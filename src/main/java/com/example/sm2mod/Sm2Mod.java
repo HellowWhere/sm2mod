@@ -12,5 +12,6 @@ public class Sm2Mod {
         IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
         ModItems.ITEMS.register(bus);
         ModItems.TABS.register(bus);
+        ModEntities.ENTITIES.register(bus);
     }
 }

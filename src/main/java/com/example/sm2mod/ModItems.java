@@ -38,20 +38,28 @@ public class ModItems {
     public static final RegistryObject<Item> FRAG_GRENADE = ITEMS.register("frag_grenade",
             () -> new GrenadeItem(new Item.Properties().stacksTo(16)));
 
-    // Power armor
+    // Power armor (3D worn model, see PowerArmorModel)
     public static final RegistryObject<Item> POWER_HELMET = ITEMS.register("power_helmet",
-            () -> new ArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
+            () -> new PowerArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.HELMET, new Item.Properties()));
     public static final RegistryObject<Item> POWER_CHESTPLATE = ITEMS.register("power_chestplate",
-            () -> new ArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
+            () -> new PowerArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.CHESTPLATE, new Item.Properties()));
     public static final RegistryObject<Item> POWER_LEGGINGS = ITEMS.register("power_leggings",
-            () -> new ArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
+            () -> new PowerArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.LEGGINGS, new Item.Properties()));
     public static final RegistryObject<Item> POWER_BOOTS = ITEMS.register("power_boots",
-            () -> new ArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, new Item.Properties()));
+            () -> new PowerArmorItem(PowerArmorMaterial.INSTANCE, ArmorItem.Type.BOOTS, new Item.Properties()));
+
+    // Render-only items used by projectile renderers (hidden from the creative tab)
+    public static final RegistryObject<Item> BOLT_PROJECTILE = ITEMS.register("bolt_projectile",
+            () -> new Item(new Item.Properties()));
+    public static final RegistryObject<Item> MELTA_PROJECTILE = ITEMS.register("melta_projectile",
+            () -> new Item(new Item.Properties()));
 
     public static final RegistryObject<CreativeModeTab> MAIN_TAB = TABS.register("main",
             () -> CreativeModeTab.builder()
                     .title(Component.translatable("itemGroup.sm2mod.main"))
                     .icon(() -> BOLTER.get().getDefaultInstance())
-                    .displayItems((params, out) -> ITEMS.getEntries().forEach(i -> out.accept(i.get())))
+                    .displayItems((params, out) -> ITEMS.getEntries().stream()
+                            .filter(i -> !i.getId().getPath().endsWith("_projectile"))
+                            .forEach(i -> out.accept(i.get())))
                     .build());
 }

@@ -11,5 +11,10 @@
   "item.sm2mod.power_helmet": "Power Armor Helmet",
   "item.sm2mod.power_chestplate": "Power Armor Chestplate",
   "item.sm2mod.power_leggings": "Power Armor Leggings",
-  "item.sm2mod.power_boots": "Power Armor Boots"
+  "item.sm2mod.power_boots": "Power Armor Boots",
+  "item.sm2mod.bolt_projectile": "Bolt (render only)",
+  "item.sm2mod.melta_projectile": "Melta blast (render only)",
+  "entity.sm2mod.bolt": "Bolt",
+  "entity.sm2mod.melta": "Melta Blast",
+  "entity.sm2mod.frag_grenade": "Frag Grenade"
 }
