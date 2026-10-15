@@ -1,0 +1,23 @@
+{
+  "type": "minecraft:crafting_shaped",
+  "pattern": [
+    "II ",
+    "IBN",
+    "   "
+  ],
+  "key": {
+    "I": {
+      "item": "minecraft:iron_ingot"
+    },
+    "B": {
+      "item": "minecraft:crossbow"
+    },
+    "N": {
+      "item": "minecraft:iron_block"
+    }
+  },
+  "result": {
+    "item": "sm2mod:bolt_pistol",
+    "count": 1
+  }
+}
