@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Заявки — Лучше звоните Борису</title>
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/admin.css">
+</head>
+<body class="admin">
+
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="logo" href="/"><span class="logo-mark">Б</span><span class="logo-text">Заявки<small>панель Бориса</small></span></a>
+    <div class="admin-actions" data-when="in" hidden>
+      <button class="btn btn-small btn-outline" type="button" data-refresh>Обновить</button>
+      <a class="btn btn-small btn-outline" href="/api/admin/export.csv">Скачать CSV</a>
+      <button class="btn btn-small" type="button" data-logout>Выйти</button>
+    </div>
+  </div>
+</header>
+
+<main class="container admin-main">
+
+  <section class="card login" data-when="out" hidden>
+    <h2>Вход</h2>
+    <form class="form" data-login novalidate>
+      <label class="field">Пароль администратора
+        <input name="password" type="password" autocomplete="current-password" required>
+      </label>
+      <button class="btn btn-block" type="submit">Войти</button>
+      <p class="form-status" role="status" aria-live="polite"></p>
+    </form>
+    <p class="fine-print">Пароль выводится в консоли при первом запуске сервера и хранится в файле <code>data/admin_password.txt</code>.</p>
+  </section>
+
+  <section data-when="in" hidden>
+    <div class="stats" data-stats></div>
+    <div class="filters">
+      <button class="chip active" type="button" data-filter="all">Все</button>
+      <button class="chip" type="button" data-filter="new">Новые</button>
+      <button class="chip" type="button" data-filter="in_progress">В работе</button>
+      <button class="chip" type="button" data-filter="done">Завершены</button>
+      <button class="chip" type="button" data-filter="rejected">Отклонены</button>
+      <input class="search" type="search" placeholder="Поиск по имени, телефону, тексту" data-search>
+    </div>
+    <div class="requests" data-list></div>
+    <p class="empty" data-empty hidden>Заявок пока нет.</p>
+  </section>
+
+</main>
+
+<template id="request-tpl">
+  <article class="card request">
+    <header class="request-head">
+      <div>
+        <span class="request-type"></span>
+        <h3 class="request-name"></h3>
+        <time class="request-time"></time>
+      </div>
+      <select class="status-select" aria-label="Статус">
+        <option value="new">Новая</option>
+        <option value="in_progress">В работе</option>
+        <option value="done">Завершена</option>
+        <option value="rejected">Отклонена</option>
+      </select>
+    </header>
+    <dl class="request-fields"></dl>
+    <p class="request-message"></p>
+    <label class="field">Заметка
+      <textarea class="note" rows="2" maxlength="2000" placeholder="Для себя: итоги звонка, договорённости"></textarea>
+    </label>
+    <div class="request-foot">
+      <button class="btn btn-small" type="button" data-save>Сохранить заметку</button>
+      <button class="link-btn danger" type="button" data-delete>Удалить</button>
+    </div>
+  </article>
+</template>
+
+<div class="toast" data-toast hidden></div>
+<script src="/admin.js"></script>
+</body>
+</html>

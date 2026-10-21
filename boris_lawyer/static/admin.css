@@ -1,0 +1,40 @@
+.admin-main { padding: 40px 20px 80px; }
+.admin-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+.login { max-width: 420px; margin: 60px auto; }
+.stats { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+.stat { background: var(--paper); border: 1px solid var(--line); border-radius: var(--radius); padding: 18px 20px; }
+.stat strong { display: block; font: 700 34px/1 var(--serif); color: var(--blue); }
+.stat span { color: var(--ink-soft); font-size: 14px; }
+.filters { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin-bottom: 24px; }
+.chip {
+  border: 1.5px solid var(--blue); background: transparent; color: var(--blue); border-radius: 999px;
+  padding: 7px 16px; font: 600 14px var(--sans); cursor: pointer;
+}
+.chip.active, .chip:hover { background: var(--blue); color: #fff; }
+.search {
+  flex: 1; min-width: 220px; font: 15px var(--sans); padding: 9px 14px; border-radius: 999px;
+  border: 1.5px solid var(--line); background: #fff;
+}
+.search:focus { outline: none; border-color: var(--blue); }
+.requests { display: grid; gap: 18px; }
+.request { padding: 24px; }
+.request.status-new { border-left: 5px solid var(--blue); }
+.request.status-done, .request.status-rejected { opacity: .75; }
+.request-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; }
+.request-type {
+  display: inline-block; font-size: 12px; font-weight: 600; text-transform: uppercase; letter-spacing: .08em;
+  background: var(--blue-soft); color: var(--blue); padding: 3px 10px; border-radius: 999px;
+}
+.request-name { margin: 8px 0 2px; font-size: 26px; }
+.request-time { color: var(--ink-soft); font-size: 13px; }
+.status-select { font: 14px var(--sans); padding: 8px 10px; border-radius: 10px; border: 1.5px solid var(--line); background: #fff; }
+.request-fields { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 8px 20px; margin: 16px 0; }
+.request-fields div { font-size: 14px; }
+.request-fields dt { color: var(--ink-soft); font-size: 12px; text-transform: uppercase; letter-spacing: .06em; }
+.request-fields dd { margin: 0; font-weight: 500; word-break: break-word; }
+.request-message { white-space: pre-wrap; background: var(--cream); border-radius: 10px; padding: 14px; }
+.request-message:empty { display: none; }
+.request-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; }
+.danger { color: var(--error); }
+.empty { text-align: center; color: var(--ink-soft); padding: 40px; }
+@media (max-width: 640px) { .stats { grid-template-columns: 1fr 1fr; } }
