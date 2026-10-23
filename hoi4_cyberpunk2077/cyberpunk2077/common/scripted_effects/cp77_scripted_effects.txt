@@ -1,0 +1,306 @@
+cp77_setup_world = {
+	if = {
+		limit = { NOT = { has_global_flag = cp77_world_ready } }
+		set_global_flag = cp77_world_ready
+		ZNC = {
+			transfer_state = 378
+			add_state_core = 378
+			set_capital = { state = 378 }
+			set_technology = {
+				infantry_weapons = 1
+				infantry_weapons1 = 1
+				infantry_weapons2 = 1
+				tech_support = 1
+				tech_engineers = 1
+				tech_recon = 1
+				motorised_infantry = 1
+				gw_artillery = 1
+				interwar_artillery = 1
+				electronic_mechanical_engineering = 1
+				radio = 1
+				basic_machine_tools = 1
+				early_fighter = 1
+			}
+			division_template = {
+				name = "Соло-наёмники"
+				regiments = { infantry = { x = 0 y = 0 } infantry = { x = 0 y = 1 } infantry = { x = 0 y = 2 } infantry = { x = 1 y = 0 } infantry = { x = 1 y = 1 } infantry = { x = 1 y = 2 } }
+				support = { engineer = { x = 0 y = 0 } recon = { x = 0 y = 1 } }
+			}
+			division_template = {
+				name = "Хромированные банды"
+				regiments = { infantry = { x = 0 y = 0 } infantry = { x = 0 y = 1 } infantry = { x = 0 y = 2 } infantry = { x = 1 y = 0 } }
+				support = {  }
+			}
+			division_template = {
+				name = "Бронетакси"
+				regiments = { motorized = { x = 0 y = 0 } motorized = { x = 0 y = 1 } motorized = { x = 0 y = 2 } motorized = { x = 1 y = 0 } }
+				support = { recon = { x = 0 y = 0 } }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+			add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }
+			add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 400 }
+			add_manpower = 30000
+		}
+		ZFT = {
+			transfer_state = 375
+			add_state_core = 375
+			transfer_state = 376
+			add_state_core = 376
+			set_capital = { state = 375 }
+			set_technology = {
+				infantry_weapons = 1
+				infantry_weapons1 = 1
+				infantry_weapons2 = 1
+				tech_support = 1
+				tech_engineers = 1
+				tech_recon = 1
+				motorised_infantry = 1
+				gw_artillery = 1
+				interwar_artillery = 1
+				electronic_mechanical_engineering = 1
+				radio = 1
+				basic_machine_tools = 1
+				early_fighter = 1
+			}
+			division_template = {
+				name = "Техасские рейнджеры"
+				regiments = { infantry = { x = 0 y = 0 } infantry = { x = 0 y = 1 } infantry = { x = 0 y = 2 } infantry = { x = 1 y = 0 } infantry = { x = 1 y = 1 } infantry = { x = 1 y = 2 } }
+				support = { engineer = { x = 0 y = 0 } }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+			add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }
+			add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 400 }
+			add_manpower = 30000
+		}
+		ZFP = {
+			transfer_state = 386
+			add_state_core = 386
+			transfer_state = 385
+			add_state_core = 385
+			set_capital = { state = 386 }
+			set_technology = {
+				infantry_weapons = 1
+				infantry_weapons1 = 1
+				infantry_weapons2 = 1
+				tech_support = 1
+				tech_engineers = 1
+				tech_recon = 1
+				motorised_infantry = 1
+				gw_artillery = 1
+				interwar_artillery = 1
+				electronic_mechanical_engineering = 1
+				radio = 1
+				basic_machine_tools = 1
+				early_fighter = 1
+			}
+			division_template = {
+				name = "Каскадская гвардия"
+				regiments = { infantry = { x = 0 y = 0 } infantry = { x = 0 y = 1 } infantry = { x = 0 y = 2 } infantry = { x = 1 y = 0 } infantry = { x = 1 y = 1 } infantry = { x = 1 y = 2 } }
+				support = { engineer = { x = 0 y = 0 } }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+			add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }
+			add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 400 }
+			add_manpower = 30000
+		}
+		ZBL = {
+			transfer_state = 379
+			add_state_core = 379
+			transfer_state = 377
+			add_state_core = 377
+			set_capital = { state = 379 }
+			set_technology = {
+				infantry_weapons = 1
+				infantry_weapons1 = 1
+				infantry_weapons2 = 1
+				tech_support = 1
+				tech_engineers = 1
+				tech_recon = 1
+				motorised_infantry = 1
+				gw_artillery = 1
+				interwar_artillery = 1
+				electronic_mechanical_engineering = 1
+				radio = 1
+				basic_machine_tools = 1
+				early_fighter = 1
+			}
+			division_template = {
+				name = "Кочевой караван"
+				regiments = { motorized = { x = 0 y = 0 } motorized = { x = 0 y = 1 } motorized = { x = 0 y = 2 } motorized = { x = 1 y = 0 } }
+				support = { recon = { x = 0 y = 0 } }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+			add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }
+			add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 400 }
+			add_manpower = 30000
+		}
+		USA = {
+			set_cosmetic_tag = CP77_NUSA
+			create_country_leader = {
+				name = "Розалинд Майерс"
+				desc = "USA_myers_desc"
+				picture = "gfx/leaders/cp77/myers.dds"
+				expire = "2150.1.1.1"
+				ideology = conservatism
+				traits = { }
+			}
+			set_politics = { ruling_party = democratic elections_allowed = no }
+			add_ideas = { cp77_nusa_federal cp77_militech_state }
+			remove_state_core = 375
+			add_state_claim = 375
+			remove_state_core = 376
+			add_state_claim = 376
+			remove_state_core = 377
+			add_state_claim = 377
+			remove_state_core = 378
+			add_state_claim = 378
+			remove_state_core = 379
+			add_state_claim = 379
+			remove_state_core = 385
+			add_state_claim = 385
+			remove_state_core = 386
+			add_state_claim = 386
+		}
+		JAP = {
+			set_cosmetic_tag = CP77_ARJ
+			create_country_leader = {
+				name = "Сабуро Арасака"
+				desc = "JAP_saburo_desc"
+				picture = "gfx/leaders/cp77/saburo.dds"
+				expire = "2150.1.1.1"
+				ideology = fascism_ideology
+				traits = { }
+			}
+			set_politics = { ruling_party = fascism elections_allowed = no }
+			add_ideas = cp77_arasaka_empire
+			if = { limit = { has_war_with = CHI } white_peace = CHI }
+			if = { limit = { has_war_with = PRC } white_peace = PRC }
+			create_corps_commander = {
+				name = "Горо Такэмура"
+				picture = "gfx/leaders/cp77/takemura.dds"
+				traits = { }
+				skill = 4
+				attack_skill = 3
+				defense_skill = 4
+				planning_skill = 4
+				logistics_skill = 3
+			}
+		}
+		if = {
+			limit = { country_exists = CHI }
+			CHI = {
+				set_cosmetic_tag = CP77_KTC
+				create_country_leader = {
+					name = "Совет директоров Кан Тао"
+					desc = "CHI_kangtao_desc"
+					picture = "gfx/leaders/cp77/kangtao.dds"
+					expire = "2150.1.1.1"
+					ideology = oligarchism
+					traits = { }
+				}
+				set_politics = { ruling_party = neutrality elections_allowed = no }
+				add_ideas = cp77_kang_tao
+			}
+		}
+		if = {
+			limit = { country_exists = SOV }
+			SOV = {
+				set_cosmetic_tag = CP77_SOV
+				create_country_leader = {
+					name = "Президиум СовОйл"
+					desc = "SOV_sovoil_desc"
+					picture = "gfx/leaders/cp77/sovoil.dds"
+					expire = "2150.1.1.1"
+					ideology = marxism
+					traits = { }
+				}
+				set_politics = { ruling_party = communism elections_allowed = no }
+				add_ideas = cp77_sovoil
+			}
+		}
+		if = {
+			limit = { country_exists = FRA }
+			FRA = {
+				set_cosmetic_tag = CP77_EEC
+				create_country_leader = {
+					name = "Еврокомиссар ЕЭС"
+					desc = "FRA_eec_desc"
+					picture = "gfx/leaders/cp77/eec.dds"
+					expire = "2150.1.1.1"
+					ideology = liberalism
+					traits = { }
+				}
+				set_politics = { ruling_party = democratic elections_allowed = no }
+				add_ideas = cp77_eec
+			}
+		}
+		ZNC = { set_variable = { cp77_cyberpsychosis = 20 } }
+	}
+}
+
+cp77_spawn_armies = {
+	if = {
+		limit = { NOT = { has_global_flag = cp77_armies_ready } }
+		set_global_flag = cp77_armies_ready
+		378 = {
+			if = {
+				limit = { is_owned_by = ZNC }
+				create_unit = {
+					division = "name = \"Соло-дивизия\" division_template = \"Соло-наёмники\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZNC
+					count = 4
+				}
+			}
+		}
+		378 = {
+			if = {
+				limit = { is_owned_by = ZNC }
+				create_unit = {
+					division = "name = \"Бригада банд\" division_template = \"Хромированные банды\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZNC
+					count = 4
+				}
+			}
+		}
+		378 = {
+			if = {
+				limit = { is_owned_by = ZNC }
+				create_unit = {
+					division = "name = \"Таксомоторный полк\" division_template = \"Бронетакси\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZNC
+					count = 2
+				}
+			}
+		}
+		375 = {
+			if = {
+				limit = { is_owned_by = ZFT }
+				create_unit = {
+					division = "name = \"Рейнджеры\" division_template = \"Техасские рейнджеры\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZFT
+					count = 5
+				}
+			}
+		}
+		386 = {
+			if = {
+				limit = { is_owned_by = ZFP }
+				create_unit = {
+					division = "name = \"Гвардия Каскадии\" division_template = \"Каскадская гвардия\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZFP
+					count = 4
+				}
+			}
+		}
+		379 = {
+			if = {
+				limit = { is_owned_by = ZBL }
+				create_unit = {
+					division = "name = \"Караван\" division_template = \"Кочевой караван\" start_experience_factor = 0.4 start_equipment_factor = 1.0"
+					owner = ZBL
+					count = 4
+				}
+			}
+		}
+	}
+}

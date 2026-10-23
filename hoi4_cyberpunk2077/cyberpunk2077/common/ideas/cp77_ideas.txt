@@ -1,0 +1,714 @@
+ideas = {
+	country = {
+		cp77_city_of_dreams = {
+			picture = cp77_city
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				consumer_goods_factor = 0.1
+				research_speed_factor = 0.05
+				stability_factor = -0.1
+			}
+		}
+		cp77_gang_wars = {
+			picture = cp77_swords
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = -0.1
+				war_support_factor = 0.05
+				conscription = 0.01
+			}
+		}
+		cp77_corpo_plaza = {
+			picture = cp77_yen
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.1
+				political_power_factor = -0.1
+			}
+		}
+		cp77_cyberpsychosis = {
+			picture = cp77_brain
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.05
+				stability_factor = -0.1
+			}
+		}
+		cp77_relic = {
+			picture = cp77_chip
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.05
+				stability_factor = -0.05
+				war_support_factor = 0.1
+			}
+		}
+		cp77_tax_paradise = {
+			picture = cp77_money
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.2
+				consumer_goods_factor = -0.05
+			}
+		}
+		cp77_arasaka_security = {
+			picture = cp77_arasaka
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_defence_factor = 0.1
+				stability_factor = 0.1
+				communism_drift = -0.02
+			}
+		}
+		cp77_arasaka_prefecture = {
+			picture = cp77_arasaka
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				production_speed_buildings_factor = 0.1
+				political_power_factor = -0.1
+				industrial_capacity_factory = 0.1
+			}
+		}
+		cp77_mikoshi_nation = {
+			picture = cp77_ghost
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.25
+				monthly_population = -0.5
+				stability_factor = 0.1
+			}
+		}
+		cp77_militech_contracts = {
+			picture = cp77_militech
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.1
+				army_attack_factor = 0.05
+			}
+		}
+		cp77_drone_swarm = {
+			picture = cp77_plane
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.1
+				training_time_factor = -0.2
+			}
+		}
+		cp77_free_city_charter = {
+			picture = cp77_pen
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.1
+				democratic_drift = 0.05
+				political_power_gain = 0.1
+			}
+		}
+		cp77_shadow_puppeteers = {
+			picture = cp77_eye
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.5
+				stability_factor = 0.15
+				war_support_factor = -0.1
+			}
+		}
+		cp77_samurai_on_tour = {
+			picture = cp77_guitar
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				war_support_factor = 0.15
+				political_power_gain = 0.1
+			}
+		}
+		cp77_burn_corpo = {
+			picture = cp77_flame
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.1
+				production_speed_buildings_factor = -0.1
+				communism_drift = 0.03
+			}
+		}
+		cp77_afterlife_mercs = {
+			picture = cp77_spade
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				experience_gain_army = 0.15
+				special_forces_cap = 0.5
+			}
+		}
+		cp77_nomad_clans = {
+			picture = cp77_wheel
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_speed_factor = 0.15
+				monthly_population = 0.1
+			}
+		}
+		cp77_nation_on_wheels = {
+			picture = cp77_wheel
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_speed_factor = 0.5
+				production_speed_buildings_factor = -0.5
+				army_org_factor = 0.1
+			}
+		}
+		cp77_chrome_cult = {
+			picture = cp77_maelstrom
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.2
+				stability_factor = -0.15
+				army_org_factor = -0.1
+			}
+		}
+		cp77_flesh_is_trash = {
+			picture = cp77_skull
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_defence_factor = 0.2
+				monthly_population = -0.3
+				research_speed_factor = 0.05
+			}
+		}
+		cp77_familia = {
+			picture = cp77_rose
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.15
+				conscription = 0.02
+			}
+		}
+		cp77_saint_jackie = {
+			picture = cp77_jackie
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				war_support_factor = 0.2
+				political_power_gain = 0.1
+			}
+		}
+		cp77_tyger_shogunate = {
+			picture = cp77_tiger
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.2
+				army_org_factor = 0.05
+			}
+		}
+		cp77_pacifica_net = {
+			picture = cp77_wave
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				decryption_factor = 0.3
+				encryption_factor = 0.3
+			}
+		}
+		cp77_ai_overlords = {
+			picture = cp77_ai
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.4
+				stability_factor = 0.2
+				consumer_goods_factor = -0.1
+				monthly_population = -0.2
+			}
+		}
+		cp77_rogue_ai = {
+			picture = cp77_wall
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = -0.05
+				decryption_factor = -0.2
+				stability_factor = -0.05
+			}
+		}
+		cp77_netwatch_protectorate = {
+			picture = cp77_eye
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				encryption_factor = 0.5
+				research_speed_factor = 0.05
+				stability_factor = 0.05
+			}
+		}
+		cp77_delamain_citizens = {
+			picture = cp77_taxi
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.2
+				army_speed_factor = 0.1
+			}
+		}
+		cp77_delamain_split = {
+			picture = cp77_glitch
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = -0.2
+				political_power_gain = -0.1
+			}
+		}
+		cp77_vendocracy = {
+			picture = cp77_soda
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				consumer_goods_factor = -0.1
+				political_power_gain = 0.15
+			}
+		}
+		cp77_free_soda = {
+			picture = cp77_soda
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.25
+				consumer_goods_factor = 0.1
+				war_support_factor = -0.1
+			}
+		}
+		cp77_blue_eyes = {
+			picture = cp77_eye
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.3
+				stability_factor = 0.1
+				research_speed_factor = 0.1
+			}
+		}
+		cp77_blue_dreams = {
+			picture = cp77_eye
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = -0.05
+				research_speed_factor = 0.03
+			}
+		}
+		cp77_bd_nation = {
+			picture = cp77_brain
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.2
+				war_support_factor = -0.2
+				research_speed_factor = 0.1
+			}
+		}
+		cp77_simulation = {
+			picture = cp77_glitch
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.5
+				stability_factor = -0.1
+			}
+		}
+		cp77_lizzy_cult = {
+			picture = cp77_music
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				war_support_factor = 0.15
+				stability_factor = 0.1
+				consumer_goods_factor = 0.05
+			}
+		}
+		cp77_lizzy_fever = {
+			picture = cp77_music
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.05
+				war_support_factor = -0.05
+			}
+		}
+		cp77_trauma_team = {
+			picture = cp77_medic
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.05
+				army_org_factor = 0.05
+				training_time_factor = -0.1
+			}
+		}
+		cp77_sandevistan = {
+			picture = cp77_sandevistan
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.1
+				army_speed_factor = 0.1
+			}
+		}
+		cp77_fortress_city = {
+			picture = cp77_tower
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_core_defence_factor = 0.15
+				army_defence_factor = 0.05
+			}
+		}
+		cp77_netrunner_corps = {
+			picture = cp77_net
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				decryption_factor = 0.25
+				encryption_factor = 0.25
+			}
+		}
+		cp77_daemon_legion = {
+			picture = cp77_net
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				decryption_factor = 0.5
+				research_speed_factor = 0.05
+			}
+		}
+		cp77_ncpd = {
+			picture = cp77_police
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.05
+				conscription = 0.01
+			}
+		}
+		cp77_cyberpsycho_squads = {
+			picture = cp77_brain
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.15
+				army_org_factor = -0.15
+				stability_factor = -0.05
+			}
+		}
+		cp77_megacorp_economy = {
+			picture = cp77_gear
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.15
+				production_factory_max_efficiency_factor = 0.05
+			}
+		}
+		cp77_nusa_federal = {
+			picture = cp77_star
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.1
+				stability_factor = 0.05
+				war_support_factor = 0.1
+			}
+		}
+		cp77_militech_state = {
+			picture = cp77_militech
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.1
+				production_factory_max_efficiency_factor = 0.05
+			}
+		}
+		cp77_unification_war = {
+			picture = cp77_flag
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				war_support_factor = 0.2
+				army_attack_factor = 0.05
+			}
+		}
+		cp77_fia = {
+			picture = cp77_eye
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				decryption_factor = 0.3
+				encryption_factor = 0.3
+			}
+		}
+		cp77_moon_colony = {
+			picture = cp77_moon
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.1
+				monthly_population = 0.05
+			}
+		}
+		cp77_crystal_palace = {
+			picture = cp77_rocket
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				production_speed_buildings_factor = 0.1
+				research_speed_factor = 0.05
+			}
+		}
+		cp77_myers_eternal = {
+			picture = cp77_infinity
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.5
+				stability_factor = 0.1
+				democratic_drift = -0.05
+			}
+		}
+		cp77_arasaka_empire = {
+			picture = cp77_arasaka
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.1
+				stability_factor = 0.1
+				political_power_gain = 0.1
+			}
+		}
+		cp77_saburo_eternal = {
+			picture = cp77_ghost
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				political_power_gain = 0.25
+				research_speed_factor = 0.05
+			}
+		}
+		cp77_yorinobu_reforms = {
+			picture = cp77_fist
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				consumer_goods_factor = -0.1
+				stability_factor = -0.05
+				democratic_drift = 0.05
+			}
+		}
+		cp77_soulkiller_nation = {
+			picture = cp77_ghost
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.5
+				monthly_population = -0.8
+				stability_factor = 0.2
+			}
+		}
+		cp77_digital_emperor = {
+			picture = cp77_ai
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_attack_factor = 0.1
+				army_defence_factor = 0.1
+				political_power_gain = 1.0
+			}
+		}
+		cp77_relic_world = {
+			picture = cp77_chip
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = -0.05
+				war_support_factor = -0.05
+				research_speed_factor = 0.02
+			}
+		}
+		cp77_kang_tao = {
+			picture = cp77_kangtao
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				industrial_capacity_factory = 0.1
+				research_speed_factor = 0.05
+			}
+		}
+		cp77_sovoil = {
+			picture = cp77_flame
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				local_resources_factor = 0.15
+				stability_factor = 0.05
+			}
+		}
+		cp77_eec = {
+			picture = cp77_money
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				trade_opinion_factor = 0.2
+				consumer_goods_factor = -0.05
+			}
+		}
+		cp77_free_state = {
+			picture = cp77_flag
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				war_support_factor = 0.1
+				stability_factor = -0.05
+			}
+		}
+		cp77_chooh2 = {
+			picture = cp77_corn
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				local_resources_factor = 0.2
+				consumer_goods_factor = -0.05
+			}
+		}
+		cp77_corn_empire = {
+			picture = cp77_corn
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.15
+				political_power_gain = 0.2
+				research_speed_factor = -0.05
+			}
+		}
+		cp77_biotechnica_forests = {
+			picture = cp77_tree
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
+				production_speed_buildings_factor = 0.05
+			}
+		}
+		cp77_bigfoot = {
+			picture = cp77_bigfoot
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				stability_factor = 0.1
+				army_defence_factor = 0.05
+			}
+		}
+		cp77_druid_ai = {
+			picture = cp77_tree
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				research_speed_factor = 0.15
+				industrial_capacity_factory = -0.05
+			}
+		}
+		cp77_nomad_horde = {
+			picture = cp77_wheel
+			allowed = { always = no }
+			allowed_civil_war = { always = yes }
+			removal_cost = -1
+			modifier = {
+				army_speed_factor = 0.25
+				army_attack_factor = 0.1
+			}
+		}
+	}
+}

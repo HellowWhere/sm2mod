@@ -1,0 +1,53 @@
+bookmarks = {
+	bookmark = {
+		name = "CP77_BOOKMARK"
+		desc = "CP77_BOOKMARK_DESC"
+		date = 2077.1.1.12
+		picture = "GFX_select_date_1936"
+		default_country = "ZNC"
+		default = yes
+		ZNC = {
+			history = "CP77_ZNC_BM"
+			ideology = neutrality
+			ideas = { cp77_city_of_dreams cp77_gang_wars cp77_corpo_plaza }
+			focuses = { ZNC_corpo_council ZNC_burn_corpo ZNC_delamain }
+		}
+		USA = {
+			history = "CP77_USA_BM"
+			ideology = democratic
+			ideas = { cp77_nusa_federal cp77_militech_state }
+			focuses = { CP77_USA_unification_war_ii CP77_USA_save_songbird CP77_USA_myers_forever }
+		}
+		JAP = {
+			history = "CP77_JAP_BM"
+			ideology = fascism
+			ideas = { cp77_arasaka_empire }
+			focuses = { CP77_JAP_yorinobu_coup CP77_JAP_saburo_eternal CP77_JAP_digital_emperor }
+		}
+		"---" = {
+			history = "CP77_OTHERS_BM"
+		}
+		ZFT = {
+			history = "CP77_ZFT_BM"
+			ideology = neutrality
+			ideas = { cp77_free_state }
+			focuses = { CP77_FS_corn_kingdom }
+		}
+		ZBL = {
+			history = "CP77_ZBL_BM"
+			ideology = neutrality
+			ideas = { cp77_free_state }
+			focuses = { CP77_FS_nomad_horde }
+		}
+		ZFP = {
+			history = "CP77_ZFP_BM"
+			ideology = democratic
+			ideas = { cp77_free_state }
+			focuses = { CP77_FS_druid_ai }
+		}
+		effect = {
+			randomize_weather = 22345
+			cp77_setup_world = yes
+		}
+	}
+}

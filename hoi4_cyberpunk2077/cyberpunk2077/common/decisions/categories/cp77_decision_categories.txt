@@ -1,0 +1,20 @@
+cp77_gangs_category = {
+	icon = cp77_swords
+	allowed = { tag = ZNC }
+}
+
+cp77_relic_category = {
+	icon = cp77_chip
+	allowed = { tag = ZNC }
+}
+
+cp77_netrunning_category = {
+	icon = cp77_net
+	allowed = { OR = { tag = ZNC tag = USA tag = JAP tag = CHI } }
+}
+
+cp77_blackwall_category = {
+	icon = cp77_wall
+	allowed = { always = yes }
+	visible = { has_global_flag = cp77_blackwall_fallen }
+}

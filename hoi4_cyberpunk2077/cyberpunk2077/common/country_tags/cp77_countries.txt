@@ -1,0 +1,4 @@
+ZNC = "countries/Night City.txt"
+ZFT = "countries/Free State of Texas.txt"
+ZFP = "countries/Free States Northwest.txt"
+ZBL = "countries/Badlands Nomad Nation.txt"

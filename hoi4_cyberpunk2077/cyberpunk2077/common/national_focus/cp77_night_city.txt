@@ -1,0 +1,2461 @@
+focus_tree = {
+	id = cp77_night_city_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZNC }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = ZNC_chrome_economy
+		icon = GFX_goal_cp77_money
+		x = 2
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 50
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_megabuildings
+		icon = GFX_goal_cp77_tower
+		x = 1
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_chrome_economy }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_kabuki_markets
+		icon = GFX_goal_cp77_dice
+		x = 3
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_chrome_economy }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_stability = 0.03
+		}
+	}
+
+	focus = {
+		id = ZNC_eurodollar_reserve
+		icon = GFX_goal_cp77_money
+		x = 1
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_megabuildings }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			add_ideas = cp77_tax_paradise
+		}
+	}
+
+	focus = {
+		id = ZNC_waterfront_docks
+		icon = GFX_goal_cp77_anchor
+		x = 3
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_kabuki_markets }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 2 instant_build = yes }
+				add_building_construction = { type = infrastructure level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_ripperdoc_clinics
+		icon = GFX_goal_cp77_medic
+		x = 0
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_eurodollar_reserve }
+		search_filters = { FOCUS_FILTER_MANPOWER FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 15000
+			add_tech_bonus = { name = ZNC_ripperdoc_clinics bonus = 0.5 uses = 1 category = industry }
+		}
+	}
+
+	focus = {
+		id = ZNC_arms_plants
+		icon = GFX_goal_cp77_gear
+		x = 2
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_eurodollar_reserve focus = ZNC_waterfront_docks }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_free_port
+		icon = GFX_goal_cp77_anchor
+		x = 4
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_waterfront_docks }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 50
+			capital_scope = {
+				add_resource = { type = steel amount = 8 }
+				add_resource = { type = rubber amount = 6 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_mass_cyberware
+		icon = GFX_goal_cp77_chip
+		x = 0
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_ripperdoc_clinics }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZNC_smart_weapons
+		icon = GFX_goal_cp77_target
+		x = 1
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_arms_plants }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_smart_weapons bonus = 1.0 uses = 2 category = infantry_weapons }
+		}
+	}
+
+	focus = {
+		id = ZNC_armored_cabs
+		icon = GFX_goal_cp77_taxi
+		x = 3
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_arms_plants }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_armored_cabs bonus = 1.0 uses = 1 technology = motorised_infantry }
+			add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 300 }
+		}
+	}
+
+	focus = {
+		id = ZNC_av_production
+		icon = GFX_goal_cp77_plane
+		x = 2
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_smart_weapons focus = ZNC_armored_cabs }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = air_base level = 3 instant_build = yes }
+			}
+			add_tech_bonus = { name = ZNC_av_production bonus = 0.75 uses = 2 category = air_equipment }
+		}
+	}
+
+	focus = {
+		id = ZNC_biotech_farms
+		icon = GFX_goal_cp77_bio
+		x = 4
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_free_port }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.05
+			add_manpower = 10000
+		}
+	}
+
+	focus = {
+		id = ZNC_megacorp_economy
+		icon = GFX_goal_cp77_gear
+		x = 2
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_av_production }
+		prerequisite = { focus = ZNC_mass_cyberware }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_megacorp_economy
+		}
+	}
+
+	focus = {
+		id = ZNC_santo_domingo_tech
+		icon = GFX_goal_cp77_atom
+		x = 2
+		y = 7
+		cost = 15
+		prerequisite = { focus = ZNC_megacorp_economy }
+		search_filters = { FOCUS_FILTER_RESEARCH FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			capital_scope = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = { type = industrial_complex level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_city_of_dreams
+		icon = GFX_goal_cp77_city
+		x = 17
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_stability = 0.03
+		}
+	}
+
+	focus = {
+		id = ZNC_power_vacuum
+		icon = GFX_goal_cp77_question
+		x = 17
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_city_of_dreams }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 50
+			custom_effect_tooltip = ZNC_power_vacuum_tt
+		}
+	}
+
+	focus = {
+		id = ZNC_corpo_council
+		icon = GFX_goal_cp77_yen
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_mayor_peralez focus = ZNC_burn_corpo focus = ZNC_nomad_pact focus = ZNC_street_rule focus = ZNC_voodoo_net focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_popularity = { ideology = neutrality popularity = 0.25 }
+			set_cosmetic_tag = CP77_CORPO
+			create_country_leader = {
+				name = "Совет директоров Найт-Сити"
+				desc = "ZNC_corpo_board_desc"
+				picture = "gfx/leaders/cp77/znc_corpo_board.dds"
+				expire = "2150.1.1.1"
+				ideology = oligarchism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_tax_paradise
+		icon = GFX_goal_cp77_money
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_corpo_council }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_arasaka_way
+		icon = GFX_goal_cp77_arasaka
+		x = 6
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_tax_paradise }
+		mutually_exclusive = { focus = ZNC_militech_way }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_ideas = cp77_arasaka_security
+			if = { limit = { country_exists = JAP } JAP = { add_political_power = 50 } }
+		}
+	}
+
+	focus = {
+		id = ZNC_militech_way
+		icon = GFX_goal_cp77_militech
+		x = 8
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_tax_paradise }
+		mutually_exclusive = { focus = ZNC_arasaka_way }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_ideas = cp77_militech_contracts
+		}
+	}
+
+	focus = {
+		id = ZNC_hanako_regency
+		icon = GFX_goal_cp77_crown
+		x = 6
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_arasaka_way }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_politics = { ruling_party = fascism elections_allowed = no }
+			add_popularity = { ideology = fascism popularity = 0.25 }
+			set_cosmetic_tag = CP77_ARASAKA_NC
+			create_country_leader = {
+				name = "Ханако Арасака"
+				desc = "ZNC_hanako_desc"
+				picture = "gfx/leaders/cp77/hanako.dds"
+				expire = "2150.1.1.1"
+				ideology = fascism_ideology
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_arasaka_prefecture
+		icon = GFX_goal_cp77_arasaka
+		x = 6
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_hanako_regency }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_arasaka_prefecture
+			if = { limit = { country_exists = JAP JAP = { NOT = { has_war_with = ROOT } } } JAP = { puppet = ROOT } }
+		}
+	}
+
+	focus = {
+		id = ZNC_mikoshi_for_all
+		icon = GFX_goal_cp77_ghost
+		x = 6
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_arasaka_prefecture }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_ideas = cp77_mikoshi_nation
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZNC_militech_contracts
+		icon = GFX_goal_cp77_hammer
+		x = 8
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_militech_way }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 2000 }
+		}
+	}
+
+	focus = {
+		id = ZNC_return_to_nusa
+		icon = GFX_goal_cp77_star
+		x = 8
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_militech_contracts }
+		mutually_exclusive = { focus = ZNC_militech_republic }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = no }
+			add_popularity = { ideology = democratic popularity = 0.25 }
+			if = { limit = { country_exists = USA USA = { NOT = { has_war_with = ROOT } } } USA = { puppet = ROOT } }
+		}
+	}
+
+	focus = {
+		id = ZNC_militech_republic
+		icon = GFX_goal_cp77_militech
+		x = 9
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_militech_contracts }
+		mutually_exclusive = { focus = ZNC_return_to_nusa }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_politics = { ruling_party = fascism elections_allowed = no }
+			add_popularity = { ideology = fascism popularity = 0.25 }
+			set_cosmetic_tag = CP77_MILITECH
+			create_country_leader = {
+				name = "Мередит Стаут"
+				desc = "ZNC_stout_desc"
+				picture = "gfx/leaders/cp77/stout.dds"
+				expire = "2150.1.1.1"
+				ideology = fascism_ideology
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_51st_state
+		icon = GFX_goal_cp77_flag
+		x = 8
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_return_to_nusa }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+			add_stability = 0.1
+			if = { limit = { country_exists = USA } USA = { give_guarantee = ROOT } }
+		}
+	}
+
+	focus = {
+		id = ZNC_drone_swarm
+		icon = GFX_goal_cp77_plane
+		x = 9
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_militech_republic }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_drone_swarm
+			air_experience = 50
+		}
+	}
+
+	focus = {
+		id = ZNC_fifth_corporate_war
+		icon = GFX_goal_cp77_swords
+		x = 9
+		y = 8
+		cost = 10
+		prerequisite = { focus = ZNC_drone_swarm }
+		will_lead_to_war_with = JAP
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			if = { limit = { country_exists = JAP } create_wargoal = { type = annex_everything target = JAP } }
+			add_war_support = 0.2
+		}
+	}
+
+	focus = {
+		id = ZNC_mayor_peralez
+		icon = GFX_goal_cp77_vote
+		x = 12
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_burn_corpo focus = ZNC_nomad_pact focus = ZNC_street_rule focus = ZNC_voodoo_net focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_popularity = { ideology = democratic popularity = 0.25 }
+			create_country_leader = {
+				name = "Джефферсон Пералес"
+				desc = "ZNC_peralez_desc"
+				picture = "gfx/leaders/cp77/peralez.dds"
+				expire = "2150.1.1.1"
+				ideology = liberalism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_dream_on
+		icon = GFX_goal_cp77_eye
+		x = 12
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_mayor_peralez }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			country_event = { id = cp77.15 days = 3 }
+		}
+	}
+
+	focus = {
+		id = ZNC_expose_puppeteers
+		icon = GFX_goal_cp77_pen
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_dream_on }
+		mutually_exclusive = { focus = ZNC_embrace_puppeteers }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_stability = -0.05
+			add_war_support = 0.05
+			add_popularity = { ideology = democratic popularity = 0.15 }
+		}
+	}
+
+	focus = {
+		id = ZNC_embrace_puppeteers
+		icon = GFX_goal_cp77_mask
+		x = 13
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_dream_on }
+		mutually_exclusive = { focus = ZNC_expose_puppeteers }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_shadow_puppeteers
+		}
+	}
+
+	focus = {
+		id = ZNC_city_charter
+		icon = GFX_goal_cp77_pen
+		x = 11
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_expose_puppeteers }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_free_city_charter
+		}
+	}
+
+	focus = {
+		id = ZNC_free_elections
+		icon = GFX_goal_cp77_vote
+		x = 11
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_city_charter }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.1
+			add_political_power = 100
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+		}
+	}
+
+	focus = {
+		id = ZNC_pacific_league
+		icon = GFX_goal_cp77_handshake
+		x = 11
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_free_elections }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { NOT = { is_in_faction = yes } } create_faction = cp77_pacific_league }
+			every_country = {
+				limit = { OR = { tag = ZFP tag = ZFT tag = ZBL } exists = yes is_in_faction = no NOT = { has_war_with = ROOT } }
+				ROOT = { add_to_faction = PREV }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_beacon_of_freedom
+		icon = GFX_goal_cp77_star
+		x = 11
+		y = 8
+		cost = 15
+		prerequisite = { focus = ZNC_pacific_league }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			add_stability = 0.05
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_shadow_council
+		icon = GFX_goal_cp77_eye
+		x = 13
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_embrace_puppeteers }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+			set_politics = { ruling_party = democratic elections_allowed = no }
+		}
+	}
+
+	focus = {
+		id = ZNC_bd_suggestion
+		icon = GFX_goal_cp77_brain
+		x = 13
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_shadow_council }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.15
+			add_war_support = 0.1
+			add_popularity = { ideology = democratic popularity = 0.3 }
+		}
+	}
+
+	focus = {
+		id = ZNC_who_are_they
+		icon = GFX_goal_cp77_question
+		x = 13
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_bd_suggestion }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			country_event = { id = cp77.16 }
+		}
+	}
+
+	focus = {
+		id = ZNC_burn_corpo
+		icon = GFX_goal_cp77_flame
+		x = 15
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_mayor_peralez focus = ZNC_nomad_pact focus = ZNC_street_rule focus = ZNC_voodoo_net focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+			set_cosmetic_tag = CP77_SAMURAI
+			add_ideas = cp77_burn_corpo
+		}
+	}
+
+	focus = {
+		id = ZNC_samurai_reunion
+		icon = GFX_goal_cp77_guitar
+		x = 15
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_burn_corpo }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_samurai_on_tour
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_afterlife_alliance
+		icon = GFX_goal_cp77_spade
+		x = 15
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_samurai_reunion }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_afterlife_mercs
+			army_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZNC_storm_arasaka_tower
+		icon = GFX_goal_cp77_tower
+		x = 15
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_afterlife_alliance }
+		will_lead_to_war_with = JAP
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = JAP } create_wargoal = { type = topple_government target = JAP } }
+			add_war_support = 0.15
+			capital_scope = {
+				add_building_construction = { type = anti_air_building level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_silverhand_president
+		icon = GFX_goal_cp77_skull
+		x = 14
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_storm_arasaka_tower }
+		mutually_exclusive = { focus = ZNC_v_legend }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+			create_country_leader = {
+				name = "Джонни Сильверхенд"
+				desc = "ZNC_johnny_desc"
+				picture = "gfx/leaders/cp77/johnny.dds"
+				expire = "2150.1.1.1"
+				ideology = anarchist_communism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_v_legend
+		icon = GFX_goal_cp77_v
+		x = 16
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_storm_arasaka_tower }
+		mutually_exclusive = { focus = ZNC_silverhand_president }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+			set_cosmetic_tag = CP77_AFTERLIFE
+			create_country_leader = {
+				name = "Ви"
+				desc = "ZNC_v_desc"
+				picture = "gfx/leaders/cp77/v_leader.dds"
+				expire = "2150.1.1.1"
+				ideology = anarchist_communism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_nuke_2
+		icon = GFX_goal_cp77_nuke
+		x = 14
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_silverhand_president }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 0.3
+		}
+		completion_reward = {
+			add_nuclear_bombs = 3
+			add_war_support = 0.2
+			add_stability = -0.1
+			every_country = { news_event = { id = cp77.20 hours = 6 } }
+		}
+	}
+
+	focus = {
+		id = ZNC_afterlife_republic
+		icon = GFX_goal_cp77_spade
+		x = 16
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_v_legend }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_trauma_team
+			army_experience = 50
+			add_manpower = 20000
+		}
+	}
+
+	focus = {
+		id = ZNC_world_rebellion
+		icon = GFX_goal_cp77_fist
+		x = 15
+		y = 8
+		cost = 15
+		prerequisite = { focus = ZNC_nuke_2 focus = ZNC_afterlife_republic }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			JAP = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.3 } } }
+			USA = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.25 } } }
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_nomad_pact
+		icon = GFX_goal_cp77_wheel
+		x = 18
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_mayor_peralez focus = ZNC_burn_corpo focus = ZNC_street_rule focus = ZNC_voodoo_net focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_popularity = { ideology = neutrality popularity = 0.25 }
+			set_cosmetic_tag = CP77_NOMAD
+			add_ideas = cp77_nomad_clans
+		}
+	}
+
+	focus = {
+		id = ZNC_panam
+		icon = GFX_goal_cp77_heart
+		x = 18
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_nomad_pact }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			create_country_leader = {
+				name = "Панам Палмер"
+				desc = "ZNC_panam_desc"
+				picture = "gfx/leaders/cp77/panam.dds"
+				expire = "2150.1.1.1"
+				ideology = anarchism
+				traits = { }
+			}
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+		}
+	}
+
+	focus = {
+		id = ZNC_basilisk
+		icon = GFX_goal_cp77_mech
+		x = 18
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_panam }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_basilisk bonus = 1.0 uses = 2 category = armor }
+			army_experience = 25
+		}
+	}
+
+	focus = {
+		id = ZNC_aldecaldo_smugglers
+		icon = GFX_goal_cp77_dice
+		x = 19
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_panam }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }
+		}
+	}
+
+	focus = {
+		id = ZNC_badlands_union
+		icon = GFX_goal_cp77_handshake
+		x = 18
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_basilisk }
+		search_filters = { FOCUS_FILTER_ANNEXATION }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZBL ZBL = { is_in_faction = no } NOT = { has_war_with = ZBL } } annex_country = { target = ZBL transfer_troops = yes } }
+			else = { add_state_claim = 379 add_state_claim = 377 }
+		}
+	}
+
+	focus = {
+		id = ZNC_border_breach
+		icon = GFX_goal_cp77_target
+		x = 19
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_aldecaldo_smugglers }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_war_support = 0.1
+			add_state_claim = 375
+			add_state_claim = 376
+		}
+	}
+
+	focus = {
+		id = ZNC_great_exodus
+		icon = GFX_goal_cp77_sun
+		x = 18
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_badlands_union }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { owns_state = 379 } set_capital = { state = 379 } }
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_nation_on_wheels
+		icon = GFX_goal_cp77_wheel
+		x = 18
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_great_exodus }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			swap_ideas = { remove_idea = cp77_nomad_clans add_idea = cp77_nation_on_wheels }
+			set_cosmetic_tag = CP77_WHEELS
+		}
+	}
+
+	focus = {
+		id = ZNC_eternal_road
+		icon = GFX_goal_cp77_wheel
+		x = 18
+		y = 8
+		cost = 10
+		prerequisite = { focus = ZNC_nation_on_wheels }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			every_country = {
+				limit = { OR = { tag = ZFT tag = ZFP } exists = yes NOT = { is_in_faction_with = ROOT } }
+				ROOT = { create_wargoal = { type = annex_everything target = PREV } }
+			}
+			add_war_support = 0.15
+		}
+	}
+
+	focus = {
+		id = ZNC_street_rule
+		icon = GFX_goal_cp77_swords
+		x = 24
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_mayor_peralez focus = ZNC_burn_corpo focus = ZNC_nomad_pact focus = ZNC_voodoo_net focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = fascism elections_allowed = no }
+			add_popularity = { ideology = fascism popularity = 0.25 }
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_maelstrom
+		icon = GFX_goal_cp77_maelstrom
+		x = 21
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_street_rule }
+		mutually_exclusive = { focus = ZNC_valentinos focus = ZNC_tyger_claws }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_MAELSTROM
+			create_country_leader = {
+				name = "Брик"
+				desc = "ZNC_brick_desc"
+				picture = "gfx/leaders/cp77/brick.dds"
+				expire = "2150.1.1.1"
+				ideology = fascism_ideology
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_valentinos
+		icon = GFX_goal_cp77_rose
+		x = 24
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_street_rule }
+		mutually_exclusive = { focus = ZNC_maelstrom focus = ZNC_tyger_claws }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_VALENTINOS
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Падре"
+				desc = "ZNC_padre_desc"
+				picture = "gfx/leaders/cp77/padre.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_tyger_claws
+		icon = GFX_goal_cp77_tiger
+		x = 27
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_street_rule }
+		mutually_exclusive = { focus = ZNC_maelstrom focus = ZNC_valentinos }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_TYGER
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Вакако Окада"
+				desc = "ZNC_wakako_desc"
+				picture = "gfx/leaders/cp77/wakako.dds"
+				expire = "2150.1.1.1"
+				ideology = oligarchism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_chrome_over_flesh
+		icon = GFX_goal_cp77_gear
+		x = 21
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_maelstrom }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_chrome_cult
+			army_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZNC_cyberpsychosis_virtue
+		icon = GFX_goal_cp77_brain
+		x = 21
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_chrome_over_flesh }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_ideas = cp77_cyberpsycho_squads
+			set_variable = { cp77_cyberpsychosis = 90 }
+		}
+	}
+
+	focus = {
+		id = ZNC_totentanz
+		icon = GFX_goal_cp77_music
+		x = 22
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_chrome_over_flesh }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_flesh_is_trash
+		icon = GFX_goal_cp77_skull
+		x = 21
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_cyberpsychosis_virtue }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 0.3
+		}
+		completion_reward = {
+			add_ideas = cp77_flesh_is_trash
+		}
+	}
+
+	focus = {
+		id = ZNC_ofrenda_jackie
+		icon = GFX_goal_cp77_cross
+		x = 24
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_valentinos }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.1
+			add_war_support = 0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_jackie_lives
+		icon = GFX_goal_cp77_jackie
+		x = 23
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_ofrenda_jackie }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_saint_jackie
+			create_country_leader = {
+				name = "Джеки Уэллс"
+				desc = "ZNC_jackie_desc"
+				picture = "gfx/leaders/cp77/jackie.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_familia
+		icon = GFX_goal_cp77_rose
+		x = 25
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_ofrenda_jackie }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_familia
+			add_manpower = 15000
+		}
+	}
+
+	focus = {
+		id = ZNC_heywood_capital
+		icon = GFX_goal_cp77_crown
+		x = 24
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_jackie_lives focus = ZNC_familia }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_wakako_network
+		icon = GFX_goal_cp77_phone
+		x = 27
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_tyger_claws }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZNC_jig_jig_street
+		icon = GFX_goal_cp77_heart
+		x = 26
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_wakako_network }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.05
+			capital_scope = {
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_claws_arasaka_deal
+		icon = GFX_goal_cp77_arasaka
+		x = 28
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_wakako_network }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_arasaka_security
+		}
+	}
+
+	focus = {
+		id = ZNC_claw_shogunate
+		icon = GFX_goal_cp77_tiger
+		x = 27
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_jig_jig_street focus = ZNC_claws_arasaka_deal }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_tyger_shogunate
+		}
+	}
+
+	focus = {
+		id = ZNC_gang_army
+		icon = GFX_goal_cp77_swords
+		x = 24
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_flesh_is_trash focus = ZNC_totentanz focus = ZNC_heywood_capital focus = ZNC_claw_shogunate }
+		search_filters = { FOCUS_FILTER_ARMY_XP FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 50
+			add_manpower = 25000
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+		}
+	}
+
+	focus = {
+		id = ZNC_sixth_street_patriots
+		icon = GFX_goal_cp77_flag
+		x = 24
+		y = 8
+		cost = 10
+		prerequisite = { focus = ZNC_gang_army }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_war_support = 0.15
+			add_state_claim = 375
+			add_state_claim = 377
+			add_state_claim = 379
+		}
+	}
+
+	focus = {
+		id = ZNC_voodoo_net
+		icon = GFX_goal_cp77_wave
+		x = 30
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_mayor_peralez focus = ZNC_burn_corpo focus = ZNC_nomad_pact focus = ZNC_street_rule focus = ZNC_city_goes_mad }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_VOODOO
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_ideas = cp77_pacifica_net
+			create_country_leader = {
+				name = "Пласид"
+				desc = "ZNC_placide_desc"
+				picture = "gfx/leaders/cp77/placide.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_pacifica_reborn
+		icon = GFX_goal_cp77_wave
+		x = 30
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_voodoo_net }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_contact_alt
+		icon = GFX_goal_cp77_ai
+		x = 30
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_pacifica_reborn }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			country_event = { id = cp77.9 days = 2 }
+		}
+	}
+
+	focus = {
+		id = ZNC_tear_blackwall
+		icon = GFX_goal_cp77_wall
+		x = 29
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_contact_alt }
+		mutually_exclusive = { focus = ZNC_netwatch_deal }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_global_flag = cp77_blackwall_fallen
+			every_country = { news_event = { id = cp77.5 hours = 12 } }
+		}
+	}
+
+	focus = {
+		id = ZNC_netwatch_deal
+		icon = GFX_goal_cp77_eye
+		x = 31
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_contact_alt }
+		mutually_exclusive = { focus = ZNC_tear_blackwall }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_ai_ascension
+		icon = GFX_goal_cp77_ai
+		x = 29
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_tear_blackwall }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_BEYOND
+			add_ideas = cp77_ai_overlords
+			create_country_leader = {
+				name = "Альт Каннингем"
+				desc = "ZNC_alt_desc"
+				picture = "gfx/leaders/cp77/alt.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_old_net_returns
+		icon = GFX_goal_cp77_net
+		x = 29
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_ai_ascension }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			every_other_country = { limit = { is_major = yes } add_timed_idea = { idea = cp77_rogue_ai days = 365 } }
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZNC_singularity
+		icon = GFX_goal_cp77_infinity
+		x = 29
+		y = 8
+		cost = 15
+		prerequisite = { focus = ZNC_old_net_returns }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_singularity bonus = 2.0 uses = 3 category = electronics }
+			add_tech_bonus = { name = ZNC_singularity bonus = 2.0 uses = 3 category = industry }
+			every_country = { news_event = { id = cp77.22 hours = 6 } }
+		}
+	}
+
+	focus = {
+		id = ZNC_netwatch_protectorate
+		icon = GFX_goal_cp77_eye
+		x = 31
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_netwatch_deal }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_NETWATCH
+			add_ideas = cp77_netwatch_protectorate
+			create_country_leader = {
+				name = "Директор Курт Бергманн"
+				desc = "ZNC_netwatch_desc"
+				picture = "gfx/leaders/cp77/netwatch.dds"
+				expire = "2150.1.1.1"
+				ideology = oligarchism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_icebreaker_doctrine
+		icon = GFX_goal_cp77_ice
+		x = 31
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_netwatch_protectorate }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_netrunner_corps
+			add_tech_bonus = { name = ZNC_icebreaker_doctrine bonus = 1.0 uses = 2 category = electronics }
+		}
+	}
+
+	focus = {
+		id = ZNC_world_firewall
+		icon = GFX_goal_cp77_wall
+		x = 31
+		y = 8
+		cost = 15
+		prerequisite = { focus = ZNC_icebreaker_doctrine }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 200
+			every_other_country = { limit = { is_major = yes } add_political_power = -50 }
+		}
+	}
+
+	focus = {
+		id = ZNC_city_goes_mad
+		icon = GFX_goal_cp77_glitch
+		x = 37
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_power_vacuum }
+		mutually_exclusive = { focus = ZNC_corpo_council focus = ZNC_mayor_peralez focus = ZNC_burn_corpo focus = ZNC_nomad_pact focus = ZNC_street_rule focus = ZNC_voodoo_net }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 50
+			add_stability = -0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_delamain
+		icon = GFX_goal_cp77_taxi
+		x = 33
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_city_goes_mad }
+		mutually_exclusive = { focus = ZNC_brendan focus = ZNC_mr_blue_eyes focus = ZNC_braindance_reality focus = ZNC_lizzy_wizzy }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_DELAMAIN
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Делямейн"
+				desc = "ZNC_delamain_desc"
+				picture = "gfx/leaders/cp77/delamain.dds"
+				expire = "2150.1.1.1"
+				ideology = moderatism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_brendan
+		icon = GFX_goal_cp77_soda
+		x = 35
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_city_goes_mad }
+		mutually_exclusive = { focus = ZNC_delamain focus = ZNC_mr_blue_eyes focus = ZNC_braindance_reality focus = ZNC_lizzy_wizzy }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_BRENDAN
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Брендан"
+				desc = "ZNC_brendan_desc"
+				picture = "gfx/leaders/cp77/brendan.dds"
+				expire = "2150.1.1.1"
+				ideology = centrism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_mr_blue_eyes
+		icon = GFX_goal_cp77_eye
+		x = 37
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_city_goes_mad }
+		mutually_exclusive = { focus = ZNC_delamain focus = ZNC_brendan focus = ZNC_braindance_reality focus = ZNC_lizzy_wizzy }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Мистер Синие Глаза"
+				desc = "ZNC_blue_eyes_desc"
+				picture = "gfx/leaders/cp77/blue_eyes.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+			add_ideas = cp77_blue_eyes
+		}
+	}
+
+	focus = {
+		id = ZNC_braindance_reality
+		icon = GFX_goal_cp77_brain
+		x = 39
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_city_goes_mad }
+		mutually_exclusive = { focus = ZNC_delamain focus = ZNC_brendan focus = ZNC_mr_blue_eyes focus = ZNC_lizzy_wizzy }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_BRAINDANCE
+			set_politics = { ruling_party = democratic elections_allowed = no }
+			create_country_leader = {
+				name = "Джуди Альварес"
+				desc = "ZNC_judy_desc"
+				picture = "gfx/leaders/cp77/judy.dds"
+				expire = "2150.1.1.1"
+				ideology = liberalism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_lizzy_wizzy
+		icon = GFX_goal_cp77_music
+		x = 41
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_city_goes_mad }
+		mutually_exclusive = { focus = ZNC_delamain focus = ZNC_brendan focus = ZNC_mr_blue_eyes focus = ZNC_braindance_reality }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_LIZZY
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			create_country_leader = {
+				name = "Лиззи Уиззи"
+				desc = "ZNC_lizzy_desc"
+				picture = "gfx/leaders/cp77/lizzy.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_taxis_are_citizens
+		icon = GFX_goal_cp77_taxi
+		x = 33
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_delamain }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_delamain_citizens
+		}
+	}
+
+	focus = {
+		id = ZNC_president_delamain
+		icon = GFX_goal_cp77_crown
+		x = 33
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_taxis_are_citizens }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+			add_stability = 0.1
+			add_tech_bonus = { name = ZNC_president_delamain bonus = 1.0 uses = 2 technology = motorised_infantry }
+		}
+	}
+
+	focus = {
+		id = ZNC_personality_split
+		icon = GFX_goal_cp77_glitch
+		x = 33
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_president_delamain }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_delamain_split
+			country_event = { id = cp77.6 days = 5 }
+		}
+	}
+
+	focus = {
+		id = ZNC_planetary_taxi
+		icon = GFX_goal_cp77_earth
+		x = 33
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_personality_split }
+		search_filters = { FOCUS_FILTER_ANNEXATION }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_state_claim = 375
+			add_state_claim = 376
+			add_state_claim = 377
+			add_state_claim = 379
+			add_state_claim = 385
+			add_state_claim = 386
+			army_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZNC_vendocracy
+		icon = GFX_goal_cp77_soda
+		x = 35
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_brendan }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_vendocracy
+		}
+	}
+
+	focus = {
+		id = ZNC_vending_rights
+		icon = GFX_goal_cp77_scales
+		x = 35
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_vendocracy }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = 0.1
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZNC_free_soda_forever
+		icon = GFX_goal_cp77_soda
+		x = 35
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_vending_rights }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_free_soda
+		}
+	}
+
+	focus = {
+		id = ZNC_brendan_awakening
+		icon = GFX_goal_cp77_infinity
+		x = 35
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_free_soda_forever }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			every_country = { news_event = { id = cp77.7 hours = 12 } }
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZNC_cradle_dream
+		icon = GFX_goal_cp77_moon
+		x = 37
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_mr_blue_eyes }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZNC_he_was_always_here
+		icon = GFX_goal_cp77_eye
+		x = 37
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_cradle_dream }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			country_event = { id = cp77.8 }
+		}
+	}
+
+	focus = {
+		id = ZNC_beyond_the_veil
+		icon = GFX_goal_cp77_question
+		x = 37
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_he_was_always_here }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			every_other_country = { limit = { is_major = yes } add_timed_idea = { idea = cp77_blue_dreams days = 365 } }
+			add_research_slot = 1
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZNC_clouds_studio
+		icon = GFX_goal_cp77_music
+		x = 39
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_braindance_reality }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_tech_bonus = { name = ZNC_clouds_studio bonus = 0.5 uses = 2 category = electronics }
+		}
+	}
+
+	focus = {
+		id = ZNC_nation_in_bd
+		icon = GFX_goal_cp77_brain
+		x = 39
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_clouds_studio }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_bd_nation
+		}
+	}
+
+	focus = {
+		id = ZNC_who_is_real
+		icon = GFX_goal_cp77_question
+		x = 39
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_nation_in_bd }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			country_event = { id = cp77.10 }
+		}
+	}
+
+	focus = {
+		id = ZNC_simulation_in_simulation
+		icon = GFX_goal_cp77_glitch
+		x = 39
+		y = 7
+		cost = 10
+		prerequisite = { focus = ZNC_who_is_real }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_ideas = cp77_simulation
+		}
+	}
+
+	focus = {
+		id = ZNC_chrome_pop
+		icon = GFX_goal_cp77_music
+		x = 41
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_lizzy_wizzy }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_lizzy_cult
+		}
+	}
+
+	focus = {
+		id = ZNC_lizzy_army
+		icon = GFX_goal_cp77_mask
+		x = 41
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_chrome_pop }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 40000
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZNC_orbital_concert
+		icon = GFX_goal_cp77_rocket
+		x = 41
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_lizzy_army }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			every_other_country = { add_timed_idea = { idea = cp77_lizzy_fever days = 180 } }
+			add_political_power = 150
+			every_country = { news_event = { id = cp77.12 hours = 6 } }
+		}
+	}
+
+	focus = {
+		id = ZNC_mercenary_city
+		icon = GFX_goal_cp77_swords
+		x = 46
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 25
+			add_manpower = 10000
+		}
+	}
+
+	focus = {
+		id = ZNC_ncpd
+		icon = GFX_goal_cp77_police
+		x = 45
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_mercenary_city }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_ncpd
+		}
+	}
+
+	focus = {
+		id = ZNC_maxtac
+		icon = GFX_goal_cp77_target
+		x = 47
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_mercenary_city }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 30
+			add_tech_bonus = { name = ZNC_maxtac bonus = 0.5 uses = 2 category = infantry_weapons }
+		}
+	}
+
+	focus = {
+		id = ZNC_fixers
+		icon = GFX_goal_cp77_phone
+		x = 45
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_ncpd }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 25
+			add_manpower = 15000
+		}
+	}
+
+	focus = {
+		id = ZNC_trauma_team
+		icon = GFX_goal_cp77_medic
+		x = 47
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_maxtac }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_trauma_team
+		}
+	}
+
+	focus = {
+		id = ZNC_solo_corps
+		icon = GFX_goal_cp77_spade
+		x = 44
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_fixers }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_solo_corps bonus = 1.0 uses = 1 category = land_doctrine }
+			army_experience = 25
+		}
+	}
+
+	focus = {
+		id = ZNC_cyberpsycho_squads
+		icon = GFX_goal_cp77_brain
+		x = 46
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_fixers focus = ZNC_trauma_team }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_ideas = cp77_cyberpsycho_squads
+		}
+	}
+
+	focus = {
+		id = ZNC_av_gunships
+		icon = GFX_goal_cp77_plane
+		x = 48
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_trauma_team }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_av_gunships bonus = 1.0 uses = 2 category = air_equipment }
+			air_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZNC_morgan_blackhand
+		icon = GFX_goal_cp77_skull
+		x = 45
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_solo_corps }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			create_corps_commander = {
+				name = "Морган Блэкхенд"
+				picture = "gfx/leaders/cp77/blackhand.dds"
+				traits = { }
+				skill = 5
+				attack_skill = 5
+				defense_skill = 4
+				planning_skill = 4
+				logistics_skill = 3
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_mechs
+		icon = GFX_goal_cp77_mech
+		x = 47
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_av_gunships }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_mechs bonus = 1.0 uses = 2 category = armor }
+		}
+	}
+
+	focus = {
+		id = ZNC_sandevistan_doctrine
+		icon = GFX_goal_cp77_sandevistan
+		x = 46
+		y = 5
+		cost = 10
+		prerequisite = { focus = ZNC_morgan_blackhand focus = ZNC_mechs }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_sandevistan
+			add_tech_bonus = { name = ZNC_sandevistan_doctrine bonus = 1.0 uses = 2 category = land_doctrine }
+		}
+	}
+
+	focus = {
+		id = ZNC_fortress_city
+		icon = GFX_goal_cp77_tower
+		x = 46
+		y = 6
+		cost = 10
+		prerequisite = { focus = ZNC_sandevistan_doctrine }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_fortress_city
+			capital_scope = {
+				add_building_construction = { type = anti_air_building level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZNC_netrunners
+		icon = GFX_goal_cp77_net
+		x = 51
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_netrunners bonus = 0.5 uses = 1 category = electronics }
+		}
+	}
+
+	focus = {
+		id = ZNC_ice_walls
+		icon = GFX_goal_cp77_ice
+		x = 50
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_netrunners }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_netrunner_corps
+		}
+	}
+
+	focus = {
+		id = ZNC_quickhacks
+		icon = GFX_goal_cp77_bolt
+		x = 52
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZNC_netrunners }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_quickhacks bonus = 0.75 uses = 2 category = electronics }
+		}
+	}
+
+	focus = {
+		id = ZNC_netwatch_moles
+		icon = GFX_goal_cp77_eye
+		x = 51
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZNC_ice_walls focus = ZNC_quickhacks }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+			custom_effect_tooltip = ZNC_netwatch_moles_tt
+		}
+	}
+
+	focus = {
+		id = ZNC_bartmoss_legacy
+		icon = GFX_goal_cp77_ghost
+		x = 50
+		y = 3
+		cost = 15
+		prerequisite = { focus = ZNC_netwatch_moles }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZNC_soulkiller_study
+		icon = GFX_goal_cp77_skull
+		x = 52
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZNC_netwatch_moles }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = ZNC_soulkiller_study bonus = 1.0 uses = 2 category = industry }
+		}
+	}
+
+	focus = {
+		id = ZNC_daemon_legion
+		icon = GFX_goal_cp77_net
+		x = 51
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZNC_bartmoss_legacy }
+		prerequisite = { focus = ZNC_soulkiller_study }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			swap_ideas = { remove_idea = cp77_netrunner_corps add_idea = cp77_daemon_legion }
+		}
+	}
+
+}

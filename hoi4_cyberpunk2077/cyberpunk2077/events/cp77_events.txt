@@ -1,0 +1,573 @@
+add_namespace = cp77
+
+news_event = {
+	id = cp77.1
+	title = cp77.1.t
+	desc = cp77.1.desc
+	picture = GFX_report_event_cp77_city
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.1.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = {
+	id = cp77.2
+	title = cp77.2.t
+	desc = cp77.2.desc
+	picture = GFX_report_event_cp77_relic
+	is_triggered_only = yes
+	option = {
+		name = cp77.2.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_relic
+		set_country_flag = cp77_relic_active
+		custom_effect_tooltip = cp77_relic_tt
+	}
+}
+
+country_event = {
+	id = cp77.3
+	title = cp77.3.t
+	desc = cp77.3.desc
+	picture = GFX_report_event_cp77_psycho
+	trigger = {
+		tag = ZNC
+		NOT = { has_country_flag = cp77_no_psycho_events }
+	}
+	mean_time_to_happen = { days = 200 }
+	immediate = {
+		add_to_variable = { cp77_cyberpsychosis = 5 }
+	}
+	option = {
+		name = cp77.3.a
+		ai_chance = { factor = 2 }
+		add_political_power = -25
+		add_stability = 0.02
+	}
+	option = {
+		name = cp77.3.b
+		ai_chance = { factor = 1 }
+		add_to_variable = { cp77_cyberpsychosis = 10 }
+		add_stability = -0.03
+	}
+}
+
+country_event = {
+	id = cp77.4
+	title = cp77.4.t
+	desc = cp77.4.desc
+	picture = GFX_report_event_cp77_arasaka
+	is_triggered_only = yes
+	option = {
+		name = cp77.4.a
+		ai_chance = { factor = 1 }
+		set_global_flag = cp77_saburo_dead
+		add_stability = -0.1
+		add_political_power = 100
+		every_other_country = { news_event = { id = cp77.24 hours = 6 } }
+	}
+}
+
+news_event = {
+	id = cp77.5
+	title = cp77.5.t
+	desc = cp77.5.desc
+	picture = GFX_report_event_cp77_blackwall
+	major = yes
+	is_triggered_only = yes
+	immediate = {
+		if = { limit = { NOT = { tag = ZNC } } add_timed_idea = { idea = cp77_rogue_ai days = 540 } }
+	}
+	option = {
+		name = cp77.5.a
+		ai_chance = { factor = 1 }
+		add_political_power = -50
+		add_stability = -0.02
+	}
+	option = {
+		name = cp77.5.b
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = {
+	id = cp77.6
+	title = cp77.6.t
+	desc = cp77.6.desc
+	picture = GFX_report_event_cp77_delamain
+	is_triggered_only = yes
+	option = {
+		name = cp77.6.a
+		ai_chance = { factor = 1 }
+		remove_ideas = cp77_delamain_split
+		add_political_power = -100
+		add_stability = -0.05
+	}
+	option = {
+		name = cp77.6.b
+		ai_chance = { factor = 2 }
+		random_list = {
+			50 = { remove_ideas = cp77_delamain_split add_stability = 0.1 }
+			50 = { add_stability = -0.05 add_war_support = -0.05 }
+		}
+	}
+	option = {
+		name = cp77.6.c
+		ai_chance = { factor = 1 }
+		remove_ideas = cp77_delamain_split
+		add_stability = 0.05
+		add_war_support = -0.05
+		add_manpower = -5000
+	}
+}
+
+news_event = {
+	id = cp77.7
+	title = cp77.7.t
+	desc = cp77.7.desc
+	picture = GFX_report_event_cp77_brendan
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.7.a
+		ai_chance = { factor = 1 }
+		if = { limit = { NOT = { tag = ZNC } } add_stability = -0.02 }
+	}
+	option = {
+		name = cp77.7.b
+		ai_chance = { factor = 1 }
+		add_political_power = 15
+	}
+}
+
+country_event = {
+	id = cp77.8
+	title = cp77.8.t
+	desc = cp77.8.desc
+	picture = GFX_report_event_cp77_blue_eyes
+	is_triggered_only = yes
+	option = {
+		name = cp77.8.a
+		ai_chance = { factor = 1 }
+		random_list = {
+			40 = { add_tech_bonus = { name = cp77.8.a bonus = 1.0 uses = 2 category = electronics } }
+			30 = { add_political_power = 200 }
+			30 = { add_stability = -0.1 add_war_support = 0.1 }
+		}
+	}
+	option = {
+		name = cp77.8.b
+		ai_chance = { factor = 1 }
+		add_stability = 0.05
+		add_political_power = 50
+	}
+}
+
+country_event = {
+	id = cp77.9
+	title = cp77.9.t
+	desc = cp77.9.desc
+	picture = GFX_report_event_cp77_alt
+	is_triggered_only = yes
+	option = {
+		name = cp77.9.a
+		ai_chance = { factor = 2 }
+		add_tech_bonus = { name = cp77.9.a bonus = 1.0 uses = 1 category = electronics }
+		add_stability = -0.03
+	}
+	option = {
+		name = cp77.9.b
+		ai_chance = { factor = 1 }
+		add_stability = 0.05
+	}
+}
+
+country_event = {
+	id = cp77.10
+	title = cp77.10.t
+	desc = cp77.10.desc
+	picture = GFX_report_event_cp77_braindance
+	is_triggered_only = yes
+	option = {
+		name = cp77.10.a
+		ai_chance = { factor = 1 }
+		add_stability = 0.05
+	}
+	option = {
+		name = cp77.10.b
+		ai_chance = { factor = 1 }
+		add_political_power = 100
+		add_stability = -0.03
+	}
+	option = {
+		name = cp77.10.c
+		ai_chance = { factor = 1 }
+		random_list = {
+			50 = { add_research_slot = 1 add_stability = -0.1 }
+			50 = { add_stability = 0.1 add_war_support = -0.1 }
+		}
+	}
+}
+
+country_event = {
+	id = cp77.11
+	title = cp77.11.t
+	desc = cp77.11.desc
+	picture = GFX_report_event_cp77_nusa
+	is_triggered_only = yes
+	option = {
+		name = cp77.11.a
+		ai_chance = { factor = 1 }
+		army_experience = 20
+		add_political_power = -25
+	}
+	option = {
+		name = cp77.11.b
+		ai_chance = { factor = 1 }
+		add_political_power = 50
+	}
+}
+
+news_event = {
+	id = cp77.12
+	title = cp77.12.t
+	desc = cp77.12.desc
+	picture = GFX_report_event_cp77_lizzy
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.12.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = {
+	id = cp77.13
+	title = cp77.13.t
+	desc = cp77.13.desc
+	picture = GFX_report_event_cp77_relic
+	is_triggered_only = yes
+	option = {
+		name = cp77.13.a
+		ai_chance = { factor = 1 }
+		remove_ideas = cp77_relic
+		clr_country_flag = cp77_relic_active
+		set_country_flag = cp77_relic_resolved
+		add_stability = -0.1
+		add_war_support = 0.15
+	}
+}
+
+country_event = {
+	id = cp77.15
+	title = cp77.15.t
+	desc = cp77.15.desc
+	picture = GFX_report_event_cp77_blue_eyes
+	is_triggered_only = yes
+	option = {
+		name = cp77.15.a
+		ai_chance = { factor = 1 }
+		add_political_power = -25
+		add_war_support = 0.03
+	}
+	option = {
+		name = cp77.15.b
+		ai_chance = { factor = 1 }
+		add_stability = 0.03
+	}
+}
+
+country_event = {
+	id = cp77.16
+	title = cp77.16.t
+	desc = cp77.16.desc
+	picture = GFX_report_event_cp77_glitch
+	is_triggered_only = yes
+	immediate = {
+		random_list = {
+			25 = { set_country_flag = cp77_puppets_netwatch }
+			25 = { set_country_flag = cp77_puppets_arasaka }
+			25 = { set_country_flag = cp77_puppets_blue_eyes }
+			25 = { set_country_flag = cp77_puppets_brendan }
+		}
+	}
+	option = {
+		name = cp77.16.a
+		trigger = {
+			has_country_flag = cp77_puppets_netwatch
+		}
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_netwatch_protectorate
+		add_political_power = 50
+	}
+	option = {
+		name = cp77.16.b
+		trigger = {
+			has_country_flag = cp77_puppets_arasaka
+		}
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_arasaka_security
+		add_stability = -0.05
+	}
+	option = {
+		name = cp77.16.c
+		trigger = {
+			has_country_flag = cp77_puppets_blue_eyes
+		}
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_blue_eyes
+	}
+	option = {
+		name = cp77.16.d
+		trigger = {
+			has_country_flag = cp77_puppets_brendan
+		}
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_free_soda
+		add_political_power = 100
+	}
+}
+
+country_event = {
+	id = cp77.17
+	title = cp77.17.t
+	desc = cp77.17.desc
+	picture = GFX_report_event_cp77_trauma
+	trigger = {
+		tag = ZNC
+		has_political_power > 100
+		NOT = { has_idea = cp77_trauma_team }
+	}
+	mean_time_to_happen = { days = 400 }
+	option = {
+		name = cp77.17.a
+		ai_chance = { factor = 1 }
+		add_political_power = -75
+		add_timed_idea = { idea = cp77_trauma_team days = 365 }
+	}
+	option = {
+		name = cp77.17.b
+		ai_chance = { factor = 1 }
+		add_manpower = -2000
+	}
+}
+
+country_event = {
+	id = cp77.18
+	title = cp77.18.t
+	desc = cp77.18.desc
+	picture = GFX_report_event_cp77_blackwall
+	trigger = {
+		has_global_flag = cp77_blackwall_fallen
+		NOT = { has_idea = cp77_ai_overlords }
+	}
+	mean_time_to_happen = { days = 500 }
+	option = {
+		name = cp77.18.a
+		ai_chance = { factor = 1 }
+		add_stability = -0.03
+	}
+	option = {
+		name = cp77.18.b
+		ai_chance = { factor = 1 }
+		random_list = {
+			50 = { add_tech_bonus = { name = cp77.18.b bonus = 0.5 uses = 1 category = electronics } }
+			50 = { add_stability = -0.05 }
+		}
+	}
+}
+
+news_event = {
+	id = cp77.20
+	title = cp77.20.t
+	desc = cp77.20.desc
+	picture = GFX_report_event_cp77_nuke
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.20.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = {
+	id = cp77.21
+	title = cp77.21.t
+	desc = cp77.21.desc
+	picture = GFX_report_event_cp77_psycho
+	trigger = {
+		tag = ZNC
+		check_variable = { cp77_cyberpsychosis > 79 }
+		NOT = { has_idea = cp77_cyberpsychosis }
+	}
+	mean_time_to_happen = { days = 20 }
+	option = {
+		name = cp77.21.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_cyberpsychosis
+		set_variable = { cp77_cyberpsychosis = 50 }
+		add_war_support = 0.05
+	}
+}
+
+news_event = {
+	id = cp77.22
+	title = cp77.22.t
+	desc = cp77.22.desc
+	picture = GFX_report_event_cp77_alt
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.22.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.23
+	title = cp77.23.t
+	desc = cp77.23.desc
+	picture = GFX_report_event_cp77_orbit
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.23.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.24
+	title = cp77.24.t
+	desc = cp77.24.desc
+	picture = GFX_report_event_cp77_arasaka
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.24.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+country_event = {
+	id = cp77.25
+	title = cp77.25.t
+	desc = cp77.25.desc
+	picture = GFX_report_event_cp77_arasaka
+	fire_only_once = yes
+	trigger = {
+		tag = ZNC
+		has_global_flag = cp77_saburo_dead
+	}
+	mean_time_to_happen = { days = 30 }
+	option = {
+		name = cp77.25.a
+		ai_chance = { factor = 1 }
+		add_political_power = 50
+	}
+	option = {
+		name = cp77.25.b
+		ai_chance = { factor = 1 }
+		add_war_support = 0.05
+		add_stability = -0.02
+	}
+}
+
+country_event = {
+	id = cp77.31
+	title = cp77.31.t
+	desc = cp77.31.desc
+	picture = GFX_report_event_cp77_arasaka
+	is_triggered_only = yes
+	option = {
+		name = cp77.31.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_arasaka_security
+		add_political_power = 100
+		if = { limit = { country_exists = JAP } JAP = { add_political_power = 100 } }
+	}
+}
+
+country_event = {
+	id = cp77.32
+	title = cp77.32.t
+	desc = cp77.32.desc
+	picture = GFX_report_event_cp77_nomads
+	is_triggered_only = yes
+	option = {
+		name = cp77.32.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_nomad_clans
+		add_manpower = 15000
+	}
+}
+
+country_event = {
+	id = cp77.33
+	title = cp77.33.t
+	desc = cp77.33.desc
+	picture = GFX_report_event_cp77_afterlife
+	is_triggered_only = yes
+	option = {
+		name = cp77.33.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_afterlife_mercs
+		army_experience = 50
+		add_war_support = 0.1
+	}
+}
+
+country_event = {
+	id = cp77.34
+	title = cp77.34.t
+	desc = cp77.34.desc
+	picture = GFX_report_event_cp77_samurai
+	is_triggered_only = yes
+	option = {
+		name = cp77.34.a
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_samurai_on_tour
+		add_popularity = { ideology = communism popularity = 0.2 }
+	}
+	option = {
+		name = cp77.34.b
+		ai_chance = { factor = 1 }
+		add_ideas = cp77_burn_corpo
+		add_war_support = 0.15
+		add_popularity = { ideology = communism popularity = 0.3 }
+	}
+}
+
+country_event = {
+	id = cp77.35
+	title = cp77.35.t
+	desc = cp77.35.desc
+	picture = GFX_report_event_cp77_nusa
+	is_triggered_only = yes
+	option = {
+		name = cp77.35.a
+		ai_chance = { factor = 1 }
+		add_stability = 0.1
+		add_war_support = -0.1
+		if = { limit = { country_exists = USA } USA = { add_political_power = 50 } }
+	}
+}
+
+country_event = {
+	id = cp77.36
+	title = cp77.36.t
+	desc = cp77.36.desc
+	picture = GFX_report_event_cp77_glitch
+	is_triggered_only = yes
+	option = {
+		name = cp77.36.a
+		ai_chance = { factor = 1 }
+		set_cosmetic_tag = CP77_REPUBLIC_V
+		add_manpower = 30000
+		army_experience = 50
+		add_stability = -0.05
+	}
+}

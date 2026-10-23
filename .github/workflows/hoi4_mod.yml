@@ -1,0 +1,18 @@
+name: Package HOI4 Cyberpunk mod
+on:
+  push:
+    paths:
+      - "hoi4_cyberpunk2077/**"
+      - ".github/workflows/hoi4_mod.yml"
+  workflow_dispatch:
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/upload-artifact@v4
+        with:
+          name: hoi4-cyberpunk2077-mod
+          path: |
+            hoi4_cyberpunk2077/cyberpunk2077
+            hoi4_cyberpunk2077/cyberpunk2077.mod
