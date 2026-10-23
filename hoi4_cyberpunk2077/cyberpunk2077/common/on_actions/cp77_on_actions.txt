@@ -2,6 +2,7 @@ on_actions = {
 	on_startup = {
 		effect = {
 			cp77_setup_world = yes
+			cp77_start_diplomacy = yes
 			cp77_spawn_armies = yes
 			every_country = { news_event = { id = cp77.1 days = 1 } }
 			ZNC = { country_event = { id = cp77.2 days = 14 } }

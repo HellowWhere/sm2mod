@@ -8,4 +8,5 @@ tags={
 name="Cyberpunk 2077: Night City Wars"
 supported_version="1.*"
 replace_path="common/bookmarks"
+replace_path="common/national_focus"
 path="mod/cyberpunk2077"

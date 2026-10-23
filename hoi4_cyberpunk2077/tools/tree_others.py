@@ -1,4 +1,4 @@
-"""Деревья фокусов НСША (USA), Арасаки (JAP) и Свободных штатов (ZFT/ZFP/ZBL)."""
+"""Деревья фокусов НСША (ZNU), Арасаки (ZJP) и Свободных штатов (ZFT/ZFP/ZBL)."""
 from cp77core import indent, loc
 from content_common import leader
 
@@ -133,8 +133,8 @@ def build_usa(T):
       "add_manpower = 30000\narmy_experience = 30", prereq=["CP77_USA_av_corps"], filters=[MAN])
     a("CP77_USA_fifth_corporate_war", 11, 4, "swords", "Пятая корпоративная война",
       "Милитех против Арасаки. Снова. На этот раз — с армией целой страны.",
-      wargoal("JAP") + "\nadd_war_support = 0.15", prereq=["CP77_USA_barghest_contracts"], ai=0.5,
-      filters=[WS], will_lead_to_war_with=["JAP"])
+      wargoal("ZJP") + "\nadd_war_support = 0.15", prereq=["CP77_USA_barghest_contracts"], ai=0.5,
+      filters=[WS], will_lead_to_war_with=["ZJP"])
     return T
 
 
@@ -244,17 +244,29 @@ def build_jap(T):
       wargoal("ZNC", "puppet"), prereq=["CP77_JAP_tower_in_nc"], filters=[ANNEX], will_lead_to_war_with=["ZNC"])
     a("CP77_JAP_kang_tao_war", 8, 4, "kangtao", "Война с Кан Тао",
       "Молодой китайский конкурент слишком быстро растёт.",
-      wargoal("CHI") + "\nadd_war_support = 0.1", prereq=["CP77_JAP_arasaka_navy"], filters=[WS], will_lead_to_war_with=["CHI"])
+      wargoal("ZCH") + "\nadd_war_support = 0.1", prereq=["CP77_JAP_arasaka_navy"], filters=[WS], will_lead_to_war_with=["ZCH"])
     a("CP77_JAP_fifth_corporate_war", 8, 5, "swords", "Пятая корпоративная война",
       "Арасака против Милитеха. Последняя битва за мир.",
-      wargoal("USA") + "\nadd_war_support = 0.2", prereq=["CP77_JAP_kang_tao_war"], ai=0.5, filters=[WS], will_lead_to_war_with=["USA"])
+      wargoal("ZNU") + "\nadd_war_support = 0.2", prereq=["CP77_JAP_kang_tao_war"], ai=0.5, filters=[WS], will_lead_to_war_with=["ZNU"])
     return T
 
 
 # ============================================================ СВОБОДНЫЕ ШТАТЫ
-def build_free_states(T):
-    T.group = "cp77_focus_fs"
-    a = T.add
+def build_free_states(T, tag):
+    """Дерево конкретного Свободного штата: общий ствол + собственная ветка."""
+    T.group = f"cp77_focus_{tag.lower()}"
+    pre = f"CP77_{tag}_"
+
+    def r(x):
+        return x.replace("CP77_FS_", pre) if isinstance(x, str) else tuple(r(i) for i in x)
+
+    def a(fid, *args, **kw):
+        kw.pop("allow_branch", None)
+        kw["prereq"] = [r(p) for p in kw.get("prereq", [])]
+        return T.add(r(fid), *args, **kw)
+
+    def mutex(ids):
+        T.mutex_group([r(i) for i in ids])
     a("CP77_FS_independence", 5, 0, "flag", "Свобода от Вашингтона",
       "Мы вышли из Союза во время Коллапса и не собираемся возвращаться.",
       "add_political_power = 75\nadd_war_support = 0.05", filters=[POL])
@@ -293,63 +305,63 @@ def build_free_states(T):
       "add_research_slot = 1", prereq=["CP77_FS_industrial_push"], cost=15, filters=[RES])
     a("CP77_FS_join_nusa", 4, 5, "star", "Вернуться в НСША",
       "Может, Майерс не так плоха? По крайней мере, у неё есть армия.",
-      "set_politics = { ruling_party = democratic elections_allowed = yes }\nif = { limit = { country_exists = USA NOT = { has_war_with = USA } } USA = { puppet = ROOT } }",
+      "set_politics = { ruling_party = democratic elections_allowed = yes }\nif = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } ZNU = { puppet = ROOT } }",
       prereq=["CP77_FS_resist_nusa"], ai=0.5, filters=[POL])
     a("CP77_FS_free_forever", 6, 5, "flag", "Свободны навсегда",
       "Ни Вашингтон, ни корпорации не будут нами править.",
       "add_stability = 0.1\nadd_war_support = 0.1\nadd_political_power = 100", prereq=["CP77_FS_resist_nusa"], ai=2, filters=[STAB])
-    T.mutex_group(["CP77_FS_join_nusa", "CP77_FS_free_forever"])
-    # Техас
-    a("CP77_FS_petrochem_deal", 0, 1, "flame", "Сделка с Петрохемом",
-      "Петрохем выращивает кукурузу для топлива CHOOH2. Её поля простираются до горизонта.",
-      "add_ideas = cp77_chooh2", prereq=["CP77_FS_independence"], allow_branch="tag = ZFT", filters=[IND])
-    a("CP77_FS_chooh2_fields", 0, 2, "corn", "Бескрайние поля CHOOH2",
-      "Техас превращается в одно огромное кукурузное поле.",
-      cap("add_resource = { type = oil amount = 20 }\nadd_building_construction = { type = synthetic_refinery level = 2 instant_build = yes }"),
-      prereq=["CP77_FS_petrochem_deal"], filters=[IND])
-    a("CP77_FS_corn_kingdom", 0, 3, "corn", "Кукурузное королевство",
-      "Генеральный директор Петрохема объявляет себя королём Техаса. Корона — из золотых початков.",
-      "set_politics = { ruling_party = neutrality elections_allowed = no }\nadd_ideas = cp77_corn_empire\n" +
-      leader("Король Кукурузы Брэдли I", "ZFT_corn_king_desc",
-             "Бывший генеральный директор Петрохема. Считает, что кукуруза разумна, а люди — её инструмент. Возможно, прав.",
-             "corn_king", "yellow", "despotism", initials="KING"),
-      prereq=["CP77_FS_chooh2_fields"], ai=0.5, filters=[POL])
-    a("CP77_FS_corn_emperor", 0, 4, "corn", "Император кукурузы",
-      "Кукурузная империя Техас заявляет права на всю Америку. Кукуруза должна расти везде.",
-      "set_cosmetic_tag = CP77_CORN\nadd_state_claim = 377\nadd_state_claim = 378\nadd_state_claim = 379\n" + wargoal("USA"),
-      prereq=["CP77_FS_corn_kingdom"], ai=0.3, filters=[ANNEX])
-    # Кочевники
-    a("CP77_FS_aldecaldo_council", 9, 1, "wheel", "Совет кланов",
-      "Альдекальдо, Джоды, Бакеры собираются у костра решать судьбу Пустошей.",
-      "add_ideas = cp77_nomad_clans", prereq=["CP77_FS_independence"], allow_branch="tag = ZBL", filters=[POL])
-    a("CP77_FS_raffen_shiv_purge", 9, 2, "target", "Изгнать Раффен Шив",
-      "Кочевники-отступники грабят караваны. Хватит.",
-      "add_stability = 0.1\narmy_experience = 25", prereq=["CP77_FS_aldecaldo_council"], filters=[STAB])
-    a("CP77_FS_war_on_wraiths", 9, 3, "skull", "Война с Призраками",
-      "Банда «Призраки» нападает на всех подряд. Пора показать им, что такое кочевая месть.",
-      "army_experience = 40\nadd_equipment_to_stockpile = { type = motorized_equipment_1 amount = 500 }",
-      prereq=["CP77_FS_raffen_shiv_purge"], filters=[ARMY])
-    a("CP77_FS_nomad_horde", 9, 4, "wheel", "Великая орда",
-      "Все кланы объединяются в одну орду. Её цель — вся Америка.",
-      "set_cosmetic_tag = CP77_HORDE\nadd_ideas = cp77_nomad_horde\n" +
-      "\n".join(wargoal(t) for t in ("ZNC", "ZFT")),
-      prereq=["CP77_FS_war_on_wraiths"], ai=0.5, filters=[ANNEX])
-    # Северо-Запад
-    a("CP77_FS_biotechnica_forests", 11, 1, "tree", "Леса Биотехники",
-      "Генетически модифицированные леса Каскадии растут на глазах.",
-      "add_ideas = cp77_biotechnica_forests", prereq=["CP77_FS_independence"], allow_branch="tag = ZFP", filters=[IND])
-    a("CP77_FS_cascadia_republic", 11, 2, "vote", "Республика Каскадия",
-      "Самый демократичный из Свободных штатов. Здесь даже голосуют без взлома.",
-      "set_politics = { ruling_party = democratic elections_allowed = yes }\nadd_stability = 0.1",
-      prereq=["CP77_FS_biotechnica_forests"], filters=[POL])
-    a("CP77_FS_bigfoot_ministry", 11, 3, "bigfoot", "Министерство снежного человека",
-      "Генетики Биотехники случайно вывели снежного человека. Он оказался прекрасным администратором.",
-      "add_ideas = cp77_bigfoot", prereq=["CP77_FS_cascadia_republic"], ai=0.5, filters=[STAB])
-    a("CP77_FS_druid_ai", 11, 4, "tree", "ИИ-друид",
-      "Лес обрёл разум через корневую сеть датчиков. Он требует место в парламенте.",
-      "set_cosmetic_tag = CP77_DRUID\nadd_ideas = cp77_druid_ai\n" +
-      leader("Великий Друид Секвойя", "ZFP_druid_desc",
-             "Коллективный разум миллиона генномодифицированных деревьев. Мыслит медленно, но очень глубоко.",
-             "druid", "green", "centrism", kind="ai", initials="TREE"),
-      prereq=["CP77_FS_bigfoot_ministry"], ai=0.3, filters=[POL])
+    mutex(["CP77_FS_join_nusa", "CP77_FS_free_forever"])
+    if tag == "ZFT":
+        a("CP77_FS_petrochem_deal", 0, 1, "flame", "Сделка с Петрохемом",
+          "Петрохем выращивает кукурузу для топлива CHOOH2. Её поля простираются до горизонта.",
+          "add_ideas = cp77_chooh2", prereq=["CP77_FS_independence"], allow_branch="tag = ZFT", filters=[IND])
+        a("CP77_FS_chooh2_fields", 0, 2, "corn", "Бескрайние поля CHOOH2",
+          "Техас превращается в одно огромное кукурузное поле.",
+          cap("add_resource = { type = oil amount = 20 }\nadd_building_construction = { type = synthetic_refinery level = 2 instant_build = yes }"),
+          prereq=["CP77_FS_petrochem_deal"], filters=[IND])
+        a("CP77_FS_corn_kingdom", 0, 3, "corn", "Кукурузное королевство",
+          "Генеральный директор Петрохема объявляет себя королём Техаса. Корона — из золотых початков.",
+          "set_politics = { ruling_party = neutrality elections_allowed = no }\nadd_ideas = cp77_corn_empire\n" +
+          leader("Король Кукурузы Брэдли I", "ZFT_corn_king_desc",
+                 "Бывший генеральный директор Петрохема. Считает, что кукуруза разумна, а люди — её инструмент. Возможно, прав.",
+                 "corn_king", "yellow", "despotism", initials="KING"),
+          prereq=["CP77_FS_chooh2_fields"], ai=0.5, filters=[POL])
+        a("CP77_FS_corn_emperor", 0, 4, "corn", "Император кукурузы",
+          "Кукурузная империя Техас заявляет права на всю Америку. Кукуруза должна расти везде.",
+          "set_cosmetic_tag = CP77_CORN\nadd_state_claim = 377\nadd_state_claim = 378\nadd_state_claim = 379\n" + wargoal("ZNU"),
+          prereq=["CP77_FS_corn_kingdom"], ai=0.3, filters=[ANNEX])
+    if tag == "ZBL":
+        a("CP77_FS_aldecaldo_council", 9, 1, "wheel", "Совет кланов",
+          "Альдекальдо, Джоды, Бакеры собираются у костра решать судьбу Пустошей.",
+          "add_ideas = cp77_nomad_clans", prereq=["CP77_FS_independence"], allow_branch="tag = ZBL", filters=[POL])
+        a("CP77_FS_raffen_shiv_purge", 9, 2, "target", "Изгнать Раффен Шив",
+          "Кочевники-отступники грабят караваны. Хватит.",
+          "add_stability = 0.1\narmy_experience = 25", prereq=["CP77_FS_aldecaldo_council"], filters=[STAB])
+        a("CP77_FS_war_on_wraiths", 9, 3, "skull", "Война с Призраками",
+          "Банда «Призраки» нападает на всех подряд. Пора показать им, что такое кочевая месть.",
+          "army_experience = 40\nadd_equipment_to_stockpile = { type = motorized_equipment_1 amount = 500 }",
+          prereq=["CP77_FS_raffen_shiv_purge"], filters=[ARMY])
+        a("CP77_FS_nomad_horde", 9, 4, "wheel", "Великая орда",
+          "Все кланы объединяются в одну орду. Её цель — вся Америка.",
+          "set_cosmetic_tag = CP77_HORDE\nadd_ideas = cp77_nomad_horde\n" +
+          "\n".join(wargoal(t) for t in ("ZNC", "ZFT")),
+          prereq=["CP77_FS_war_on_wraiths"], ai=0.5, filters=[ANNEX])
+    if tag == "ZFP":
+        a("CP77_FS_biotechnica_forests", 11, 1, "tree", "Леса Биотехники",
+          "Генетически модифицированные леса Каскадии растут на глазах.",
+          "add_ideas = cp77_biotechnica_forests", prereq=["CP77_FS_independence"], allow_branch="tag = ZFP", filters=[IND])
+        a("CP77_FS_cascadia_republic", 11, 2, "vote", "Республика Каскадия",
+          "Самый демократичный из Свободных штатов. Здесь даже голосуют без взлома.",
+          "set_politics = { ruling_party = democratic elections_allowed = yes }\nadd_stability = 0.1",
+          prereq=["CP77_FS_biotechnica_forests"], filters=[POL])
+        a("CP77_FS_bigfoot_ministry", 11, 3, "bigfoot", "Министерство снежного человека",
+          "Генетики Биотехники случайно вывели снежного человека. Он оказался прекрасным администратором.",
+          "add_ideas = cp77_bigfoot", prereq=["CP77_FS_cascadia_republic"], ai=0.5, filters=[STAB])
+        a("CP77_FS_druid_ai", 11, 4, "tree", "ИИ-друид",
+          "Лес обрёл разум через корневую сеть датчиков. Он требует место в парламенте.",
+          "set_cosmetic_tag = CP77_DRUID\nadd_ideas = cp77_druid_ai\n" +
+          leader("Великий Друид Секвойя", "ZFP_druid_desc",
+                 "Коллективный разум миллиона генномодифицированных деревьев. Мыслит медленно, но очень глубоко.",
+                 "druid", "green", "centrism", kind="ai", initials="TREE"),
+          prereq=["CP77_FS_bigfoot_ministry"], ai=0.3, filters=[POL])
     return T

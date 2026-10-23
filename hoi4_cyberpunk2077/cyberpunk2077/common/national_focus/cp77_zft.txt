@@ -1,0 +1,300 @@
+focus_tree = {
+	id = cp77_zft_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZFT }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = CP77_ZFT_independence
+		icon = GFX_goal_cp77_flag
+		x = 5
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_war_support = 0.05
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_local_militia
+		icon = GFX_goal_cp77_swords
+		x = 3
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_independence }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 20000
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_free_trade
+		icon = GFX_goal_cp77_money
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_independence }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_border_forts
+		icon = GFX_goal_cp77_tower
+		x = 3
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_local_militia }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_fortress_city
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_corp_investors
+		icon = GFX_goal_cp77_yen
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_free_trade }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_mercs_from_nc
+		icon = GFX_goal_cp77_spade
+		x = 3
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_border_forts }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 40
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_union_of_free_states
+		icon = GFX_goal_cp77_handshake
+		x = 5
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_border_forts focus = CP77_ZFT_corp_investors }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { is_in_faction = no } create_faction = cp77_free_states_union }
+			every_country = { limit = { OR = { tag = ZFT tag = ZFP tag = ZBL } NOT = { tag = ROOT } exists = yes is_in_faction = no } ROOT = { add_to_faction = PREV } }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_industrial_push
+		icon = GFX_goal_cp77_gear
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_corp_investors }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_resist_nusa
+		icon = GFX_goal_cp77_fist
+		x = 5
+		y = 4
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_union_of_free_states }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_war_support = 0.15
+			add_ideas = cp77_free_state
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_research_cooperation
+		icon = GFX_goal_cp77_atom
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = CP77_ZFT_industrial_push }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_join_nusa
+		icon = GFX_goal_cp77_star
+		x = 4
+		y = 5
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_resist_nusa }
+		mutually_exclusive = { focus = CP77_ZFT_free_forever }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			if = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } ZNU = { puppet = ROOT } }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_free_forever
+		icon = GFX_goal_cp77_flag
+		x = 6
+		y = 5
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_resist_nusa }
+		mutually_exclusive = { focus = CP77_ZFT_join_nusa }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_stability = 0.1
+			add_war_support = 0.1
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_petrochem_deal
+		icon = GFX_goal_cp77_flame
+		x = 0
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_independence }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_chooh2
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_chooh2_fields
+		icon = GFX_goal_cp77_corn
+		x = 0
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_petrochem_deal }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = oil amount = 20 }
+				add_building_construction = { type = synthetic_refinery level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_corn_kingdom
+		icon = GFX_goal_cp77_corn
+		x = 0
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_chooh2_fields }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_ideas = cp77_corn_empire
+			create_country_leader = {
+				name = "Король Кукурузы Брэдли I"
+				desc = "ZFT_corn_king_desc"
+				picture = "gfx/leaders/cp77/corn_king.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFT_corn_emperor
+		icon = GFX_goal_cp77_corn
+		x = 0
+		y = 4
+		cost = 10
+		prerequisite = { focus = CP77_ZFT_corn_kingdom }
+		search_filters = { FOCUS_FILTER_ANNEXATION }
+		ai_will_do = {
+			factor = 0.3
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_CORN
+			add_state_claim = 377
+			add_state_claim = 378
+			add_state_claim = 379
+			if = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } create_wargoal = { type = annex_everything target = ZNU } }
+		}
+	}
+
+}

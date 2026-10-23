@@ -1,0 +1,453 @@
+focus_tree = {
+	id = cp77_zaf_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZAF }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = ZAF_root
+		icon = GFX_goal_cp77_diamond
+		x = 4
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+		}
+	}
+
+	focus = {
+		id = ZAF_p0_0
+		icon = GFX_goal_cp77_diamond
+		x = 1
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_root }
+		mutually_exclusive = { focus = ZAF_p1_0 focus = ZAF_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			add_political_power = 100
+			capital_scope = {
+				add_resource = { type = chromium amount = 10 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_p0_1
+		icon = GFX_goal_cp77_money
+		x = 1
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZAF_p0_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+		}
+	}
+
+	focus = {
+		id = ZAF_p0_2
+		icon = GFX_goal_cp77_handshake
+		x = 1
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_p0_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZJP NOT = { has_war_with = ZJP } } ZJP = { give_guarantee = ROOT } }
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_p0_3
+		icon = GFX_goal_cp77_crown
+		x = 1
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZAF_p0_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zaf_monopoly
+		}
+	}
+
+	focus = {
+		id = ZAF_p1_0
+		icon = GFX_goal_cp77_star
+		x = 4
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_root }
+		mutually_exclusive = { focus = ZAF_p0_0 focus = ZAF_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_popularity = { ideology = democratic popularity = 0.25 }
+			create_country_leader = {
+				name = "Президент Амара Окафор"
+				desc = "ZAF_amara_desc"
+				picture = "gfx/leaders/cp77/zaf_amara.dds"
+				expire = "2150.1.1.1"
+				ideology = socialism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_p1_1
+		icon = GFX_goal_cp77_handshake
+		x = 4
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZAF_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZSH NOT = { has_war_with = ZSH } } ZSH = { give_guarantee = ROOT } }
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZAF_p1_2
+		icon = GFX_goal_cp77_chip
+		x = 4
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_p1_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZAF_p1_3
+		icon = GFX_goal_cp77_flag
+		x = 4
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZAF_p1_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZSH NOT = { has_war_with = ZSH } NOT = { tag = ZSH } } create_wargoal = { type = puppet target = ZSH } }
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZAF_p2_0
+		icon = GFX_goal_cp77_bigfoot
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_root }
+		mutually_exclusive = { focus = ZAF_p0_0 focus = ZAF_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_ZAF_HERD
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_popularity = { ideology = democratic popularity = 0.25 }
+			create_country_leader = {
+				name = "Матриарх Нджамби"
+				desc = "ZAF_matriarch_desc"
+				picture = "gfx/leaders/cp77/zaf_matriarch.dds"
+				expire = "2150.1.1.1"
+				ideology = socialism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_p2_1
+		icon = GFX_goal_cp77_tree
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZAF_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zaf_animals
+		}
+	}
+
+	focus = {
+		id = ZAF_p2_2
+		icon = GFX_goal_cp77_net
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_p2_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZAF_p2_3
+		icon = GFX_goal_cp77_swords
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZAF_p2_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 50
+			add_ideas = cp77_zaf_rhino
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_0
+		icon = GFX_goal_cp77_diamond
+		x = 11
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = chromium amount = 10 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_1
+		icon = GFX_goal_cp77_gear
+		x = 10
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_2
+		icon = GFX_goal_cp77_hammer
+		x = 12
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = steel amount = 12 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_3
+		icon = GFX_goal_cp77_money
+		x = 11
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZAF_eco_1 focus = ZAF_eco_2 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_4
+		icon = GFX_goal_cp77_anchor
+		x = 10
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_5
+		icon = GFX_goal_cp77_chip
+		x = 12
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZAF_eco_6
+		icon = GFX_goal_cp77_sun
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZAF_eco_4 }
+		prerequisite = { focus = ZAF_eco_5 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZAF_mil_0
+		icon = GFX_goal_cp77_swords
+		x = 15
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZAF_mil_1
+		icon = GFX_goal_cp77_wheel
+		x = 14
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZAF_mil_2 bonus = 1.0 uses = 2 category = armor }
+		}
+	}
+
+	focus = {
+		id = ZAF_mil_2
+		icon = GFX_goal_cp77_target
+		x = 16
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZAF_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZAF_mil_3 bonus = 1.0 uses = 2 category = land_doctrine }
+		}
+	}
+
+	focus = {
+		id = ZAF_mil_3
+		icon = GFX_goal_cp77_plane
+		x = 15
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZAF_mil_1 focus = ZAF_mil_2 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZAF_mil_4 bonus = 1.0 uses = 2 category = air_equipment }
+		}
+	}
+
+	focus = {
+		id = ZAF_mil_4
+		icon = GFX_goal_cp77_fist
+		x = 15
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZAF_mil_3 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 25000
+		}
+	}
+
+}

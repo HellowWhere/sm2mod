@@ -3,7 +3,7 @@ focus_tree = {
 
 	country = {
 		factor = 0
-		modifier = { add = 100 tag = JAP }
+		modifier = { add = 100 tag = ZJP }
 	}
 	default = no
 	continuous_focus_position = { x = 50 y = 1400 }
@@ -467,13 +467,13 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = CP77_JAP_arasaka_navy }
-		will_lead_to_war_with = CHI
+		will_lead_to_war_with = ZCH
 		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
 		ai_will_do = {
 			factor = 1
 		}
 		completion_reward = {
-			if = { limit = { country_exists = CHI NOT = { has_war_with = CHI } } create_wargoal = { type = annex_everything target = CHI } }
+			if = { limit = { country_exists = ZCH NOT = { has_war_with = ZCH } } create_wargoal = { type = annex_everything target = ZCH } }
 			add_war_support = 0.1
 		}
 	}
@@ -485,13 +485,13 @@ focus_tree = {
 		y = 5
 		cost = 10
 		prerequisite = { focus = CP77_JAP_kang_tao_war }
-		will_lead_to_war_with = USA
+		will_lead_to_war_with = ZNU
 		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
 		ai_will_do = {
 			factor = 0.5
 		}
 		completion_reward = {
-			if = { limit = { country_exists = USA NOT = { has_war_with = USA } } create_wargoal = { type = annex_everything target = USA } }
+			if = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } create_wargoal = { type = annex_everything target = ZNU } }
 			add_war_support = 0.2
 		}
 	}

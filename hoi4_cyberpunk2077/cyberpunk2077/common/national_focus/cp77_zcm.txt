@@ -1,0 +1,459 @@
+focus_tree = {
+	id = cp77_zcm_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZCM }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = ZCM_root
+		icon = GFX_goal_cp77_militech
+		x = 4
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 50
+		}
+	}
+
+	focus = {
+		id = ZCM_p0_0
+		icon = GFX_goal_cp77_militech
+		x = 1
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_root }
+		mutually_exclusive = { focus = ZCM_p1_0 focus = ZCM_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } ZNU = { puppet = ROOT } }
+			add_political_power = 50
+		}
+	}
+
+	focus = {
+		id = ZCM_p0_1
+		icon = GFX_goal_cp77_gear
+		x = 1
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZCM_p0_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+			add_tech_bonus = { name = cp77_tb_ZCM_p0_2 bonus = 1.0 uses = 2 category = infantry_weapons }
+		}
+	}
+
+	focus = {
+		id = ZCM_p0_2
+		icon = GFX_goal_cp77_plane
+		x = 1
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_p0_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = air_base level = 4 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_p0_3
+		icon = GFX_goal_cp77_swords
+		x = 1
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZCM_p0_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zcm_fortress
+		}
+	}
+
+	focus = {
+		id = ZCM_p1_0
+		icon = GFX_goal_cp77_fist
+		x = 4
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_root }
+		mutually_exclusive = { focus = ZCM_p0_0 focus = ZCM_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+			create_country_leader = {
+				name = "Команданте Лус Арагон"
+				desc = "ZCM_comandante_desc"
+				picture = "gfx/leaders/cp77/zcm_comandante.dds"
+				expire = "2150.1.1.1"
+				ideology = leninism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_p1_1
+		icon = GFX_goal_cp77_tree
+		x = 4
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZCM_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZCM_p1_2 bonus = 1.0 uses = 2 category = land_doctrine }
+		}
+	}
+
+	focus = {
+		id = ZCM_p1_2
+		icon = GFX_goal_cp77_flag
+		x = 4
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_p1_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }
+		}
+	}
+
+	focus = {
+		id = ZCM_p1_3
+		icon = GFX_goal_cp77_star
+		x = 4
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZCM_p1_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { country_exists = ZAD NOT = { has_war_with = ZAD } } ZAD = { give_guarantee = ROOT } }
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZCM_p2_0
+		icon = GFX_goal_cp77_anchor
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_root }
+		mutually_exclusive = { focus = ZCM_p0_0 focus = ZCM_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_ZCM_CANAL
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_popularity = { ideology = neutrality popularity = 0.25 }
+			create_country_leader = {
+				name = "ИИ «Шлюз-7»"
+				desc = "ZCM_lock_desc"
+				picture = "gfx/leaders/cp77/zcm_lock.dds"
+				expire = "2150.1.1.1"
+				ideology = moderatism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_p2_1
+		icon = GFX_goal_cp77_money
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZCM_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+			add_ideas = cp77_zcm_tolls
+		}
+	}
+
+	focus = {
+		id = ZCM_p2_2
+		icon = GFX_goal_cp77_wave
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_p2_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_p2_3
+		icon = GFX_goal_cp77_infinity
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZCM_p2_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			every_other_country = { limit = { is_major = yes } add_political_power = -25 }
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_0
+		icon = GFX_goal_cp77_gear
+		x = 11
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_1
+		icon = GFX_goal_cp77_tree
+		x = 10
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_2
+		icon = GFX_goal_cp77_anchor
+		x = 12
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_3
+		icon = GFX_goal_cp77_money
+		x = 11
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZCM_eco_1 focus = ZCM_eco_2 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_4
+		icon = GFX_goal_cp77_flame
+		x = 10
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_5
+		icon = GFX_goal_cp77_chip
+		x = 12
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZCM_eco_6
+		icon = GFX_goal_cp77_hammer
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZCM_eco_4 }
+		prerequisite = { focus = ZCM_eco_5 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = { type = arms_factory level = 1 instant_build = yes }
+			}
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 4000 }
+		}
+	}
+
+	focus = {
+		id = ZCM_mil_0
+		icon = GFX_goal_cp77_swords
+		x = 15
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 40
+		}
+	}
+
+	focus = {
+		id = ZCM_mil_1
+		icon = GFX_goal_cp77_target
+		x = 14
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZCM_mil_2 bonus = 1.0 uses = 2 category = infantry_weapons }
+		}
+	}
+
+	focus = {
+		id = ZCM_mil_2
+		icon = GFX_goal_cp77_plane
+		x = 16
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZCM_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZCM_mil_3 bonus = 1.0 uses = 2 category = air_equipment }
+		}
+	}
+
+	focus = {
+		id = ZCM_mil_3
+		icon = GFX_goal_cp77_skull
+		x = 15
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZCM_mil_1 focus = ZCM_mil_2 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 20000
+		}
+	}
+
+	focus = {
+		id = ZCM_mil_4
+		icon = GFX_goal_cp77_tower
+		x = 15
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZCM_mil_3 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_fortress_city
+		}
+	}
+
+}

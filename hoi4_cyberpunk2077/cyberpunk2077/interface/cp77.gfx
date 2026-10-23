@@ -16,6 +16,10 @@ spriteTypes = {
 		texturefile = "gfx/interface/goals/cp77/atom.dds"
 	}
 	spriteType = {
+		name = "GFX_goal_cp77_bat"
+		texturefile = "gfx/interface/goals/cp77/bat.dds"
+	}
+	spriteType = {
 		name = "GFX_goal_cp77_bigfoot"
 		texturefile = "gfx/interface/goals/cp77/bigfoot.dds"
 	}
@@ -52,8 +56,16 @@ spriteTypes = {
 		texturefile = "gfx/interface/goals/cp77/crown.dds"
 	}
 	spriteType = {
+		name = "GFX_goal_cp77_diamond"
+		texturefile = "gfx/interface/goals/cp77/diamond.dds"
+	}
+	spriteType = {
 		name = "GFX_goal_cp77_dice"
 		texturefile = "gfx/interface/goals/cp77/dice.dds"
+	}
+	spriteType = {
+		name = "GFX_goal_cp77_dragon"
+		texturefile = "gfx/interface/goals/cp77/dragon.dds"
 	}
 	spriteType = {
 		name = "GFX_goal_cp77_earth"
@@ -104,6 +116,14 @@ spriteTypes = {
 		texturefile = "gfx/interface/goals/cp77/heart.dds"
 	}
 	spriteType = {
+		name = "GFX_goal_cp77_hex"
+		texturefile = "gfx/interface/goals/cp77/hex.dds"
+	}
+	spriteType = {
+		name = "GFX_goal_cp77_hourglass"
+		texturefile = "gfx/interface/goals/cp77/hourglass.dds"
+	}
+	spriteType = {
 		name = "GFX_goal_cp77_ice"
 		texturefile = "gfx/interface/goals/cp77/ice.dds"
 	}
@@ -114,6 +134,10 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_goal_cp77_jackie"
 		texturefile = "gfx/interface/goals/cp77/jackie.dds"
+	}
+	spriteType = {
+		name = "GFX_goal_cp77_kangaroo"
+		texturefile = "gfx/interface/goals/cp77/kangaroo.dds"
 	}
 	spriteType = {
 		name = "GFX_goal_cp77_kangtao"
@@ -176,6 +200,10 @@ spriteTypes = {
 		texturefile = "gfx/interface/goals/cp77/police.dds"
 	}
 	spriteType = {
+		name = "GFX_goal_cp77_pyramid"
+		texturefile = "gfx/interface/goals/cp77/pyramid.dds"
+	}
+	spriteType = {
 		name = "GFX_goal_cp77_question"
 		texturefile = "gfx/interface/goals/cp77/question.dds"
 	}
@@ -198,6 +226,10 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_goal_cp77_skull"
 		texturefile = "gfx/interface/goals/cp77/skull.dds"
+	}
+	spriteType = {
+		name = "GFX_goal_cp77_snake"
+		texturefile = "gfx/interface/goals/cp77/snake.dds"
 	}
 	spriteType = {
 		name = "GFX_goal_cp77_soda"
@@ -272,6 +304,10 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/cat_chip.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_category_cp77_flag"
+		texturefile = "gfx/interface/decisions/cp77/cat_flag.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_category_cp77_net"
 		texturefile = "gfx/interface/decisions/cp77/cat_net.dds"
 	}
@@ -284,12 +320,40 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/cat_wall.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_anchor"
+		texturefile = "gfx/interface/decisions/cp77/anchor.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_arasaka"
 		texturefile = "gfx/interface/decisions/cp77/arasaka.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_bigfoot"
+		texturefile = "gfx/interface/decisions/cp77/bigfoot.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_bio"
+		texturefile = "gfx/interface/decisions/cp77/bio.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_brain"
 		texturefile = "gfx/interface/decisions/cp77/brain.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_chip"
+		texturefile = "gfx/interface/decisions/cp77/chip.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_crown"
+		texturefile = "gfx/interface/decisions/cp77/crown.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_diamond"
+		texturefile = "gfx/interface/decisions/cp77/diamond.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_eye"
+		texturefile = "gfx/interface/decisions/cp77/eye.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_fist"
@@ -300,8 +364,20 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/flag.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_flame"
+		texturefile = "gfx/interface/decisions/cp77/flame.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_guitar"
 		texturefile = "gfx/interface/decisions/cp77/guitar.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_hammer"
+		texturefile = "gfx/interface/decisions/cp77/hammer.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_handshake"
+		texturefile = "gfx/interface/decisions/cp77/handshake.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_heart"
@@ -320,16 +396,56 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/maelstrom.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_mech"
+		texturefile = "gfx/interface/decisions/cp77/mech.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_medic"
 		texturefile = "gfx/interface/decisions/cp77/medic.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_militech"
+		texturefile = "gfx/interface/decisions/cp77/militech.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_money"
+		texturefile = "gfx/interface/decisions/cp77/money.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_music"
+		texturefile = "gfx/interface/decisions/cp77/music.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_net"
 		texturefile = "gfx/interface/decisions/cp77/net.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_phone"
+		texturefile = "gfx/interface/decisions/cp77/phone.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_police"
+		texturefile = "gfx/interface/decisions/cp77/police.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_rocket"
+		texturefile = "gfx/interface/decisions/cp77/rocket.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_rose"
 		texturefile = "gfx/interface/decisions/cp77/rose.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_skull"
+		texturefile = "gfx/interface/decisions/cp77/skull.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_snake"
+		texturefile = "gfx/interface/decisions/cp77/snake.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_soda"
+		texturefile = "gfx/interface/decisions/cp77/soda.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_spade"
@@ -340,12 +456,24 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/star.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_sun"
+		texturefile = "gfx/interface/decisions/cp77/sun.dds"
+	}
+	spriteType = {
 		name = "GFX_decision_cp77_target"
 		texturefile = "gfx/interface/decisions/cp77/target.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_tiger"
 		texturefile = "gfx/interface/decisions/cp77/tiger.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_tower"
+		texturefile = "gfx/interface/decisions/cp77/tower.dds"
+	}
+	spriteType = {
+		name = "GFX_decision_cp77_tree"
+		texturefile = "gfx/interface/decisions/cp77/tree.dds"
 	}
 	spriteType = {
 		name = "GFX_decision_cp77_v"
@@ -364,16 +492,32 @@ spriteTypes = {
 		texturefile = "gfx/interface/decisions/cp77/wheel.dds"
 	}
 	spriteType = {
+		name = "GFX_decision_cp77_yen"
+		texturefile = "gfx/interface/decisions/cp77/yen.dds"
+	}
+	spriteType = {
 		name = "GFX_idea_cp77_ai"
 		texturefile = "gfx/interface/ideas/cp77/ai.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_anchor"
+		texturefile = "gfx/interface/ideas/cp77/anchor.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_arasaka"
 		texturefile = "gfx/interface/ideas/cp77/arasaka.dds"
 	}
 	spriteType = {
+		name = "GFX_idea_cp77_bat"
+		texturefile = "gfx/interface/ideas/cp77/bat.dds"
+	}
+	spriteType = {
 		name = "GFX_idea_cp77_bigfoot"
 		texturefile = "gfx/interface/ideas/cp77/bigfoot.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_bio"
+		texturefile = "gfx/interface/ideas/cp77/bio.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_brain"
@@ -390,6 +534,22 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_idea_cp77_corn"
 		texturefile = "gfx/interface/ideas/cp77/corn.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_crown"
+		texturefile = "gfx/interface/ideas/cp77/crown.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_diamond"
+		texturefile = "gfx/interface/ideas/cp77/diamond.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_dice"
+		texturefile = "gfx/interface/ideas/cp77/dice.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_dragon"
+		texturefile = "gfx/interface/ideas/cp77/dragon.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_eye"
@@ -424,6 +584,14 @@ spriteTypes = {
 		texturefile = "gfx/interface/ideas/cp77/guitar.dds"
 	}
 	spriteType = {
+		name = "GFX_idea_cp77_hex"
+		texturefile = "gfx/interface/ideas/cp77/hex.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_ice"
+		texturefile = "gfx/interface/ideas/cp77/ice.dds"
+	}
+	spriteType = {
 		name = "GFX_idea_cp77_infinity"
 		texturefile = "gfx/interface/ideas/cp77/infinity.dds"
 	}
@@ -432,12 +600,20 @@ spriteTypes = {
 		texturefile = "gfx/interface/ideas/cp77/jackie.dds"
 	}
 	spriteType = {
+		name = "GFX_idea_cp77_kangaroo"
+		texturefile = "gfx/interface/ideas/cp77/kangaroo.dds"
+	}
+	spriteType = {
 		name = "GFX_idea_cp77_kangtao"
 		texturefile = "gfx/interface/ideas/cp77/kangtao.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_maelstrom"
 		texturefile = "gfx/interface/ideas/cp77/maelstrom.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_mask"
+		texturefile = "gfx/interface/ideas/cp77/mask.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_medic"
@@ -464,8 +640,16 @@ spriteTypes = {
 		texturefile = "gfx/interface/ideas/cp77/net.dds"
 	}
 	spriteType = {
+		name = "GFX_idea_cp77_nuke"
+		texturefile = "gfx/interface/ideas/cp77/nuke.dds"
+	}
+	spriteType = {
 		name = "GFX_idea_cp77_pen"
 		texturefile = "gfx/interface/ideas/cp77/pen.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_phone"
+		texturefile = "gfx/interface/ideas/cp77/phone.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_plane"
@@ -474,6 +658,10 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_idea_cp77_police"
 		texturefile = "gfx/interface/ideas/cp77/police.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_pyramid"
+		texturefile = "gfx/interface/ideas/cp77/pyramid.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_rocket"
@@ -502,6 +690,10 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_idea_cp77_star"
 		texturefile = "gfx/interface/ideas/cp77/star.dds"
+	}
+	spriteType = {
+		name = "GFX_idea_cp77_sun"
+		texturefile = "gfx/interface/ideas/cp77/sun.dds"
 	}
 	spriteType = {
 		name = "GFX_idea_cp77_swords"
@@ -618,5 +810,25 @@ spriteTypes = {
 	spriteType = {
 		name = "GFX_report_event_cp77_glitch"
 		texturefile = "gfx/event_pictures/cp77/glitch.dds"
+	}
+	spriteType = {
+		name = "GFX_report_event_cp77_carnival"
+		texturefile = "gfx/event_pictures/cp77/carnival.dds"
+	}
+	spriteType = {
+		name = "GFX_report_event_cp77_tea"
+		texturefile = "gfx/event_pictures/cp77/tea.dds"
+	}
+	spriteType = {
+		name = "GFX_report_event_cp77_mars"
+		texturefile = "gfx/event_pictures/cp77/mars.dds"
+	}
+	spriteType = {
+		name = "GFX_report_event_cp77_bolly"
+		texturefile = "gfx/event_pictures/cp77/bolly.dds"
+	}
+	spriteType = {
+		name = "GFX_report_event_cp77_roo"
+		texturefile = "gfx/event_pictures/cp77/roo.dds"
 	}
 }

@@ -111,7 +111,7 @@ def build(T: Tree):
       prereq=["ZNC_corpo_council"], filters=[IND])
     a("ZNC_arasaka_way", 6, 4, "arasaka", "Путь Арасаки",
       "Японский гигант предлагает порядок, катаны и пожизненный контракт.",
-      "add_ideas = cp77_arasaka_security\nif = { limit = { country_exists = JAP } JAP = { add_political_power = 50 } }",
+      "add_ideas = cp77_arasaka_security\nif = { limit = { country_exists = ZJP } ZJP = { add_political_power = 50 } }",
       prereq=["ZNC_tax_paradise"], ai=2, filters=[POL])
     a("ZNC_militech_way", 8, 4, "militech", "Путь Милитеха",
       "Американские пушки, американские деньги, американские условия.",
@@ -125,7 +125,7 @@ def build(T: Tree):
       prereq=["ZNC_arasaka_way"], filters=[POL])
     a("ZNC_arasaka_prefecture", 6, 6, "arasaka", "Префектура Арасаки",
       "Найт-Сити официально становится протекторатом корпоративной Японии.",
-      "add_ideas = cp77_arasaka_prefecture\nif = { limit = { country_exists = JAP JAP = { NOT = { has_war_with = ROOT } } } JAP = { puppet = ROOT } }",
+      "add_ideas = cp77_arasaka_prefecture\nif = { limit = { country_exists = ZJP ZJP = { NOT = { has_war_with = ROOT } } } ZJP = { puppet = ROOT } }",
       prereq=["ZNC_hanako_regency"], filters=[POL])
     a("ZNC_mikoshi_for_all", 6, 7, "ghost", "Микоси для всех",
       "Почему только Сабуро должен жить вечно? Оцифруем всех граждан! Добровольно-принудительно.",
@@ -138,7 +138,7 @@ def build(T: Tree):
       prereq=["ZNC_militech_way"], filters=[IND])
     a("ZNC_return_to_nusa", 8, 6, "star", "Возвращение в НСША",
       "Президент Майерс протягивает руку. Найт-Сити возвращается в федерацию — на особых условиях.",
-      gov("democratic") + "\nif = { limit = { country_exists = USA USA = { NOT = { has_war_with = ROOT } } } USA = { puppet = ROOT } }",
+      gov("democratic") + "\nif = { limit = { country_exists = ZNU ZNU = { NOT = { has_war_with = ROOT } } } ZNU = { puppet = ROOT } }",
       prereq=["ZNC_militech_contracts"], ai=2, filters=[POL])
     a("ZNC_militech_republic", 9, 6, "militech", "Республика Милитех",
       "Зачем делиться с Вашингтоном? Милитех сам себе государство.",
@@ -149,7 +149,7 @@ def build(T: Tree):
       prereq=["ZNC_militech_contracts"], ai=1, filters=[POL])
     a("ZNC_51st_state", 8, 7, "flag", "Особый статус",
       "Найт-Сити — жемчужина НСША. Федеральные деньги текут рекой.",
-      "add_political_power = 150\nadd_stability = 0.1\nif = { limit = { country_exists = USA } USA = { give_guarantee = ROOT } }",
+      "add_political_power = 150\nadd_stability = 0.1\nif = { limit = { country_exists = ZNU } ZNU = { give_guarantee = ROOT } }",
       prereq=["ZNC_return_to_nusa"], filters=[STAB])
     a("ZNC_drone_swarm", 9, 7, "plane", "Рой дронов",
       "Сто тысяч боевых дронов Милитеха в небе над городом.",
@@ -157,8 +157,8 @@ def build(T: Tree):
       prereq=["ZNC_militech_republic"], filters=[ARMY])
     a("ZNC_fifth_corporate_war", 9, 8, "swords", "Пятая корпоративная война",
       "Арасака должна исчезнуть. Навсегда.",
-      "if = { limit = { country_exists = JAP } create_wargoal = { type = annex_everything target = JAP } }\nadd_war_support = 0.2",
-      prereq=["ZNC_drone_swarm"], ai=0.5, filters=[WS], will_lead_to_war_with=["JAP"])
+      "if = { limit = { country_exists = ZJP } create_wargoal = { type = annex_everything target = ZJP } }\nadd_war_support = 0.2",
+      prereq=["ZNC_drone_swarm"], ai=0.5, filters=[WS], will_lead_to_war_with=["ZJP"])
     T.mutex_group(["ZNC_arasaka_way", "ZNC_militech_way"])
     T.mutex_group(["ZNC_return_to_nusa", "ZNC_militech_republic"])
 
@@ -225,9 +225,9 @@ def build(T: Tree):
       prereq=["ZNC_samurai_reunion"], filters=[ARMY])
     a("ZNC_storm_arasaka_tower", 15, 5, "tower", "Штурм Арасака-тауэр",
       "Как в 2023-м. Только в этот раз — до конца. «Не бойся жнеца».",
-      "if = { limit = { country_exists = JAP } create_wargoal = { type = topple_government target = JAP } }\nadd_war_support = 0.15\n" +
+      "if = { limit = { country_exists = ZJP } create_wargoal = { type = topple_government target = ZJP } }\nadd_war_support = 0.15\n" +
       cap("add_building_construction = { type = anti_air_building level = 2 instant_build = yes }"),
-      prereq=["ZNC_afterlife_alliance"], filters=[WS], will_lead_to_war_with=["JAP"])
+      prereq=["ZNC_afterlife_alliance"], filters=[WS], will_lead_to_war_with=["ZJP"])
     a("ZNC_silverhand_president", 14, 6, "skull", "Президент Сильверхенд",
       "Джонни навсегда занимает тело Ви. Город получает самого неуравновешенного лидера в истории.",
       gov("communism") + "\n" +
@@ -252,8 +252,8 @@ def build(T: Tree):
       prereq=["ZNC_v_legend"], filters=[ARMY])
     a("ZNC_world_rebellion", 15, 8, "fist", "Всемирное восстание",
       "Пусть горят все башни: в Токио, в Вашингтоне, в Пекине.",
-      "JAP = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.3 } } }\n"
-      "USA = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.25 } } }\n"
+      "ZJP = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.3 } } }\n"
+      "ZNU = { if = { limit = { exists = yes NOT = { has_government = communism } } start_civil_war = { ideology = communism size = 0.25 } } }\n"
       "add_war_support = 0.1",
       prereq=[("ZNC_nuke_2", "ZNC_afterlife_republic")], cost=15, ai=0.5, filters=[POL])
     T.mutex_group(["ZNC_silverhand_president", "ZNC_v_legend"])

@@ -10,11 +10,121 @@ cp77_relic_category = {
 
 cp77_netrunning_category = {
 	icon = cp77_net
-	allowed = { OR = { tag = ZNC tag = USA tag = JAP tag = CHI } }
+	allowed = { always = yes }
 }
 
 cp77_blackwall_category = {
 	icon = cp77_wall
 	allowed = { always = yes }
 	visible = { has_global_flag = cp77_blackwall_fallen }
+}
+
+cp77_zca_category = {
+	icon = cp77_flag
+	allowed = { tag = ZCA }
+}
+
+cp77_zmx_category = {
+	icon = cp77_flag
+	allowed = { tag = ZMX }
+}
+
+cp77_zcm_category = {
+	icon = cp77_flag
+	allowed = { tag = ZCM }
+}
+
+cp77_zbr_category = {
+	icon = cp77_flag
+	allowed = { tag = ZBR }
+}
+
+cp77_zad_category = {
+	icon = cp77_flag
+	allowed = { tag = ZAD }
+}
+
+cp77_zsc_category = {
+	icon = cp77_flag
+	allowed = { tag = ZSC }
+}
+
+cp77_zeu_category = {
+	icon = cp77_flag
+	allowed = { tag = ZEU }
+}
+
+cp77_zuk_category = {
+	icon = cp77_flag
+	allowed = { tag = ZUK }
+}
+
+cp77_zee_category = {
+	icon = cp77_flag
+	allowed = { tag = ZEE }
+}
+
+cp77_zsv_category = {
+	icon = cp77_flag
+	allowed = { tag = ZSV }
+}
+
+cp77_zme_category = {
+	icon = cp77_flag
+	allowed = { tag = ZME }
+}
+
+cp77_zaf_category = {
+	icon = cp77_flag
+	allowed = { tag = ZAF }
+}
+
+cp77_zsh_category = {
+	icon = cp77_flag
+	allowed = { tag = ZSH }
+}
+
+cp77_zch_category = {
+	icon = cp77_flag
+	allowed = { tag = ZCH }
+}
+
+cp77_zin_category = {
+	icon = cp77_flag
+	allowed = { tag = ZIN }
+}
+
+cp77_zse_category = {
+	icon = cp77_flag
+	allowed = { tag = ZSE }
+}
+
+cp77_zau_category = {
+	icon = cp77_flag
+	allowed = { tag = ZAU }
+}
+
+cp77_znu_category = {
+	icon = cp77_flag
+	allowed = { tag = ZNU }
+}
+
+cp77_zjp_category = {
+	icon = cp77_flag
+	allowed = { tag = ZJP }
+}
+
+cp77_zft_category = {
+	icon = cp77_flag
+	allowed = { tag = ZFT }
+}
+
+cp77_zfp_category = {
+	icon = cp77_flag
+	allowed = { tag = ZFP }
+}
+
+cp77_zbl_category = {
+	icon = cp77_flag
+	allowed = { tag = ZBL }
 }

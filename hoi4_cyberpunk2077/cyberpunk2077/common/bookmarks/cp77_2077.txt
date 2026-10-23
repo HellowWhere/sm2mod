@@ -12,17 +12,35 @@ bookmarks = {
 			ideas = { cp77_city_of_dreams cp77_gang_wars cp77_corpo_plaza }
 			focuses = { ZNC_corpo_council ZNC_burn_corpo ZNC_delamain }
 		}
-		USA = {
-			history = "CP77_USA_BM"
+		ZNU = {
+			history = "CP77_ZNU_BM"
 			ideology = democratic
 			ideas = { cp77_nusa_federal cp77_militech_state }
 			focuses = { CP77_USA_unification_war_ii CP77_USA_save_songbird CP77_USA_myers_forever }
 		}
-		JAP = {
-			history = "CP77_JAP_BM"
+		ZJP = {
+			history = "CP77_ZJP_BM"
 			ideology = fascism
 			ideas = { cp77_arasaka_empire }
 			focuses = { CP77_JAP_yorinobu_coup CP77_JAP_saburo_eternal CP77_JAP_digital_emperor }
+		}
+		ZCH = {
+			history = "CP77_ZCH_BM"
+			ideology = neutrality
+			ideas = { cp77_kang_tao }
+			focuses = { ZCH_p0_0 ZCH_p1_0 ZCH_p2_0 }
+		}
+		ZSV = {
+			history = "CP77_ZSV_BM"
+			ideology = communism
+			ideas = { cp77_sovoil }
+			focuses = { ZSV_p0_0 ZSV_p1_0 ZSV_p2_0 }
+		}
+		ZEU = {
+			history = "CP77_ZEU_BM"
+			ideology = democratic
+			ideas = { cp77_zeu_eurobucks cp77_zeu_bureaucracy }
+			focuses = { ZEU_p0_0 ZEU_p1_0 ZEU_p2_0 }
 		}
 		"---" = {
 			history = "CP77_OTHERS_BM"
@@ -31,19 +49,103 @@ bookmarks = {
 			history = "CP77_ZFT_BM"
 			ideology = neutrality
 			ideas = { cp77_free_state }
-			focuses = { CP77_FS_corn_kingdom }
+			focuses = { CP77_ZFT_corn_kingdom }
 		}
 		ZBL = {
 			history = "CP77_ZBL_BM"
 			ideology = neutrality
 			ideas = { cp77_free_state }
-			focuses = { CP77_FS_nomad_horde }
+			focuses = { CP77_ZBL_nomad_horde }
 		}
 		ZFP = {
 			history = "CP77_ZFP_BM"
 			ideology = democratic
 			ideas = { cp77_free_state }
-			focuses = { CP77_FS_druid_ai }
+			focuses = { CP77_ZFP_druid_ai }
+		}
+		ZCA = {
+			history = "CP77_ZCA_BM"
+			ideology = democratic
+			ideas = { cp77_zca_north_shield }
+			focuses = { ZCA_p0_0 ZCA_p2_0 }
+		}
+		ZMX = {
+			history = "CP77_ZMX_BM"
+			ideology = neutrality
+			ideas = { cp77_zmx_cartel_shadow }
+			focuses = { ZMX_p0_0 ZMX_p2_0 }
+		}
+		ZCM = {
+			history = "CP77_ZCM_BM"
+			ideology = fascism
+			ideas = { cp77_zcm_occupation }
+			focuses = { ZCM_p0_0 ZCM_p2_0 }
+		}
+		ZBR = {
+			history = "CP77_ZBR_BM"
+			ideology = fascism
+			ideas = { cp77_zbr_junta }
+			focuses = { ZBR_p0_0 ZBR_p2_0 }
+		}
+		ZAD = {
+			history = "CP77_ZAD_BM"
+			ideology = neutrality
+			ideas = { cp77_zad_syndicate }
+			focuses = { ZAD_p0_0 ZAD_p2_0 }
+		}
+		ZSC = {
+			history = "CP77_ZSC_BM"
+			ideology = democratic
+			ideas = { cp77_zsc_antarctic }
+			focuses = { ZSC_p0_0 ZSC_p2_0 }
+		}
+		ZUK = {
+			history = "CP77_ZUK_BM"
+			ideology = democratic
+			ideas = { cp77_zuk_city }
+			focuses = { ZUK_p0_0 ZUK_p2_0 }
+		}
+		ZEE = {
+			history = "CP77_ZEE_BM"
+			ideology = democratic
+			ideas = { cp77_zee_buffer }
+			focuses = { ZEE_p0_0 ZEE_p2_0 }
+		}
+		ZME = {
+			history = "CP77_ZME_BM"
+			ideology = neutrality
+			ideas = { cp77_zme_meltdown }
+			focuses = { ZME_p0_0 ZME_p2_0 }
+		}
+		ZAF = {
+			history = "CP77_ZAF_BM"
+			ideology = neutrality
+			ideas = { cp77_zaf_diamonds }
+			focuses = { ZAF_p0_0 ZAF_p2_0 }
+		}
+		ZSH = {
+			history = "CP77_ZSH_BM"
+			ideology = neutrality
+			ideas = { cp77_zsh_solar }
+			focuses = { ZSH_p0_0 ZSH_p2_0 }
+		}
+		ZIN = {
+			history = "CP77_ZIN_BM"
+			ideology = democratic
+			ideas = { cp77_zin_billion }
+			focuses = { ZIN_p0_0 ZIN_p2_0 }
+		}
+		ZSE = {
+			history = "CP77_ZSE_BM"
+			ideology = neutrality
+			ideas = { cp77_zse_exchange }
+			focuses = { ZSE_p0_0 ZSE_p2_0 }
+		}
+		ZAU = {
+			history = "CP77_ZAU_BM"
+			ideology = democratic
+			ideas = { cp77_zau_outback }
+			focuses = { ZAU_p0_0 ZAU_p2_0 }
 		}
 		effect = {
 			randomize_weather = 22345

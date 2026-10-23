@@ -1,0 +1,27 @@
+cp77_is_cp_tag = {
+	OR = {
+		tag = ZNC
+		tag = ZFT
+		tag = ZFP
+		tag = ZBL
+		tag = ZNU
+		tag = ZJP
+		tag = ZCA
+		tag = ZMX
+		tag = ZCM
+		tag = ZBR
+		tag = ZAD
+		tag = ZSC
+		tag = ZEU
+		tag = ZUK
+		tag = ZEE
+		tag = ZSV
+		tag = ZME
+		tag = ZAF
+		tag = ZSH
+		tag = ZCH
+		tag = ZIN
+		tag = ZSE
+		tag = ZAU
+	}
+}

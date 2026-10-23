@@ -18,6 +18,8 @@ from content_common import C, ICON_CATALOG, IDEAS, NEW_TAGS, leader, portrait  #
 import content_events  # noqa: E402
 import tree_night_city  # noqa: E402
 import tree_others  # noqa: E402
+import nations as N  # noqa: E402
+from content_common import country_names  # noqa: E402
 
 VERSION = "1.0.0"
 
@@ -28,7 +30,7 @@ def decisions():
     cats = {
         "cp77_gangs_category": ("Банды Найт-Сити", "Каждая банда города чего-то хочет. Обычно — денег. Иногда — крови.", "tag = ZNC", "swords"),
         "cp77_relic_category": ("Биочип «Relic»", "Чип в голове лидера убивает носителя. Найдите выход, пока не поздно.\n\nТекущий уровень киберпсихоза в городе: [?cp77_cyberpsychosis]", "tag = ZNC", "chip"),
-        "cp77_netrunning_category": ("Нетраннинг", "Взлом чужих сетей — оружие XXI века.", "OR = { tag = ZNC tag = USA tag = JAP tag = CHI }", "net"),
+        "cp77_netrunning_category": ("Нетраннинг", "Взлом чужих сетей — оружие XXI века.", "always = yes", "net"),
         "cp77_blackwall_category": ("Последствия падения Заслона", "Дикие ИИ рыщут по Сети. Надо защищаться.", "always = yes", "wall"),
     }
     out_cat = []
@@ -96,7 +98,7 @@ def decisions():
         f"cost = 25\ndays_re_enable = 90\n{vis}\ncomplete_effect = {{ add_stability = 0.03 }}\nai_will_do = {{ factor = 1 }}")
     endings = [
         ("cp77_relic_devil", "Довериться Ханако Арасаке", "Арасака умеет извлекать чипы. Цена — вечный контракт.", "arasaka", 100,
-         "country_exists = JAP\nNOT = { has_war_with = JAP }", 31),
+         "country_exists = ZJP\nNOT = { has_war_with = ZJP }", 31),
         ("cp77_relic_star", "Уехать с Панам", "Кочевники знают нетраннера в Пустошах, который может помочь.", "wheel", 75,
          "OR = { has_idea = cp77_nomad_clans has_idea = cp77_nation_on_wheels has_completed_focus = ZNC_nomad_pact }", 32),
         ("cp77_relic_sun", "Штурм с Роуг", "Ворваться в Арасака-тауэр, добраться до Микоси и выбить ответы силой.", "spade", 75,
@@ -104,7 +106,7 @@ def decisions():
         ("cp77_relic_temperance", "Отдать тело Джонни", "Пусть Джонни живёт. Ви уйдёт за Заслон с Альт.", "guitar", 50,
          "always = yes", 34),
         ("cp77_relic_tower", "Сделка с Соломоном Ридом", "FIA обещает операцию. Нужно только немного поработать на НСША.", "star", 100,
-         "country_exists = USA\nNOT = { has_war_with = USA }", 35),
+         "country_exists = ZNU\nNOT = { has_war_with = ZNU }", 35),
         ("cp77_relic_republic_v", "Скопировать Ви в каждого", "Безумная идея учёных «Посмертия»: если нельзя спасти одного Ви, пусть их будет миллион.", "v", 150,
          "has_completed_focus = ZNC_mass_cyberware", 36),
     ]
@@ -132,28 +134,50 @@ def decisions():
     dec("cp77_blackwall_category", "cp77_firewall", "Поставить файрвол", "Изолировать государственные сети от диких ИИ.", "wall",
         "cost = 75\navailable = { has_idea = cp77_rogue_ai }\ncomplete_effect = { remove_ideas = cp77_rogue_ai }\nai_will_do = { factor = 3 }")
 
+    # --- собственные решения каждой державы
+    extra = [
+        dict(tag="ZNU", name="Новые Соединённые Штаты", decisions=[
+            ("militech_order", "Оборонный заказ Милитеху", "Ещё один завод — ещё один контракт.", "militech", 75,
+             "capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = arms_factory level = 1 instant_build = yes } }", 365),
+            ("fia_op", "Операция FIA", "Тихая операция против соперника.", "eye", 50,
+             "random_other_country = { limit = { is_major = yes } add_stability = -0.03 add_political_power = -30 }", 180),
+            ("myers_address", "Обращение Майерс к нации", "Президент говорит — нация слушает.", "star", 25, "add_war_support = 0.04\nadd_stability = 0.02", 150)]),
+        dict(tag="ZJP", name="Арасака", decisions=[
+            ("saburo_audience", "Аудиенция у Сабуро", "Старик принимает просителей. Раз в год.", "crown", 25, "add_stability = 0.04", 150),
+            ("nc_expansion", "Расширение в Найт-Сити", "Арасака-тауэр будет выше всех.", "tower", 75, "add_state_claim = 378\nadd_political_power = 50", 0),
+            ("soulkiller_test", "Испытание Soulkiller", "Ещё одна душа в Микоси. Во имя науки.", "skull", 50,
+             "add_tech_bonus = { name = cp77_zjp_soulkiller_test bonus = 0.75 uses = 1 category = electronics }", 180)]),
+        dict(tag="ZFT", name="Свободный штат Техас", decisions=[
+            ("cattle_drive", "Перегон кибер-скота", "Коровы с GPS-ошейниками идут на рынок.", "wheel", 0, "add_political_power = 40", 120),
+            ("oil_boom", "Нефтяной бум", "Новая скважина в пустыне.", "flame", 50, "random_owned_state = { add_resource = { type = oil amount = 6 } }", 0),
+            ("mech_rodeo", "Родео на мехах", "Самое техасское зрелище в мире.", "mech", 30, "add_stability = 0.04\nadd_war_support = 0.02", 150)]),
+        dict(tag="ZFP", name="Свободные Штаты Северо-Запада", decisions=[
+            ("forest_tax", "Налог на ГМО-лес", "Деревья растут — налоги растут.", "tree", 0, "add_political_power = 40", 120),
+            ("volunteers", "Каскадские добровольцы", "Лесорубы берутся за винтовки.", "fist", 30, "add_manpower = 8000", 180),
+            ("bigfoot_sighting", "Наблюдение снежного человека", "Его снова видели. Туристы в восторге.", "bigfoot", 10,
+             "random_list = { 70 = { add_stability = 0.03 } 30 = { add_political_power = 50 } }", 120)]),
+        dict(tag="ZBL", name="Нация кочевников", decisions=[
+            ("raid_convoy", "Ограбить конвой Милитеха", "Грузовики Милитеха идут через пустыню. Без охраны. Почти.", "target", 30,
+             "add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }", 120),
+            ("clan_moot", "Собрание кланов", "Костёр, споры и общее решение.", "handshake", 25, "add_stability = 0.05", 150),
+            ("fuel_run", "Бензиновый забег", "Доставить топливо через Пустоши.", "wheel", 0, "add_political_power = 40", 120)]),
+    ]
+    out_extra_cats = []
+    for n in list(N.NATIONS.values()) + extra:
+        cat, allowed, blocks = N.decisions_for(n)
+        out_extra_cats.append(f"{cat} = {{\n\ticon = cp77_flag\n\tallowed = {{ {allowed} }}\n}}")
+        CC.ICON_USES.add(("category", "flag"))
+        for icon, b in blocks:
+            CC.ICON_USES.add(("decision", icon))
+            D.setdefault(cat, []).append(b)
+    with open(os.path.join(MOD_DIR, "common/decisions/categories/cp77_decision_categories.txt"), "a", encoding="utf-8") as fh:
+        fh.write("\n" + "\n\n".join(out_extra_cats) + "\n")
+
     text = "\n\n".join(f"{cat} = {{\n" + "\n\n".join(indent(d, 1) for d in ds) + "\n}" for cat, ds in D.items())
     write("common/decisions/cp77_decisions.txt", text + "\n")
 
 
 # ------------------------------------------------------ настройка мира 2077
-def templates(tag):
-    t = {
-        "ZNC": [("Соло-наёмники", 6, "infantry", ["engineer", "recon"]),
-                ("Хромированные банды", 4, "infantry", []),
-                ("Бронетакси", 4, "motorized", ["recon"])],
-        "ZFT": [("Техасские рейнджеры", 6, "infantry", ["engineer"])],
-        "ZFP": [("Каскадская гвардия", 6, "infantry", ["engineer"])],
-        "ZBL": [("Кочевой караван", 4, "motorized", ["recon"])],
-    }[tag]
-    out = []
-    for name, n, reg, sup in t:
-        regs = " ".join(f"{reg} = {{ x = {i // 3} y = {i % 3} }}" for i in range(n))
-        sups = " ".join(f"{s} = {{ x = 0 y = {i} }}" for i, s in enumerate(sup))
-        out.append(f'division_template = {{\n\tname = "{name}"\n\tregiments = {{ {regs} }}\n\tsupport = {{ {sups} }}\n}}')
-    return out
-
-
 TECHS = ("infantry_weapons infantry_weapons1 infantry_weapons2 tech_support tech_engineers tech_recon "
          "motorised_infantry gw_artillery interwar_artillery electronic_mechanical_engineering radio basic_machine_tools early_fighter").split()
 
@@ -162,77 +186,133 @@ def set_tech():
     return "set_technology = {\n" + "\n".join(f"\t{t} = 1" for t in TECHS) + "\n}"
 
 
-UNITS = {
-    "ZNC": (378, [("Соло-наёмники", "Соло-дивизия", 4), ("Хромированные банды", "Бригада банд", 4), ("Бронетакси", "Таксомоторный полк", 2)]),
-    "ZFT": (375, [("Техасские рейнджеры", "Рейнджеры", 5)]),
-    "ZFP": (386, [("Каскадская гвардия", "Гвардия Каскадии", 4)]),
-    "ZBL": (379, [("Кочевой караван", "Караван", 4)]),
+def template(name, n, reg="infantry", sup=("engineer", "recon")):
+    regs = " ".join(f"{reg} = {{ x = {i // 3} y = {i % 3} }}" for i in range(n))
+    sups = " ".join(f"{s} = {{ x = 0 y = {i} }}" for i, s in enumerate(sup))
+    return f'division_template = {{\n\tname = "{name}"\n\tregiments = {{ {regs} }}\n\tsupport = {{ {sups} }}\n}}'
+
+
+# Армии, появляющиеся при старте партии: тег -> [(шаблон, полков, тип, поддержка, имя дивизии, число)]
+ARMIES = {
+    "ZNC": [("Соло-наёмники", 6, "infantry", ("engineer", "recon"), "Соло-дивизия", 4),
+            ("Хромированные банды", 4, "infantry", (), "Бригада банд", 4),
+            ("Бронетакси", 4, "motorized", ("recon",), "Таксомоторный полк", 2)],
+    "ZFT": [("Техасские рейнджеры", 6, "infantry", ("engineer",), "Рейнджеры", 6)],
+    "ZFP": [("Каскадская гвардия", 6, "infantry", ("engineer",), "Гвардия", 6)],
+    "ZBL": [("Кочевой караван", 4, "motorized", ("recon",), "Караван", 5)],
+    "ZNU": [("Армия НСША", 9, "infantry", ("engineer", "recon"), "Пехотная дивизия НСША", 18),
+            ("Мотопехота Милитеха", 6, "motorized", ("recon",), "Дивизия Милитеха", 6)],
+    "ZJP": [("Силы безопасности Арасаки", 9, "infantry", ("engineer", "recon"), "Дивизия Арасаки", 16),
+            ("Мобильный отряд Арасаки", 6, "motorized", ("recon",), "Мобильный отряд", 4)],
 }
-STATES = {"ZNC": [378], "ZFT": [375, 376], "ZFP": [386, 385], "ZBL": [379, 377]}
+for _t, _n in N.NATIONS.items():
+    _name, _cnt = _n["units"]
+    ARMIES[_t] = [(_name, 9, "infantry", ("engineer", "recon"), _name, _cnt),
+                  ("Мобильный корпус", 6, "motorized", ("recon",), "Мобильный корпус", max(2, _cnt // 4))]
+
+ALL_TAGS = ["ZNC", "ZFT", "ZFP", "ZBL", "ZNU", "ZJP"] + list(N.NATIONS)
+
+# ---- распределение мира: первые совпавшие правила побеждают
+# (цель, условие в области штата). Ванильные теги используются только как «география».
+RULES = [
+    ("ZNC", "state = 378"),
+    ("ZFT", "OR = { state = 375 state = 376 }"),
+    ("ZBL", "OR = { state = 379 state = 377 }"),
+    ("ZFP", "OR = { state = 385 state = 386 state = 380 state = 381 state = 382 state = 387 state = 388 }"),
+    ("ZNU", "is_owned_by = USA"),
+    ("ZCA", "is_owned_by = CAN"),
+    ("ZMX", "is_owned_by = MEX"),
+    ("ZCM", "OR = { is_owned_by = GUA is_owned_by = HON is_owned_by = ELS is_owned_by = NIC is_owned_by = COS is_owned_by = PAN is_owned_by = CUB is_owned_by = HAI is_owned_by = DOM }"),
+    ("ZBR", "is_owned_by = BRA"),
+    ("ZSC", "OR = { is_owned_by = ARG is_owned_by = CHL is_owned_by = URG is_owned_by = PAR }"),
+    ("ZAD", "OR = { is_owned_by = COL is_owned_by = VEN is_owned_by = ECU is_owned_by = PRU is_owned_by = BOL }"),
+    ("ZUK", "OR = { is_owned_by = IRE AND = { is_owned_by = ENG is_on_continent = europe } }"),
+    ("ZSV", "OR = { is_owned_by = SOV is_owned_by = EST is_owned_by = LAT is_owned_by = LIT is_owned_by = MON is_owned_by = TAN }"),
+    ("ZEE", "OR = { is_owned_by = POL is_owned_by = CZE is_owned_by = HUN is_owned_by = ROM is_owned_by = YUG is_owned_by = BUL is_owned_by = ALB is_owned_by = GRE AND = { is_owned_by = TUR is_on_continent = europe } }"),
+    ("ZJP", "is_owned_by = JAP"),
+    ("ZCH", "OR = { is_owned_by = CHI is_owned_by = PRC is_owned_by = GXC is_owned_by = YUN is_owned_by = SHX is_owned_by = XSM is_owned_by = SIK is_owned_by = MAN is_owned_by = MEN is_owned_by = TIB }"),
+    ("ZIN", "OR = { is_owned_by = RAJ is_owned_by = NEP is_owned_by = BHU }"),
+    ("ZAU", "OR = { is_owned_by = AST is_owned_by = NZL is_on_continent = australia }"),
+    ("ZAF", "OR = { is_owned_by = SAF AND = { is_on_continent = africa OR = { is_owned_by = ENG is_owned_by = POR is_owned_by = BEL } } }"),
+    ("ZME", "OR = { is_owned_by = TUR is_owned_by = PER is_owned_by = IRQ is_owned_by = SAU is_owned_by = YEM is_owned_by = OMN is_owned_by = AFG is_on_continent = middle_east }"),
+    ("ZSH", "is_on_continent = africa"),
+    ("ZEU", "is_on_continent = europe"),
+    ("ZCM", "is_on_continent = north_america"),
+    ("ZAD", "is_on_continent = south_america"),
+    ("ZSE", "always = yes"),
+]
+# столица ванильного «донора» передаётся первой, чтобы стать столицей новой державы
+CAPITAL_DONORS = {"ZNU": "USA", "ZCA": "CAN", "ZMX": "MEX", "ZCM": "PAN", "ZBR": "BRA", "ZSC": "ARG", "ZAD": "COL",
+                  "ZUK": "ENG", "ZEU": "FRA", "ZEE": "POL", "ZSV": "SOV", "ZME": "TUR", "ZAF": "SAF", "ZSH": "EGY",
+                  "ZCH": "CHI", "ZJP": "JAP", "ZIN": "RAJ", "ZSE": "SIA", "ZAU": "AST"}
+KNOWN_CAPITALS = {"ZNC": 378, "ZFT": 375, "ZFP": 386, "ZBL": 379, "ZEU": 16, "ZUK": 126, "ZSV": 219, "ZJP": 282,
+                  "ZSE": 336}
+# ванильные теги, чьи ядра надо стереть, чтобы старые страны нельзя было освободить
+VANILLA_TAGS = ("USA CAN MEX GUA HON ELS NIC COS PAN CUB HAI DOM BRA ARG CHL URG PAR COL VEN ECU PRU BOL "
+                "ENG IRE SCO WLS SOV EST LAT LIT MON TAN POL CZE SLO HUN ROM YUG CRO SER MNT BUL ALB GRE "
+                "FRA GER ITA BEL HOL LUX SWI AUS DEN NOR SWE FIN ICE SPR SPA POR TUR PER IRQ SAU YEM OMN AFG "
+                "EGY ETH LIB SAF JAP KOR MAN CHI PRC GXC YUN SHX XSM SIK MEN TIB RAJ NEP BHU SIA PHI AST NZL "
+                "UKR BLR GEO ARM AZR KAZ UZB TMS KYR TAJ PAK INS MAL VIN CAM LAO PAL ISR LEB SYR JOR MOR ALG TUN LBA SUD").split()
+
+
+def scripted_triggers():
+    write("common/scripted_triggers/cp77_triggers.txt",
+          "cp77_is_cp_tag = {\n\tOR = {\n" + "\n".join(f"\t\ttag = {t}" for t in ALL_TAGS) + "\n\t}\n}\n")
 
 
 def scripted_effects():
-    parts = []
-    for tag, states in STATES.items():
-        body = [f"transfer_state = {s}\nadd_state_core = {s}" for s in states]
-        body.append(f"set_capital = {{ state = {states[0]} }}")
-        body.append(set_tech())
-        body += templates(tag)
-        body.append("add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }\n"
-                    "add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }\n"
-                    "add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 400 }\n"
-                    "add_manpower = 30000")
-        parts.append(f"{tag} = {{\n" + indent("\n".join(body), 1) + "\n}")
-    lost = sorted(s for v in STATES.values() for s in v)
-    usa = ["set_cosmetic_tag = CP77_NUSA",
-           leader("Розалинд Майерс", "USA_myers_desc",
-                  "Президент НСША, бывшая глава Милитеха. Железная воля, стальные нервы и, по слухам, титановый позвоночник.",
-                  "myers", "blue", "conservatism", initials="RM"),
-           "set_politics = { ruling_party = democratic elections_allowed = no }",
-           "add_ideas = { cp77_nusa_federal cp77_militech_state }"]
-    usa += [f"remove_state_core = {s}\nadd_state_claim = {s}" for s in lost]
-    parts.append("USA = {\n" + indent("\n".join(usa), 1) + "\n}")
-    jap = ["set_cosmetic_tag = CP77_ARJ",
-           leader("Сабуро Арасака", "JAP_saburo_desc",
-                  "Основатель и глава корпорации Арасака. 158 лет, из них 100 — у власти. Тело — почти полностью кибернетическое.",
-                  "saburo", "red", "fascism_ideology", initials="SA"),
-           "set_politics = { ruling_party = fascism elections_allowed = no }",
-           "add_ideas = cp77_arasaka_empire",
-           "if = { limit = { has_war_with = CHI } white_peace = CHI }",
-           "if = { limit = { has_war_with = PRC } white_peace = PRC }",
-           "create_corps_commander = {\n\tname = \"Горо Такэмура\"\n\tpicture = \"gfx/leaders/cp77/takemura.dds\"\n\ttraits = { }\n\tskill = 4\n\tattack_skill = 3\n\tdefense_skill = 4\n\tplanning_skill = 4\n\tlogistics_skill = 3\n}"]
-    portrait("takemura", "red", initials="GT")
-    portrait("blackhand", "cyan", initials="MB")
-    portrait("smasher", "red", kind="machine", initials="AS")
-    parts.append("JAP = {\n" + indent("\n".join(jap), 1) + "\n}")
-    for tag, cos, idea_id, lname, did, desc, pid, col, ide, party in [
-        ("CHI", "CP77_KTC", "cp77_kang_tao", "Совет директоров Кан Тао", "CHI_kangtao_desc",
-         "Самая быстрорастущая оружейная корпорация мира и фактическое правительство Китая.", "kangtao", "cyan", "oligarchism", "neutrality"),
-        ("SOV", "CP77_SOV", "cp77_sovoil", "Президиум СовОйл", "SOV_sovoil_desc",
-         "Нефтяной гигант, который пережил распад, войны и Коллапс. И стал государством.", "sovoil", "orange", "marxism", "communism"),
-        ("FRA", "CP77_EEC", "cp77_eec", "Еврокомиссар ЕЭС", "FRA_eec_desc",
-         "Лицо Европейского экономического сообщества. Улыбается в камеры и подписывает торговые соглашения.", "eec", "blue", "liberalism", "democratic"),
-    ]:
-        b = [f"set_cosmetic_tag = {cos}", leader(lname, did, desc, pid, col, ide, initials=tag),
-             f"set_politics = {{ ruling_party = {party} elections_allowed = no }}", f"add_ideas = {idea_id}"]
-        parts.append(f"if = {{\n\tlimit = {{ country_exists = {tag} }}\n\t{tag} = {{\n" + indent("\n".join(b), 2) + "\n\t}\n}")
-    parts.append("ZNC = { set_variable = { cp77_cyberpsychosis = 20 } }")
-    setup = ("cp77_setup_world = {\n\tif = {\n\t\tlimit = { NOT = { has_global_flag = cp77_world_ready } }\n\t\tset_global_flag = cp77_world_ready\n"
-             + indent("\n".join(parts), 2) + "\n\t}\n}\n")
+    # 1. столицы доноров
+    caps = []
+    for tag, donor in CAPITAL_DONORS.items():
+        caps.append(f"{donor} = {{\n\tif = {{\n\t\tlimit = {{ exists = yes NOT = {{ cp77_is_cp_tag = yes }} }}\n"
+                    f"\t\tcapital_scope = {{ {tag} = {{ transfer_state = PREV }} }}\n\t}}\n}}")
+    # 2. все остальные штаты по правилам
+    branches = []
+    for i, (tag, cond) in enumerate(RULES):
+        kw = "if" if i == 0 else "else_if"
+        if cond == "always = yes":
+            branches.append(f"else = {{ {tag} = {{ transfer_state = PREV }} }}")
+        else:
+            branches.append(f"{kw} = {{\n\tlimit = {{ {cond} }}\n\t{tag} = {{ transfer_state = PREV }}\n}}")
+    rules = ("every_country = {\n\tlimit = { NOT = { cp77_is_cp_tag = yes } }\n\tevery_owned_state = {\n"
+             + indent("\n".join(branches), 2) + "\n\t}\n}")
+    # 3. ядра: старые стираем, новые ставим
+    cores = "\n".join(f"{t} = {{ every_core_state = {{ remove_core_of = PREV }} }}" for t in VANILLA_TAGS)
+    cores += "\nevery_country = {\n\tlimit = { cp77_is_cp_tag = yes }\n\tevery_owned_state = { add_core_of = PREV }\n}"
+    capitals = "\n".join(f"{t} = {{ if = {{ limit = {{ owns_state = {s} }} set_capital = {{ state = {s} }} }} }}" for t, s in KNOWN_CAPITALS.items())
+    setup = ("# Перекраивает мир 2077 года. Идемпотентно: трогает только штаты ванильных стран,\n"
+             "# поэтому вызывается из истории стран, из закладки и из on_startup без вреда.\n"
+             "cp77_setup_world = {\n" + indent("\n".join(caps), 1) + "\n" + indent(rules, 1) + "\n"
+             + indent(cores, 1) + "\n" + indent(capitals, 1) + "\n}\n")
 
     spawn = []
-    for tag, (state, units) in UNITS.items():
-        for tmpl, uname, cnt in units:
-            spawn.append(f'{state} = {{\n\tif = {{\n\t\tlimit = {{ is_owned_by = {tag} }}\n\t\tcreate_unit = {{\n'
-                         f'\t\t\tdivision = "name = \\"{uname}\\" division_template = \\"{tmpl}\\" start_experience_factor = 0.4 start_equipment_factor = 1.0"\n'
-                         f'\t\t\towner = {tag}\n\t\t\tcount = {cnt}\n\t\t}}\n\t}}\n}}')
+    for tag, armies in ARMIES.items():
+        body = []
+        for tname, n, reg, sup, dname, cnt in armies:
+            body.append(template(tname, n, reg, sup))
+        units = []
+        for tname, n, reg, sup, dname, cnt in armies:
+            units.append(f'create_unit = {{\n\tdivision = "name = \\"{dname}\\" division_template = \\"{tname}\\" start_experience_factor = 0.4 start_equipment_factor = 1.0"\n'
+                         f"\towner = {tag}\n\tcount = {cnt}\n}}")
+        body.append("add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 3000 }\n"
+                    "add_equipment_to_stockpile = { type = support_equipment_1 amount = 300 }\n"
+                    "add_equipment_to_stockpile = { type = motorized_equipment_1 amount = 500 }\n"
+                    "add_manpower = 30000")
+        body.append("capital_scope = {\n" + indent("\n".join(units), 1) + "\n}")
+        spawn.append(f"{tag} = {{\n\tif = {{\n\t\tlimit = {{ exists = yes }}\n" + indent("\n".join(body), 2) + "\n\t}\n}")
     spawn_txt = ("cp77_spawn_armies = {\n\tif = {\n\t\tlimit = { NOT = { has_global_flag = cp77_armies_ready } }\n\t\tset_global_flag = cp77_armies_ready\n"
                  + indent("\n".join(spawn), 2) + "\n\t}\n}\n")
-    write("common/scripted_effects/cp77_scripted_effects.txt", setup + "\n" + spawn_txt)
+    diplomacy = ("cp77_start_diplomacy = {\n\tif = {\n\t\tlimit = { NOT = { has_global_flag = cp77_diplomacy_ready } }\n\t\tset_global_flag = cp77_diplomacy_ready\n"
+                 "\t\tZNC = { set_variable = { cp77_cyberpsychosis = 20 } }\n"
+                 "\t\tif = { limit = { ZNU = { exists = yes } ZCM = { exists = yes } } ZNU = { puppet = ZCM } }\n"
+                 "\t\tevery_country = {\n\t\t\tlimit = { cp77_is_cp_tag = yes NOT = { tag = ZNU } }\n"
+                 "\t\t\tevery_owned_state = { limit = { is_core_of = ZNU } ZNU = { add_state_claim = PREV } }\n\t\t}\n"
+                 "\t}\n}\n")
+    write("common/scripted_effects/cp77_scripted_effects.txt", setup + "\n" + spawn_txt + "\n" + diplomacy)
 
     write("common/on_actions/cp77_on_actions.txt",
           "on_actions = {\n\ton_startup = {\n\t\teffect = {\n"
-          "\t\t\tcp77_setup_world = yes\n\t\t\tcp77_spawn_armies = yes\n"
+          "\t\t\tcp77_setup_world = yes\n\t\t\tcp77_start_diplomacy = yes\n\t\t\tcp77_spawn_armies = yes\n"
           "\t\t\tevery_country = { news_event = { id = cp77.1 days = 1 } }\n"
           "\t\t\tZNC = { country_event = { id = cp77.2 days = 14 } }\n"
           "\t\t}\n\t}\n}\n")
@@ -264,7 +344,22 @@ HISTORY = {
                 leader=("Сол Брайт", "ZBL_saul_desc",
                         "Глава клана Альдекальдо. Осторожный, мудрый, упрямый как мул. Панам с ним вечно спорит.", "saul", "orange", "anarchism"),
                 parties={"neutrality": ("Совет кланов", "Совет кочевых кланов Пустошей")}),
+    "ZNU": dict(capital=None, party="democratic", pops=dict(democratic=45, fascism=30, communism=5, neutrality=20),
+                stab=0.6, ws=0.55, ideas="cp77_nusa_federal cp77_militech_state",
+                leader=("Розалинд Майерс", "USA_myers_desc",
+                        "Президент НСША, бывшая глава Милитеха. Железная воля, стальные нервы и, по слухам, титановый позвоночник.",
+                        "myers", "blue", "conservatism"),
+                parties={"democratic": ("Федералисты", "Федеральная партия Майерс")}),
+    "ZJP": dict(capital=282, party="fascism", pops=dict(democratic=10, fascism=60, communism=5, neutrality=25),
+                stab=0.7, ws=0.5, ideas="cp77_arasaka_empire",
+                leader=("Сабуро Арасака", "JAP_saburo_desc",
+                        "Основатель и глава корпорации Арасака. 158 лет, из них 100 — у власти. Тело — почти полностью кибернетическое.",
+                        "saburo", "red", "fascism_ideology"),
+                parties={"fascism": ("Арасака", "Совет директоров корпорации Арасака")},
+                extra="create_corps_commander = {\n\tname = \"Горо Такэмура\"\n\tpicture = \"gfx/leaders/cp77/takemura.dds\"\n\ttraits = { }\n\tskill = 4\n\tattack_skill = 3\n\tdefense_skill = 4\n\tplanning_skill = 4\n\tlogistics_skill = 3\n}"),
 }
+# держава, в истории которой вызывается настройка мира: её тег и файл истории идут последними
+SETUP_TAG = "ZUK"
 
 
 def countries():
@@ -280,31 +375,69 @@ def countries():
         for ide, (short, long_) in h["parties"].items():
             loc("cp77_countries", f"{tag}_{ide}_party", short)
             loc("cp77_countries", f"{tag}_{ide}_party_long", long_)
+        capital = f"capital = {h['capital']}\n\n" if h["capital"] else ""
         write(f"history/countries/{tag} - {d['file']}.txt",
-              f"capital = {h['capital']}\n\nset_research_slots = 3\nset_stability = {h['stab']}\nset_war_support = {h['ws']}\nset_convoys = 20\n\n"
+              f"{capital}set_research_slots = 3\nset_stability = {h['stab']}\nset_war_support = {h['ws']}\nset_convoys = 50\n\n"
               f"{set_tech()}\n\nset_politics = {{\n\truling_party = {h['party']}\n\tlast_election = \"2076.11.3\"\n\telection_frequency = 48\n\telections_allowed = no\n}}\n"
               f"set_popularities = {{ {pops} }}\n\nadd_ideas = {{ {h['ideas']} }}\n\n"
-              + leader(ln, ld, ldesc, lp, lc, lide) + "\n")
+              + leader(ln, ld, ldesc, lp, lc, lide) + "\n" + (h.get("extra", "") + "\n" if h.get("extra") else ""))
+    for tag, n in sorted(N.NATIONS.items(), key=lambda kv: kv[0] == SETUP_TAG):
+        tags.append(f'{tag} = "countries/{n["file"]}.txt"')
+        r, g, b = n["color"]
+        gfx = "asian" if tag in ("ZCH", "ZIN", "ZSE") else "african" if tag in ("ZAF", "ZSH") else \
+            "middle_eastern" if tag == "ZME" else "south_american" if tag in ("ZBR", "ZAD", "ZSC", "ZMX", "ZCM") else \
+            "eastern_european" if tag in ("ZSV", "ZEE") else "commonwealth" if tag in ("ZAU", "ZCA", "ZUK") else "western_european"
+        write(f"common/countries/{n['file']}.txt",
+              f"graphical_culture = {gfx}_gfx\ngraphical_culture_2d = {gfx}_2d\n\ncolor = {{ {r} {g} {b} }}\n")
+        country_names(tag, n["name"], n["adj"], n["name"], n["flag"])
+        hist = N.build_history(n, set_tech())
+        if tag == SETUP_TAG:
+            hist += ("\n# Последняя загружаемая история: к этому моменту у всех ванильных стран уже есть столицы,\n"
+                     "# поэтому мир перекраивается здесь — до экрана выбора страны.\ncp77_setup_world = yes\n")
+        write(f"history/countries/{tag} - {n['file']}.txt", hist)
+    portrait("takemura", "red", initials="GT")
+    portrait("blackhand", "cyan", initials="MB")
+    portrait("smasher", "red", kind="machine", initials="AS")
     write("common/country_tags/cp77_countries.txt", "\n".join(tags) + "\n")
+
+
+def generic_tree():
+    """Дерево по умолчанию — для стран, появившихся в гражданских войнах."""
+    T = Tree("cp77_generic_tree", "cp77_focus_generic", "country = {\n\tfactor = 1\n}", default="yes")
+    a = T.add
+    a("CP77_GEN_new_order", 2, 0, "flag", "Новый порядок", "Страна родилась в огне гражданской войны. Нужно выжить.", "add_political_power = 100\nadd_stability = 0.1")
+    a("CP77_GEN_mercs", 1, 1, "spade", "Нанять наёмников", "Соло всегда готовы работать на новое правительство.", "army_experience = 30\nadd_manpower = 20000", prereq=["CP77_GEN_new_order"])
+    a("CP77_GEN_corp_loans", 3, 1, "yen", "Корпоративные кредиты", "Корпорации дают деньги под чудовищный процент.", "capital_scope = {\n\tadd_extra_state_shared_building_slots = 2\n\tadd_building_construction = { type = industrial_complex level = 2 instant_build = yes }\n}", prereq=["CP77_GEN_new_order"])
+    a("CP77_GEN_arms", 1, 2, "gear", "Свои арсеналы", "Оружие нужно производить самим.", "capital_scope = {\n\tadd_extra_state_shared_building_slots = 2\n\tadd_building_construction = { type = arms_factory level = 2 instant_build = yes }\n}", prereq=["CP77_GEN_mercs"])
+    a("CP77_GEN_netrunners", 3, 2, "net", "Свои нетраннеры", "Без защиты в Сети государство не выживет.", "add_research_slot = 1", prereq=["CP77_GEN_corp_loans"])
+    a("CP77_GEN_survive", 2, 3, "star", "Выжить в 2077", "Мы выстояли. Теперь мир должен считаться с нами.", "add_stability = 0.1\nadd_war_support = 0.1", prereq=["CP77_GEN_arms", "CP77_GEN_netrunners"])
+    return T
 
 
 def bookmark():
     G = "cp77_bookmark"
     loc(G, "CP77_BOOKMARK", "2077: Город мечты")
-    loc(G, "CP77_BOOKMARK_DESC", "Найт-Сити, 2077 год. Корпорации, банды, кочевники и ИИ за Чёрным Заслоном делят мир. Кем станете вы — легендой или удобрением?")
+    loc(G, "CP77_BOOKMARK_DESC", "2077 год. Мир поделён между мегакорпорациями, обломками старых держав, кочевниками и ИИ за Чёрным Заслоном. Кем станете вы — легендой или удобрением?")
     entries = {
         "ZNC": ("neutrality", "cp77_city_of_dreams cp77_gang_wars cp77_corpo_plaza", "ZNC_corpo_council ZNC_burn_corpo ZNC_delamain",
                 "Свободный город на западном побережье. Семь политических путей: от корпоративной префектуры Арасаки до президента-такси и вендократии торгового автомата Брендана."),
-        "USA": ("democratic", "cp77_nusa_federal cp77_militech_state", "CP77_USA_unification_war_ii CP77_USA_save_songbird CP77_USA_myers_forever",
+        "ZNU": ("democratic", "cp77_nusa_federal cp77_militech_state", "CP77_USA_unification_war_ii CP77_USA_save_songbird CP77_USA_myers_forever",
                 "Президент Розалинд Майерс собирает расколотую Америку. Вторая война за объединение, Догтаун, Сойка и Луна — или вечная энграмма Майерс."),
-        "JAP": ("fascism", "cp77_arasaka_empire", "CP77_JAP_yorinobu_coup CP77_JAP_saburo_eternal CP77_JAP_digital_emperor",
+        "ZJP": ("fascism", "cp77_arasaka_empire", "CP77_JAP_yorinobu_coup CP77_JAP_saburo_eternal CP77_JAP_digital_emperor",
                 "Корпоративная Япония Арасаки. Ёринобу против отца, Ханако против брата, Микоси против всего человечества."),
     }
+    majors = ["ZCH", "ZSV", "ZEU"]
+    for t in majors:
+        n = N.NATIONS[t]
+        entries[t] = (n["party"], " ".join(i[0] for i in n["ideas"]), f"{t}_p0_0 {t}_p1_0 {t}_p2_0", n["root"][2])
     minors = {
-        "ZFT": ("neutrality", "cp77_free_state", "CP77_FS_corn_kingdom", "Свободный штат Техас: нефть, кукуруза CHOOH2 и, возможно, Кукурузный император."),
-        "ZBL": ("neutrality", "cp77_free_state", "CP77_FS_nomad_horde", "Кочевники Пустошей: семьи на колёсах, Василиски и Великая орда."),
-        "ZFP": ("democratic", "cp77_free_state", "CP77_FS_druid_ai", "Свободные Штаты Северо-Запада: леса Биотехники, снежный человек-министр и ИИ-друид."),
+        "ZFT": ("neutrality", "cp77_free_state", "CP77_ZFT_corn_kingdom", "Свободный штат Техас: нефть, кукуруза CHOOH2 и, возможно, Кукурузный император."),
+        "ZBL": ("neutrality", "cp77_free_state", "CP77_ZBL_nomad_horde", "Кочевники Пустошей: семьи на колёсах, Василиски и Великая орда."),
+        "ZFP": ("democratic", "cp77_free_state", "CP77_ZFP_druid_ai", "Свободные Штаты Северо-Запада: леса Биотехники, снежный человек-министр и ИИ-друид."),
     }
+    for t, n in N.NATIONS.items():
+        if t not in majors:
+            minors[t] = (n["party"], " ".join(i[0] for i in n["ideas"]), f"{t}_p0_0 {t}_p2_0", n["root"][2])
     lines = ["bookmarks = {", "\tbookmark = {", '\t\tname = "CP77_BOOKMARK"', '\t\tdesc = "CP77_BOOKMARK_DESC"',
              "\t\tdate = 2077.1.1.12", '\t\tpicture = "GFX_select_date_1936"', '\t\tdefault_country = "ZNC"', "\t\tdefault = yes"]
 
@@ -315,7 +448,7 @@ def bookmark():
                 f"\t\t\tideas = {{ {ideas} }}\n\t\t\tfocuses = {{ {focuses} }}\n\t\t}}")
     for t, v in entries.items():
         lines.append(entry(t, v))
-    loc(G, "CP77_OTHERS_BM", "Свободные штаты, Кан Тао, СовОйл, ЕЭС и все остальные — мир 2077 года открыт.")
+    loc(G, "CP77_OTHERS_BM", "Свободные штаты, Британия, Индия, Бразилия, Пустоши Ближнего Востока и все остальные державы 2077 года.")
     lines.append('\t\t"---" = {\n\t\t\thistory = "CP77_OTHERS_BM"\n\t\t}')
     for t, v in minors.items():
         lines.append(entry(t, v))
@@ -431,20 +564,28 @@ def main():
         shutil.rmtree(MOD_DIR)
     CC.ICON_USES = set()
 
-    znc = tree_night_city.build(Tree("cp77_night_city_tree", "", "country = {\n\tfactor = 0\n\tmodifier = { add = 100 tag = ZNC }\n}"))
-    usa = tree_others.build_usa(Tree("cp77_nusa_tree", "", "country = {\n\tfactor = 0\n\tmodifier = { add = 100 tag = USA }\n}"))
-    jap = tree_others.build_jap(Tree("cp77_arasaka_tree", "", "country = {\n\tfactor = 0\n\tmodifier = { add = 100 tag = JAP }\n}"))
-    fs = tree_others.build_free_states(Tree("cp77_free_states_tree", "",
-                                            "country = {\n\tfactor = 0\n\tmodifier = { add = 100 OR = { tag = ZFT tag = ZFP tag = ZBL } }\n}"))
-    trees = [znc, usa, jap, fs]
-    for name, t in zip(["night_city", "nusa", "arasaka", "free_states"], trees):
+    def country_block(tag):
+        return f"country = {{\n\tfactor = 0\n\tmodifier = {{ add = 100 tag = {tag} }}\n}}"
+    trees = {
+        "night_city": tree_night_city.build(Tree("cp77_night_city_tree", "", country_block("ZNC"))),
+        "nusa": tree_others.build_usa(Tree("cp77_nusa_tree", "", country_block("ZNU"))),
+        "arasaka": tree_others.build_jap(Tree("cp77_arasaka_tree", "", country_block("ZJP"))),
+    }
+    for tag in ("ZFT", "ZFP", "ZBL"):
+        trees[tag.lower()] = tree_others.build_free_states(Tree(f"cp77_{tag.lower()}_tree", "", country_block(tag)), tag)
+    for tag, n in N.NATIONS.items():
+        trees[tag.lower()] = N.build_tree(n)
+    trees["generic"] = generic_tree()
+    for name, t in trees.items():
         write(f"common/national_focus/cp77_{name}.txt", t.render())
+    trees = list(trees.values())
 
     loc("cp77_tooltips", "cp77_pacific_league", "Тихоокеанская лига")
     loc("cp77_tooltips", "cp77_free_states_union", "Союз Свободных штатов")
 
     write("events/cp77_events.txt", content_events.build())
     decisions()
+    scripted_triggers()
     scripted_effects()
     countries()
     bookmark()
@@ -459,7 +600,8 @@ def main():
     loc("cp77_states_replace", "STATE_375", "Свободный Техас")
 
     descriptor = (f'version="{VERSION}"\ntags={{\n\t"Alternative History"\n\t"National Focuses"\n\t"Events"\n\t"Gameplay"\n}}\n'
-                  'name="Cyberpunk 2077: Night City Wars"\nsupported_version="1.*"\nreplace_path="common/bookmarks"\n')
+                  'name="Cyberpunk 2077: Night City Wars"\nsupported_version="1.*"\n'
+                  'replace_path="common/bookmarks"\nreplace_path="common/national_focus"\n')
     write("descriptor.mod", descriptor)
     with open(os.path.join(os.path.dirname(MOD_DIR), "cyberpunk2077.mod"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(descriptor + 'path="mod/cyberpunk2077"\n')
@@ -470,7 +612,7 @@ def main():
 
     n_focus = sum(len(t.focuses) for t in trees)
     print(f"OK: {n_focus} фокусов, {len(IDEAS)} идей, {len(content_events._EVENTS)} событий, "
-          f"{len(NEW_TAGS)} новых стран, {len(CC.COSMETIC)} косметических тегов, {len(CC.PORTRAITS)} портретов")
+          f"{len(NEW_TAGS) + len(N.NATIONS)} держав, {len(CC.COSMETIC)} косметических тегов, {len(CC.PORTRAITS)} портретов")
 
 
 if __name__ == "__main__":

@@ -1,0 +1,39 @@
+set_research_slots = 3
+set_stability = 0.65
+set_war_support = 0.3
+set_convoys = 50
+
+set_technology = {
+	infantry_weapons = 1
+	infantry_weapons1 = 1
+	infantry_weapons2 = 1
+	tech_support = 1
+	tech_engineers = 1
+	tech_recon = 1
+	motorised_infantry = 1
+	gw_artillery = 1
+	interwar_artillery = 1
+	electronic_mechanical_engineering = 1
+	radio = 1
+	basic_machine_tools = 1
+	early_fighter = 1
+}
+
+set_politics = {
+	ruling_party = democratic
+	last_election = "2076.11.3"
+	election_frequency = 48
+	elections_allowed = no
+}
+set_popularities = { democratic = 55 fascism = 10 communism = 10 neutrality = 25 }
+
+add_ideas = { cp77_zca_north_shield }
+
+create_country_leader = {
+	name = "Премьер Элоиза Тремблей"
+	desc = "ZCA_start_desc"
+	picture = "gfx/leaders/cp77/zca_start.dds"
+	expire = "2150.1.1.1"
+	ideology = liberalism
+	traits = { }
+}

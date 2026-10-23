@@ -1,0 +1,294 @@
+focus_tree = {
+	id = cp77_zfp_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZFP }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = CP77_ZFP_independence
+		icon = GFX_goal_cp77_flag
+		x = 5
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			add_war_support = 0.05
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_local_militia
+		icon = GFX_goal_cp77_swords
+		x = 3
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_independence }
+		search_filters = { FOCUS_FILTER_MANPOWER }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 20000
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_free_trade
+		icon = GFX_goal_cp77_money
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_independence }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_border_forts
+		icon = GFX_goal_cp77_tower
+		x = 3
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_local_militia }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_fortress_city
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_corp_investors
+		icon = GFX_goal_cp77_yen
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_free_trade }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_mercs_from_nc
+		icon = GFX_goal_cp77_spade
+		x = 3
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_border_forts }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 40
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_union_of_free_states
+		icon = GFX_goal_cp77_handshake
+		x = 5
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_border_forts focus = CP77_ZFP_corp_investors }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			if = { limit = { is_in_faction = no } create_faction = cp77_free_states_union }
+			every_country = { limit = { OR = { tag = ZFT tag = ZFP tag = ZBL } NOT = { tag = ROOT } exists = yes is_in_faction = no } ROOT = { add_to_faction = PREV } }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_industrial_push
+		icon = GFX_goal_cp77_gear
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_corp_investors }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_resist_nusa
+		icon = GFX_goal_cp77_fist
+		x = 5
+		y = 4
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_union_of_free_states }
+		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_war_support = 0.15
+			add_ideas = cp77_free_state
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_research_cooperation
+		icon = GFX_goal_cp77_atom
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = CP77_ZFP_industrial_push }
+		search_filters = { FOCUS_FILTER_RESEARCH }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_join_nusa
+		icon = GFX_goal_cp77_star
+		x = 4
+		y = 5
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_resist_nusa }
+		mutually_exclusive = { focus = CP77_ZFP_free_forever }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			if = { limit = { country_exists = ZNU NOT = { has_war_with = ZNU } } ZNU = { puppet = ROOT } }
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_free_forever
+		icon = GFX_goal_cp77_flag
+		x = 6
+		y = 5
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_resist_nusa }
+		mutually_exclusive = { focus = CP77_ZFP_join_nusa }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_stability = 0.1
+			add_war_support = 0.1
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_biotechnica_forests
+		icon = GFX_goal_cp77_tree
+		x = 11
+		y = 1
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_independence }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_biotechnica_forests
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_cascadia_republic
+		icon = GFX_goal_cp77_vote
+		x = 11
+		y = 2
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_biotechnica_forests }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_stability = 0.1
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_bigfoot_ministry
+		icon = GFX_goal_cp77_bigfoot
+		x = 11
+		y = 3
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_cascadia_republic }
+		search_filters = { FOCUS_FILTER_STABILITY }
+		ai_will_do = {
+			factor = 0.5
+		}
+		completion_reward = {
+			add_ideas = cp77_bigfoot
+		}
+	}
+
+	focus = {
+		id = CP77_ZFP_druid_ai
+		icon = GFX_goal_cp77_tree
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = CP77_ZFP_bigfoot_ministry }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 0.3
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_DRUID
+			add_ideas = cp77_druid_ai
+			create_country_leader = {
+				name = "Великий Друид Секвойя"
+				desc = "ZFP_druid_desc"
+				picture = "gfx/leaders/cp77/druid.dds"
+				expire = "2150.1.1.1"
+				ideology = centrism
+				traits = { }
+			}
+		}
+	}
+
+}

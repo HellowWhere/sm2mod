@@ -3,7 +3,7 @@ focus_tree = {
 
 	country = {
 		factor = 0
-		modifier = { add = 100 tag = USA }
+		modifier = { add = 100 tag = ZNU }
 	}
 	default = no
 	continuous_focus_position = { x = 50 y = 1400 }
@@ -506,13 +506,13 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = CP77_USA_barghest_contracts }
-		will_lead_to_war_with = JAP
+		will_lead_to_war_with = ZJP
 		search_filters = { FOCUS_FILTER_WAR_SUPPORT }
 		ai_will_do = {
 			factor = 0.5
 		}
 		completion_reward = {
-			if = { limit = { country_exists = JAP NOT = { has_war_with = JAP } } create_wargoal = { type = annex_everything target = JAP } }
+			if = { limit = { country_exists = ZJP NOT = { has_war_with = ZJP } } create_wargoal = { type = annex_everything target = ZJP } }
 			add_war_support = 0.15
 		}
 	}

@@ -1,0 +1,450 @@
+focus_tree = {
+	id = cp77_zsv_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZSV }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = ZSV_root
+		icon = GFX_goal_cp77_flame
+		x = 4
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZSV_p0_0
+		icon = GFX_goal_cp77_flame
+		x = 1
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_root }
+		mutually_exclusive = { focus = ZSV_p1_0 focus = ZSV_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = oil amount = 20 }
+			}
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZSV_p0_1
+		icon = GFX_goal_cp77_handshake
+		x = 1
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZSV_p0_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			every_other_country = { limit = { is_major = yes } add_political_power = -20 }
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZSV_p0_2
+		icon = GFX_goal_cp77_gear
+		x = 1
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_p0_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = { type = industrial_complex level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_p0_3
+		icon = GFX_goal_cp77_crown
+		x = 1
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZSV_p0_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zsv_hegemony
+		}
+	}
+
+	focus = {
+		id = ZSV_p1_0
+		icon = GFX_goal_cp77_rocket
+		x = 4
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_root }
+		mutually_exclusive = { focus = ZSV_p0_0 focus = ZSV_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			add_research_slot = 1
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+		}
+	}
+
+	focus = {
+		id = ZSV_p1_1
+		icon = GFX_goal_cp77_moon
+		x = 4
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZSV_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zsv_moon
+		}
+	}
+
+	focus = {
+		id = ZSV_p1_2
+		icon = GFX_goal_cp77_target
+		x = 4
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_p1_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_nuclear_bombs = 3
+			add_war_support = 0.1
+		}
+	}
+
+	focus = {
+		id = ZSV_p1_3
+		icon = GFX_goal_cp77_star
+		x = 4
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZSV_p1_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			every_country = { news_event = { id = cp77.28 hours = 6 } }
+		}
+	}
+
+	focus = {
+		id = ZSV_p2_0
+		icon = GFX_goal_cp77_ghost
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_root }
+		mutually_exclusive = { focus = ZSV_p0_0 focus = ZSV_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_ZSV_LENIN
+			set_politics = { ruling_party = communism elections_allowed = no }
+			add_popularity = { ideology = communism popularity = 0.25 }
+			create_country_leader = {
+				name = "Кибер-Ленин"
+				desc = "ZSV_lenin_desc"
+				picture = "gfx/leaders/cp77/zsv_lenin.dds"
+				expire = "2150.1.1.1"
+				ideology = leninism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_p2_1
+		icon = GFX_goal_cp77_pen
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZSV_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 200
+			add_stability = -0.05
+		}
+	}
+
+	focus = {
+		id = ZSV_p2_2
+		icon = GFX_goal_cp77_chip
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_p2_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			capital_scope = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = { type = industrial_complex level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_p2_3
+		icon = GFX_goal_cp77_fist
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZSV_p2_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			every_other_country = { limit = { is_major = yes NOT = { has_government = communism } } add_popularity = { ideology = communism popularity = 0.10 } }
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_0
+		icon = GFX_goal_cp77_gear
+		x = 11
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = { type = industrial_complex level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_1
+		icon = GFX_goal_cp77_hammer
+		x = 10
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 3
+				add_building_construction = { type = arms_factory level = 3 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_2
+		icon = GFX_goal_cp77_flame
+		x = 12
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = oil amount = 15 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_3
+		icon = GFX_goal_cp77_hammer
+		x = 11
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZSV_eco_1 focus = ZSV_eco_2 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = chromium amount = 12 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_4
+		icon = GFX_goal_cp77_anchor
+		x = 10
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_5
+		icon = GFX_goal_cp77_atom
+		x = 12
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZSV_eco_6
+		icon = GFX_goal_cp77_money
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZSV_eco_4 }
+		prerequisite = { focus = ZSV_eco_5 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+		}
+	}
+
+	focus = {
+		id = ZSV_mil_0
+		icon = GFX_goal_cp77_swords
+		x = 15
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 40
+		}
+	}
+
+	focus = {
+		id = ZSV_mil_1
+		icon = GFX_goal_cp77_mech
+		x = 14
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZSV_mil_2 bonus = 1.0 uses = 2 category = armor }
+		}
+	}
+
+	focus = {
+		id = ZSV_mil_2
+		icon = GFX_goal_cp77_plane
+		x = 16
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZSV_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZSV_mil_3 bonus = 1.0 uses = 2 category = air_equipment }
+		}
+	}
+
+	focus = {
+		id = ZSV_mil_3
+		icon = GFX_goal_cp77_target
+		x = 15
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZSV_mil_1 focus = ZSV_mil_2 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZSV_mil_4 bonus = 1.0 uses = 2 category = land_doctrine }
+		}
+	}
+
+	focus = {
+		id = ZSV_mil_4
+		icon = GFX_goal_cp77_fist
+		x = 15
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZSV_mil_3 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_manpower = 60000
+		}
+	}
+
+}

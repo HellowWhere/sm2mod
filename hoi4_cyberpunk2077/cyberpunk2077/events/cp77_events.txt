@@ -487,7 +487,7 @@ country_event = {
 		ai_chance = { factor = 1 }
 		add_ideas = cp77_arasaka_security
 		add_political_power = 100
-		if = { limit = { country_exists = JAP } JAP = { add_political_power = 100 } }
+		if = { limit = { country_exists = ZJP } ZJP = { add_political_power = 100 } }
 	}
 }
 
@@ -552,7 +552,7 @@ country_event = {
 		ai_chance = { factor = 1 }
 		add_stability = 0.1
 		add_war_support = -0.1
-		if = { limit = { country_exists = USA } USA = { add_political_power = 50 } }
+		if = { limit = { country_exists = ZNU } ZNU = { add_political_power = 50 } }
 	}
 }
 
@@ -569,5 +569,70 @@ country_event = {
 		add_manpower = 30000
 		army_experience = 50
 		add_stability = -0.05
+	}
+}
+
+news_event = {
+	id = cp77.26
+	title = cp77.26.t
+	desc = cp77.26.desc
+	picture = GFX_report_event_cp77_carnival
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.26.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.27
+	title = cp77.27.t
+	desc = cp77.27.desc
+	picture = GFX_report_event_cp77_tea
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.27.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.28
+	title = cp77.28.t
+	desc = cp77.28.desc
+	picture = GFX_report_event_cp77_mars
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.28.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.29
+	title = cp77.29.t
+	desc = cp77.29.desc
+	picture = GFX_report_event_cp77_bolly
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.29.a
+		ai_chance = { factor = 1 }
+	}
+}
+
+news_event = {
+	id = cp77.30
+	title = cp77.30.t
+	desc = cp77.30.desc
+	picture = GFX_report_event_cp77_roo
+	major = yes
+	is_triggered_only = yes
+	option = {
+		name = cp77.30.a
+		ai_chance = { factor = 1 }
 	}
 }

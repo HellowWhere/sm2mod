@@ -169,8 +169,8 @@ cp77_relic_category = {
 			NOT = { has_country_flag = cp77_relic_resolved }
 		}
 		available = {
-			country_exists = JAP
-			NOT = { has_war_with = JAP }
+			country_exists = ZJP
+			NOT = { has_war_with = ZJP }
 		}
 		complete_effect = {
 			set_country_flag = cp77_relic_resolved
@@ -246,8 +246,8 @@ cp77_relic_category = {
 			NOT = { has_country_flag = cp77_relic_resolved }
 		}
 		available = {
-			country_exists = USA
-			NOT = { has_war_with = USA }
+			country_exists = ZNU
+			NOT = { has_war_with = ZNU }
 		}
 		complete_effect = {
 			set_country_flag = cp77_relic_resolved
@@ -318,5 +318,732 @@ cp77_blackwall_category = {
 		available = { has_idea = cp77_rogue_ai }
 		complete_effect = { remove_ideas = cp77_rogue_ai }
 		ai_will_do = { factor = 3 }
+	}
+}
+
+cp77_zca_category = {
+	cp77_zca_maple_export = {
+		icon = cp77_money
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zca_arctic_drill = {
+		icon = cp77_flame
+		cost = 75
+		fire_only_once = yes
+		complete_effect = {
+			random_owned_state = { add_resource = { type = oil amount = 6 } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zca_mounties = {
+		icon = cp77_police
+		cost = 40
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.05
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zmx_category = {
+	cp77_zmx_bribe_cartels = {
+		icon = cp77_money
+		cost = 50
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.06
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zmx_dia_muertos = {
+		icon = cp77_flame
+		cost = 25
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.03
+			add_war_support = 0.03
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zmx_border_tolls = {
+		icon = cp77_yen
+		cost = 0
+		days_re_enable = 90
+		complete_effect = {
+			add_political_power = 40
+			add_stability = -0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zcm_category = {
+	cp77_zcm_hire_mercs = {
+		icon = cp77_spade
+		cost = 50
+		days_re_enable = 120
+		complete_effect = {
+			add_manpower = 8000
+			army_experience = 5
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zcm_canal_toll = {
+		icon = cp77_anchor
+		cost = 0
+		days_re_enable = 180
+		complete_effect = {
+			add_political_power = 50
+			every_other_country = { limit = { is_major = yes } add_political_power = -5 }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zcm_jungle_raid = {
+		icon = cp77_tree
+		cost = 30
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.04
+			army_experience = 10
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zbr_category = {
+	cp77_zbr_football_cup = {
+		icon = cp77_star
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.05
+			add_war_support = 0.03
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zbr_amazon_harvest = {
+		icon = cp77_bio
+		cost = 25
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 60
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zbr_favela_recruit = {
+		icon = cp77_fist
+		cost = 25
+		days_re_enable = 180
+		complete_effect = {
+			add_manpower = 15000
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zad_category = {
+	cp77_zad_launder = {
+		icon = cp77_money
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zad_mine_boost = {
+		icon = cp77_hammer
+		cost = 75
+		fire_only_once = yes
+		complete_effect = {
+			random_owned_state = { add_resource = { type = tungsten amount = 4 } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zad_truce = {
+		icon = cp77_handshake
+		cost = 40
+		days_re_enable = 150
+		complete_effect = {
+			add_stability = 0.06
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zsc_category = {
+	cp77_zsc_antarctic_survey = {
+		icon = cp77_ice
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			random_list = { 60 = { add_tech_bonus = { name = cp77_tb_cp77_ZSC_antarctic_survey bonus = 0.5 uses = 1 category = electronics } } 40 = { add_political_power = 75 } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsc_asado = {
+		icon = cp77_flame
+		cost = 25
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.04
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsc_tango_diplomacy = {
+		icon = cp77_music
+		cost = 30
+		days_re_enable = 150
+		complete_effect = {
+			add_political_power = 60
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zeu_category = {
+	cp77_zeu_euro_sanctions = {
+		icon = cp77_money
+		cost = 75
+		days_re_enable = 180
+		complete_effect = {
+			random_other_country = { limit = { is_major = yes NOT = { is_in_faction_with = ROOT } } add_political_power = -100 add_stability = -0.03 }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zeu_summit = {
+		icon = cp77_handshake
+		cost = 50
+		days_re_enable = 150
+		complete_effect = {
+			add_stability = 0.05
+			add_political_power = 30
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zeu_crystal_tourism = {
+		icon = cp77_rocket
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zuk_category = {
+	cp77_zuk_royal_bonds = {
+		icon = cp77_crown
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zuk_tea_ration = {
+		icon = cp77_soda
+		cost = 30
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.05
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zuk_mi6_op = {
+		icon = cp77_eye
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			random_other_country = { limit = { is_major = yes } add_stability = -0.03 }
+			add_tech_bonus = { name = cp77_tb_cp77_ZUK_mi6_op bonus = 0.5 uses = 1 category = electronics }
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zee_category = {
+	cp77_zee_balance_blocs = {
+		icon = cp77_handshake
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			add_political_power = 80
+			add_stability = 0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zee_bd_export = {
+		icon = cp77_brain
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zee_mobilize_villages = {
+		icon = cp77_fist
+		cost = 30
+		days_re_enable = 180
+		complete_effect = {
+			add_manpower = 12000
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zsv_category = {
+	cp77_zsv_gas_valve = {
+		icon = cp77_flame
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			random_other_country = { limit = { is_major = yes } add_stability = -0.04 }
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsv_five_year_plan = {
+		icon = cp77_hammer
+		cost = 100
+		days_re_enable = 365
+		complete_effect = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsv_parade = {
+		icon = cp77_star
+		cost = 30
+		days_re_enable = 180
+		complete_effect = {
+			add_war_support = 0.05
+			add_stability = 0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zme_category = {
+	cp77_zme_decontaminate = {
+		icon = cp77_bio
+		cost = 75
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.05
+			add_manpower = 5000
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zme_caravan = {
+		icon = cp77_wheel
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zme_salvage = {
+		icon = cp77_hammer
+		cost = 25
+		days_re_enable = 120
+		complete_effect = {
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zaf_category = {
+	cp77_zaf_diamond_auction = {
+		icon = cp77_diamond
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zaf_safari_diplomacy = {
+		icon = cp77_sun
+		cost = 30
+		days_re_enable = 150
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zaf_miners_strike = {
+		icon = cp77_fist
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.07
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zsh_category = {
+	cp77_zsh_sell_power = {
+		icon = cp77_sun
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsh_suez_toll = {
+		icon = cp77_anchor
+		cost = 25
+		days_re_enable = 150
+		complete_effect = {
+			add_political_power = 60
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zsh_oasis_festival = {
+		icon = cp77_music
+		cost = 30
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.05
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zch_category = {
+	cp77_zch_smart_gun_export = {
+		icon = cp77_target
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zch_social_credit = {
+		icon = cp77_eye
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			add_stability = 0.06
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zch_spy_arasaka = {
+		icon = cp77_net
+		cost = 75
+		days_re_enable = 180
+		complete_effect = {
+			if = { limit = { country_exists = ZJP } ZJP = { add_political_power = -50 } }
+			add_tech_bonus = { name = cp77_tb_cp77_ZCH_spy_arasaka bonus = 0.75 uses = 1 category = electronics }
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zin_category = {
+	cp77_zin_app_update = {
+		icon = cp77_phone
+		cost = 25
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.04
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zin_outsourcing = {
+		icon = cp77_chip
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zin_film_festival = {
+		icon = cp77_star
+		cost = 30
+		days_re_enable = 180
+		complete_effect = {
+			add_war_support = 0.04
+			add_stability = 0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zse_category = {
+	cp77_zse_ipo = {
+		icon = cp77_money
+		cost = 0
+		days_re_enable = 150
+		complete_effect = {
+			add_political_power = 60
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zse_anti_piracy = {
+		icon = cp77_anchor
+		cost = 40
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.04
+			army_experience = 5
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zse_free_port = {
+		icon = cp77_yen
+		cost = 30
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zau_category = {
+	cp77_zau_outback_rally = {
+		icon = cp77_wheel
+		cost = 25
+		days_re_enable = 120
+		complete_effect = {
+			add_stability = 0.03
+			add_war_support = 0.03
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zau_ore_export = {
+		icon = cp77_hammer
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zau_fauna_war = {
+		icon = cp77_snake
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			army_experience = 15
+			add_manpower = 5000
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_znu_category = {
+	cp77_znu_militech_order = {
+		icon = cp77_militech
+		cost = 75
+		days_re_enable = 365
+		complete_effect = {
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = arms_factory level = 1 instant_build = yes } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_znu_fia_op = {
+		icon = cp77_eye
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			random_other_country = { limit = { is_major = yes } add_stability = -0.03 add_political_power = -30 }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_znu_myers_address = {
+		icon = cp77_star
+		cost = 25
+		days_re_enable = 150
+		complete_effect = {
+			add_war_support = 0.04
+			add_stability = 0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zjp_category = {
+	cp77_zjp_saburo_audience = {
+		icon = cp77_crown
+		cost = 25
+		days_re_enable = 150
+		complete_effect = {
+			add_stability = 0.04
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zjp_nc_expansion = {
+		icon = cp77_tower
+		cost = 75
+		fire_only_once = yes
+		complete_effect = {
+			add_state_claim = 378
+			add_political_power = 50
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zjp_soulkiller_test = {
+		icon = cp77_skull
+		cost = 50
+		days_re_enable = 180
+		complete_effect = {
+			add_tech_bonus = { name = cp77_zjp_soulkiller_test bonus = 0.75 uses = 1 category = electronics }
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zft_category = {
+	cp77_zft_cattle_drive = {
+		icon = cp77_wheel
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zft_oil_boom = {
+		icon = cp77_flame
+		cost = 50
+		fire_only_once = yes
+		complete_effect = {
+			random_owned_state = { add_resource = { type = oil amount = 6 } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zft_mech_rodeo = {
+		icon = cp77_mech
+		cost = 30
+		days_re_enable = 150
+		complete_effect = {
+			add_stability = 0.04
+			add_war_support = 0.02
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zfp_category = {
+	cp77_zfp_forest_tax = {
+		icon = cp77_tree
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zfp_volunteers = {
+		icon = cp77_fist
+		cost = 30
+		days_re_enable = 180
+		complete_effect = {
+			add_manpower = 8000
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zfp_bigfoot_sighting = {
+		icon = cp77_bigfoot
+		cost = 10
+		days_re_enable = 120
+		complete_effect = {
+			random_list = { 70 = { add_stability = 0.03 } 30 = { add_political_power = 50 } }
+		}
+		ai_will_do = { factor = 1 }
+	}
+}
+
+cp77_zbl_category = {
+	cp77_zbl_raid_convoy = {
+		icon = cp77_target
+		cost = 30
+		days_re_enable = 120
+		complete_effect = {
+			add_equipment_to_stockpile = { type = infantry_equipment_1 amount = 1500 }
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zbl_clan_moot = {
+		icon = cp77_handshake
+		cost = 25
+		days_re_enable = 150
+		complete_effect = {
+			add_stability = 0.05
+		}
+		ai_will_do = { factor = 1 }
+	}
+
+	cp77_zbl_fuel_run = {
+		icon = cp77_wheel
+		cost = 0
+		days_re_enable = 120
+		complete_effect = {
+			add_political_power = 40
+		}
+		ai_will_do = { factor = 1 }
 	}
 }

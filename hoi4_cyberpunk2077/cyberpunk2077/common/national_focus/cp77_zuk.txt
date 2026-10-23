@@ -1,0 +1,452 @@
+focus_tree = {
+	id = cp77_zuk_tree
+
+	country = {
+		factor = 0
+		modifier = { add = 100 tag = ZUK }
+	}
+	default = no
+	continuous_focus_position = { x = 50 y = 1400 }
+
+	focus = {
+		id = ZUK_root
+		icon = GFX_goal_cp77_crown
+		x = 4
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 75
+		}
+	}
+
+	focus = {
+		id = ZUK_p0_0
+		icon = GFX_goal_cp77_crown
+		x = 1
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_root }
+		mutually_exclusive = { focus = ZUK_p1_0 focus = ZUK_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 3
+		}
+		completion_reward = {
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_popularity = { ideology = neutrality popularity = 0.25 }
+			add_political_power = 100
+		}
+	}
+
+	focus = {
+		id = ZUK_p0_1
+		icon = GFX_goal_cp77_money
+		x = 1
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZUK_p0_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+		}
+	}
+
+	focus = {
+		id = ZUK_p0_2
+		icon = GFX_goal_cp77_anchor
+		x = 1
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_p0_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 3 instant_build = yes }
+			}
+			navy_experience = 50
+		}
+	}
+
+	focus = {
+		id = ZUK_p0_3
+		icon = GFX_goal_cp77_crown
+		x = 1
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZUK_p0_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zuk_empire
+		}
+	}
+
+	focus = {
+		id = ZUK_p1_0
+		icon = GFX_goal_cp77_net
+		x = 4
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_root }
+		mutually_exclusive = { focus = ZUK_p0_0 focus = ZUK_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 2
+		}
+		completion_reward = {
+			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_popularity = { ideology = democratic popularity = 0.25 }
+			create_country_leader = {
+				name = "Премьер Ада Блэквуд"
+				desc = "ZUK_ada_desc"
+				picture = "gfx/leaders/cp77/zuk_ada.dds"
+				expire = "2150.1.1.1"
+				ideology = liberalism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_p1_1
+		icon = GFX_goal_cp77_eye
+		x = 4
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZUK_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zuk_mi6
+		}
+	}
+
+	focus = {
+		id = ZUK_p1_2
+		icon = GFX_goal_cp77_chip
+		x = 4
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_p1_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZUK_p1_3
+		icon = GFX_goal_cp77_wall
+		x = 4
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZUK_p1_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			add_stability = 0.05
+		}
+	}
+
+	focus = {
+		id = ZUK_p2_0
+		icon = GFX_goal_cp77_ghost
+		x = 7
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_root }
+		mutually_exclusive = { focus = ZUK_p0_0 focus = ZUK_p1_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			set_cosmetic_tag = CP77_ZUK_HOLO
+			set_politics = { ruling_party = neutrality elections_allowed = no }
+			add_popularity = { ideology = neutrality popularity = 0.25 }
+			create_country_leader = {
+				name = "Голограмма Его Величества"
+				desc = "ZUK_holo_desc"
+				picture = "gfx/leaders/cp77/zuk_holo.dds"
+				expire = "2150.1.1.1"
+				ideology = despotism
+				traits = { }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_p2_1
+		icon = GFX_goal_cp77_soda
+		x = 7
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZUK_p2_0 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_stability = -0.05
+			add_war_support = 0.15
+		}
+	}
+
+	focus = {
+		id = ZUK_p2_2
+		icon = GFX_goal_cp77_mask
+		x = 7
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_p2_1 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_ideas = cp77_zuk_queue
+		}
+	}
+
+	focus = {
+		id = ZUK_p2_3
+		icon = GFX_goal_cp77_rocket
+		x = 7
+		y = 4
+		cost = 15
+		prerequisite = { focus = ZUK_p2_2 }
+		search_filters = { FOCUS_FILTER_POLITICAL }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+			every_country = { news_event = { id = cp77.27 hours = 6 } }
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_0
+		icon = GFX_goal_cp77_gear
+		x = 11
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = industrial_complex level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_1
+		icon = GFX_goal_cp77_money
+		x = 10
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_political_power = 150
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_2
+		icon = GFX_goal_cp77_flame
+		x = 12
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_eco_0 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_resource = { type = oil amount = 8 }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_3
+		icon = GFX_goal_cp77_hammer
+		x = 11
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZUK_eco_1 focus = ZUK_eco_2 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_building_construction = { type = dockyard level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_4
+		icon = GFX_goal_cp77_anchor
+		x = 10
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 1
+				add_building_construction = { type = industrial_complex level = 1 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_5
+		icon = GFX_goal_cp77_chip
+		x = 12
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_eco_3 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_research_slot = 1
+		}
+	}
+
+	focus = {
+		id = ZUK_eco_6
+		icon = GFX_goal_cp77_hammer
+		x = 11
+		y = 4
+		cost = 10
+		prerequisite = { focus = ZUK_eco_4 }
+		prerequisite = { focus = ZUK_eco_5 }
+		search_filters = { FOCUS_FILTER_INDUSTRY }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			capital_scope = {
+				add_extra_state_shared_building_slots = 2
+				add_building_construction = { type = arms_factory level = 2 instant_build = yes }
+			}
+		}
+	}
+
+	focus = {
+		id = ZUK_mil_0
+		icon = GFX_goal_cp77_swords
+		x = 15
+		y = 0
+		cost = 10
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			army_experience = 30
+		}
+	}
+
+	focus = {
+		id = ZUK_mil_1
+		icon = GFX_goal_cp77_spade
+		x = 14
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZUK_mil_2 bonus = 1.0 uses = 2 category = land_doctrine }
+		}
+	}
+
+	focus = {
+		id = ZUK_mil_2
+		icon = GFX_goal_cp77_plane
+		x = 16
+		y = 1
+		cost = 10
+		prerequisite = { focus = ZUK_mil_0 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZUK_mil_3 bonus = 1.0 uses = 2 category = air_equipment }
+		}
+	}
+
+	focus = {
+		id = ZUK_mil_3
+		icon = GFX_goal_cp77_mech
+		x = 15
+		y = 2
+		cost = 10
+		prerequisite = { focus = ZUK_mil_1 focus = ZUK_mil_2 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			add_tech_bonus = { name = cp77_tb_ZUK_mil_4 bonus = 1.0 uses = 2 category = armor }
+		}
+	}
+
+	focus = {
+		id = ZUK_mil_4
+		icon = GFX_goal_cp77_anchor
+		x = 15
+		y = 3
+		cost = 10
+		prerequisite = { focus = ZUK_mil_3 }
+		search_filters = { FOCUS_FILTER_ARMY_XP }
+		ai_will_do = {
+			factor = 1
+		}
+		completion_reward = {
+			navy_experience = 50
+		}
+	}
+
+}
