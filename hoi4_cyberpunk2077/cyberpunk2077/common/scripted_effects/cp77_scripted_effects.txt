@@ -1,221 +1,1040 @@
-# Перекраивает мир 2077 года. Идемпотентно: трогает только штаты ванильных стран,
-# поэтому вызывается из истории стран, из закладки и из on_startup без вреда.
+# Перекраивает мир 2077 года. Идемпотентно: работает только со старыми странами,
+# поэтому вызывается из истории, из закладки и из on_startup без вреда.
 cp77_setup_world = {
-	USA = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZNU = { transfer_state = PREV } }
-		}
-	}
-	CAN = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZCA = { transfer_state = PREV } }
-		}
-	}
-	MEX = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZMX = { transfer_state = PREV } }
-		}
-	}
-	PAN = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZCM = { transfer_state = PREV } }
-		}
-	}
-	BRA = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZBR = { transfer_state = PREV } }
-		}
-	}
-	ARG = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZSC = { transfer_state = PREV } }
-		}
-	}
-	COL = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZAD = { transfer_state = PREV } }
-		}
-	}
-	ENG = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZUK = { transfer_state = PREV } }
-		}
-	}
-	FRA = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZEU = { transfer_state = PREV } }
-		}
-	}
-	POL = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZEE = { transfer_state = PREV } }
-		}
-	}
-	SOV = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZSV = { transfer_state = PREV } }
-		}
-	}
-	TUR = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZME = { transfer_state = PREV } }
-		}
-	}
-	SAF = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZAF = { transfer_state = PREV } }
-		}
-	}
-	EGY = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZSH = { transfer_state = PREV } }
-		}
-	}
-	CHI = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZCH = { transfer_state = PREV } }
-		}
-	}
-	JAP = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZJP = { transfer_state = PREV } }
-		}
-	}
-	RAJ = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZIN = { transfer_state = PREV } }
-		}
-	}
-	SIA = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZSE = { transfer_state = PREV } }
-		}
-	}
-	AST = {
-		if = {
-			limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
-			capital_scope = { ZAU = { transfer_state = PREV } }
-		}
-	}
 	every_country = {
-		limit = { NOT = { cp77_is_cp_tag = yes } }
-		every_owned_state = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
+		capital_scope = {
 			if = {
 				limit = { state = 378 }
-				ZNC = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZNC set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 375 }
+				PREV = { set_country_flag = cp77_heir_ZFT set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 386 }
+				PREV = { set_country_flag = cp77_heir_ZFP set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 379 }
+				PREV = { set_country_flag = cp77_heir_ZBL set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 361 }
+				PREV = { set_country_flag = cp77_heir_ZNU set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 282 }
+				PREV = { set_country_flag = cp77_heir_ZJP set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 276 }
+				PREV = { set_country_flag = cp77_heir_ZCA set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 277 }
+				PREV = { set_country_flag = cp77_heir_ZMX set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 304 }
+				PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 500 }
+				PREV = { set_country_flag = cp77_heir_ZBR set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 306 }
+				PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 278 }
+				PREV = { set_country_flag = cp77_heir_ZSC set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 16 }
+				PREV = { set_country_flag = cp77_heir_ZEU set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 126 }
+				PREV = { set_country_flag = cp77_heir_ZUK set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 10 }
+				PREV = { set_country_flag = cp77_heir_ZEE set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 219 }
+				PREV = { set_country_flag = cp77_heir_ZSV set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 49 }
+				PREV = { set_country_flag = cp77_heir_ZME set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 275 }
+				PREV = { set_country_flag = cp77_heir_ZAF set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 907 }
+				PREV = { set_country_flag = cp77_heir_ZSH set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 598 }
+				PREV = { set_country_flag = cp77_heir_ZCH set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 439 }
+				PREV = { set_country_flag = cp77_heir_ZIN set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 289 }
+				PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 285 }
+				PREV = { set_country_flag = cp77_heir_ZAU set_country_flag = cp77_heir_set }
+			}
+			else_if = {
+				limit = { state = 336 }
+				PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { state = 375 state = 376 } }
-				ZFT = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZFT set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { state = 379 state = 377 } }
-				ZBL = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZBL set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { state = 385 state = 386 state = 380 state = 381 state = 382 state = 387 state = 388 } }
-				ZFP = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZFP set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_owned_by = USA }
-				ZNU = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZNU set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_owned_by = CAN }
-				ZCA = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZCA set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_owned_by = MEX }
-				ZMX = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZMX set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = GUA is_owned_by = HON is_owned_by = ELS is_owned_by = NIC is_owned_by = COS is_owned_by = PAN is_owned_by = CUB is_owned_by = HAI is_owned_by = DOM } }
-				ZCM = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_owned_by = BRA }
-				ZBR = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZBR set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = ARG is_owned_by = CHL is_owned_by = URG is_owned_by = PAR } }
-				ZSC = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZSC set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = COL is_owned_by = VEN is_owned_by = ECU is_owned_by = PRU is_owned_by = BOL } }
-				ZAD = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = IRE AND = { is_owned_by = ENG is_on_continent = europe } } }
-				ZUK = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZUK set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = SOV is_owned_by = EST is_owned_by = LAT is_owned_by = LIT is_owned_by = MON is_owned_by = TAN } }
-				ZSV = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZSV set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = POL is_owned_by = CZE is_owned_by = HUN is_owned_by = ROM is_owned_by = YUG is_owned_by = BUL is_owned_by = ALB is_owned_by = GRE AND = { is_owned_by = TUR is_on_continent = europe } } }
-				ZEE = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZEE set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_owned_by = JAP }
-				ZJP = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZJP set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = CHI is_owned_by = PRC is_owned_by = GXC is_owned_by = YUN is_owned_by = SHX is_owned_by = XSM is_owned_by = SIK is_owned_by = MAN is_owned_by = MEN is_owned_by = TIB } }
-				ZCH = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZCH set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = RAJ is_owned_by = NEP is_owned_by = BHU } }
-				ZIN = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZIN set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = AST is_owned_by = NZL is_on_continent = australia } }
-				ZAU = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZAU set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = SAF AND = { is_on_continent = africa OR = { is_owned_by = ENG is_owned_by = POR is_owned_by = BEL } } } }
-				ZAF = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZAF set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { OR = { is_owned_by = TUR is_owned_by = PER is_owned_by = IRQ is_owned_by = SAU is_owned_by = YEM is_owned_by = OMN is_owned_by = AFG is_on_continent = middle_east } }
-				ZME = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZME set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_on_continent = africa }
-				ZSH = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZSH set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_on_continent = europe }
-				ZEU = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZEU set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_on_continent = north_america }
-				ZCM = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
 			}
 			else_if = {
 				limit = { is_on_continent = south_america }
-				ZAD = { transfer_state = PREV }
+				PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
 			}
-			else = { ZSE = { transfer_state = PREV } }
+			else = {
+				PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
+			}
 		}
+		if = {
+			limit = { NOT = { has_country_flag = cp77_heir_set } }
+			random_owned_state = {
+				if = {
+					limit = { state = 378 }
+					PREV = { set_country_flag = cp77_heir_ZNC set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 375 }
+					PREV = { set_country_flag = cp77_heir_ZFT set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 386 }
+					PREV = { set_country_flag = cp77_heir_ZFP set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 379 }
+					PREV = { set_country_flag = cp77_heir_ZBL set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 361 }
+					PREV = { set_country_flag = cp77_heir_ZNU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 282 }
+					PREV = { set_country_flag = cp77_heir_ZJP set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 276 }
+					PREV = { set_country_flag = cp77_heir_ZCA set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 277 }
+					PREV = { set_country_flag = cp77_heir_ZMX set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 304 }
+					PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 500 }
+					PREV = { set_country_flag = cp77_heir_ZBR set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 306 }
+					PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 278 }
+					PREV = { set_country_flag = cp77_heir_ZSC set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 16 }
+					PREV = { set_country_flag = cp77_heir_ZEU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 126 }
+					PREV = { set_country_flag = cp77_heir_ZUK set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 10 }
+					PREV = { set_country_flag = cp77_heir_ZEE set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 219 }
+					PREV = { set_country_flag = cp77_heir_ZSV set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 49 }
+					PREV = { set_country_flag = cp77_heir_ZME set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 275 }
+					PREV = { set_country_flag = cp77_heir_ZAF set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 907 }
+					PREV = { set_country_flag = cp77_heir_ZSH set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 598 }
+					PREV = { set_country_flag = cp77_heir_ZCH set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 439 }
+					PREV = { set_country_flag = cp77_heir_ZIN set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 289 }
+					PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 285 }
+					PREV = { set_country_flag = cp77_heir_ZAU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { state = 336 }
+					PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { state = 375 state = 376 } }
+					PREV = { set_country_flag = cp77_heir_ZFT set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { state = 379 state = 377 } }
+					PREV = { set_country_flag = cp77_heir_ZBL set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { state = 385 state = 386 state = 380 state = 381 state = 382 state = 387 state = 388 } }
+					PREV = { set_country_flag = cp77_heir_ZFP set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_owned_by = USA }
+					PREV = { set_country_flag = cp77_heir_ZNU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_owned_by = CAN }
+					PREV = { set_country_flag = cp77_heir_ZCA set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_owned_by = MEX }
+					PREV = { set_country_flag = cp77_heir_ZMX set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = GUA is_owned_by = HON is_owned_by = ELS is_owned_by = NIC is_owned_by = COS is_owned_by = PAN is_owned_by = CUB is_owned_by = HAI is_owned_by = DOM } }
+					PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_owned_by = BRA }
+					PREV = { set_country_flag = cp77_heir_ZBR set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = ARG is_owned_by = CHL is_owned_by = URG is_owned_by = PAR } }
+					PREV = { set_country_flag = cp77_heir_ZSC set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = COL is_owned_by = VEN is_owned_by = ECU is_owned_by = PRU is_owned_by = BOL } }
+					PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = IRE AND = { is_owned_by = ENG is_on_continent = europe } } }
+					PREV = { set_country_flag = cp77_heir_ZUK set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = SOV is_owned_by = EST is_owned_by = LAT is_owned_by = LIT is_owned_by = MON is_owned_by = TAN } }
+					PREV = { set_country_flag = cp77_heir_ZSV set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = POL is_owned_by = CZE is_owned_by = HUN is_owned_by = ROM is_owned_by = YUG is_owned_by = BUL is_owned_by = ALB is_owned_by = GRE AND = { is_owned_by = TUR is_on_continent = europe } } }
+					PREV = { set_country_flag = cp77_heir_ZEE set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_owned_by = JAP }
+					PREV = { set_country_flag = cp77_heir_ZJP set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = CHI is_owned_by = PRC is_owned_by = GXC is_owned_by = YUN is_owned_by = SHX is_owned_by = XSM is_owned_by = SIK is_owned_by = MAN is_owned_by = MEN is_owned_by = TIB } }
+					PREV = { set_country_flag = cp77_heir_ZCH set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = RAJ is_owned_by = NEP is_owned_by = BHU } }
+					PREV = { set_country_flag = cp77_heir_ZIN set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = AST is_owned_by = NZL is_on_continent = australia } }
+					PREV = { set_country_flag = cp77_heir_ZAU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = SAF AND = { is_on_continent = africa OR = { is_owned_by = ENG is_owned_by = POR is_owned_by = BEL } } } }
+					PREV = { set_country_flag = cp77_heir_ZAF set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { OR = { is_owned_by = TUR is_owned_by = PER is_owned_by = IRQ is_owned_by = SAU is_owned_by = YEM is_owned_by = OMN is_owned_by = AFG is_on_continent = middle_east } }
+					PREV = { set_country_flag = cp77_heir_ZME set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_on_continent = africa }
+					PREV = { set_country_flag = cp77_heir_ZSH set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_on_continent = europe }
+					PREV = { set_country_flag = cp77_heir_ZEU set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_on_continent = north_america }
+					PREV = { set_country_flag = cp77_heir_ZCM set_country_flag = cp77_heir_set }
+				}
+				else_if = {
+					limit = { is_on_continent = south_america }
+					PREV = { set_country_flag = cp77_heir_ZAD set_country_flag = cp77_heir_set }
+				}
+				else = {
+					PREV = { set_country_flag = cp77_heir_ZSE set_country_flag = cp77_heir_set }
+				}
+			}
+		}
+	}
+	378 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 378 } } }
+			}
+			ZNC = { transfer_state = 378 }
+		}
+	}
+	375 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 375 } } }
+			}
+			ZFT = { transfer_state = 375 }
+		}
+	}
+	386 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 386 } } }
+			}
+			ZFP = { transfer_state = 386 }
+		}
+	}
+	379 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 379 } } }
+			}
+			ZBL = { transfer_state = 379 }
+		}
+	}
+	361 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 361 } } }
+			}
+			ZNU = { transfer_state = 361 }
+		}
+	}
+	282 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 282 } } }
+			}
+			ZJP = { transfer_state = 282 }
+		}
+	}
+	276 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 276 } } }
+			}
+			ZCA = { transfer_state = 276 }
+		}
+	}
+	277 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 277 } } }
+			}
+			ZMX = { transfer_state = 277 }
+		}
+	}
+	304 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 304 } } }
+			}
+			ZCM = { transfer_state = 304 }
+		}
+	}
+	500 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 500 } } }
+			}
+			ZBR = { transfer_state = 500 }
+		}
+	}
+	306 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 306 } } }
+			}
+			ZAD = { transfer_state = 306 }
+		}
+	}
+	278 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 278 } } }
+			}
+			ZSC = { transfer_state = 278 }
+		}
+	}
+	16 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 16 } } }
+			}
+			ZEU = { transfer_state = 16 }
+		}
+	}
+	126 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 126 } } }
+			}
+			ZUK = { transfer_state = 126 }
+		}
+	}
+	10 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 10 } } }
+			}
+			ZEE = { transfer_state = 10 }
+		}
+	}
+	219 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 219 } } }
+			}
+			ZSV = { transfer_state = 219 }
+		}
+	}
+	49 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 49 } } }
+			}
+			ZME = { transfer_state = 49 }
+		}
+	}
+	275 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 275 } } }
+			}
+			ZAF = { transfer_state = 275 }
+		}
+	}
+	907 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 907 } } }
+			}
+			ZSH = { transfer_state = 907 }
+		}
+	}
+	598 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 598 } } }
+			}
+			ZCH = { transfer_state = 598 }
+		}
+	}
+	439 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 439 } } }
+			}
+			ZIN = { transfer_state = 439 }
+		}
+	}
+	289 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 289 } } }
+			}
+			ZSE = { transfer_state = 289 }
+		}
+	}
+	285 = {
+		if = {
+			limit = {
+				NOT = { OWNER = { cp77_is_cp_tag = yes } }
+				OWNER = { any_owned_state = { NOT = { state = 285 } } }
+			}
+			ZAU = { transfer_state = 285 }
+		}
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
+		every_owned_state = {
+			if = {
+				limit = { state = 378 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZNC } } }
+					ZNC = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 375 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZFT } } }
+					ZFT = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 386 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZFP } } }
+					ZFP = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 379 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZBL } } }
+					ZBL = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 361 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZNU } } }
+					ZNU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 282 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZJP } } }
+					ZJP = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 276 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCA } } }
+					ZCA = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 277 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZMX } } }
+					ZMX = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 304 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCM } } }
+					ZCM = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 500 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZBR } } }
+					ZBR = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 306 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAD } } }
+					ZAD = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 278 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSC } } }
+					ZSC = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 16 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZEU } } }
+					ZEU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 126 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZUK } } }
+					ZUK = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 10 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZEE } } }
+					ZEE = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 219 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSV } } }
+					ZSV = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 49 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZME } } }
+					ZME = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 275 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAF } } }
+					ZAF = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 907 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSH } } }
+					ZSH = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 598 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCH } } }
+					ZCH = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 439 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZIN } } }
+					ZIN = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 289 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSE } } }
+					ZSE = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 285 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAU } } }
+					ZAU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { state = 336 }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSE } } }
+					ZSE = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { state = 375 state = 376 } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZFT } } }
+					ZFT = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { state = 379 state = 377 } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZBL } } }
+					ZBL = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { state = 385 state = 386 state = 380 state = 381 state = 382 state = 387 state = 388 } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZFP } } }
+					ZFP = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_owned_by = USA }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZNU } } }
+					ZNU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_owned_by = CAN }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCA } } }
+					ZCA = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_owned_by = MEX }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZMX } } }
+					ZMX = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = GUA is_owned_by = HON is_owned_by = ELS is_owned_by = NIC is_owned_by = COS is_owned_by = PAN is_owned_by = CUB is_owned_by = HAI is_owned_by = DOM } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCM } } }
+					ZCM = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_owned_by = BRA }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZBR } } }
+					ZBR = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = ARG is_owned_by = CHL is_owned_by = URG is_owned_by = PAR } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSC } } }
+					ZSC = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = COL is_owned_by = VEN is_owned_by = ECU is_owned_by = PRU is_owned_by = BOL } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAD } } }
+					ZAD = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = IRE AND = { is_owned_by = ENG is_on_continent = europe } } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZUK } } }
+					ZUK = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = SOV is_owned_by = EST is_owned_by = LAT is_owned_by = LIT is_owned_by = MON is_owned_by = TAN } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSV } } }
+					ZSV = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = POL is_owned_by = CZE is_owned_by = HUN is_owned_by = ROM is_owned_by = YUG is_owned_by = BUL is_owned_by = ALB is_owned_by = GRE AND = { is_owned_by = TUR is_on_continent = europe } } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZEE } } }
+					ZEE = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_owned_by = JAP }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZJP } } }
+					ZJP = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = CHI is_owned_by = PRC is_owned_by = GXC is_owned_by = YUN is_owned_by = SHX is_owned_by = XSM is_owned_by = SIK is_owned_by = MAN is_owned_by = MEN is_owned_by = TIB } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCH } } }
+					ZCH = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = RAJ is_owned_by = NEP is_owned_by = BHU } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZIN } } }
+					ZIN = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = AST is_owned_by = NZL is_on_continent = australia } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAU } } }
+					ZAU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = SAF AND = { is_on_continent = africa OR = { is_owned_by = ENG is_owned_by = POR is_owned_by = BEL } } } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAF } } }
+					ZAF = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { OR = { is_owned_by = TUR is_owned_by = PER is_owned_by = IRQ is_owned_by = SAU is_owned_by = YEM is_owned_by = OMN is_owned_by = AFG is_on_continent = middle_east } }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZME } } }
+					ZME = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_on_continent = africa }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSH } } }
+					ZSH = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_on_continent = europe }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZEU } } }
+					ZEU = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_on_continent = north_america }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZCM } } }
+					ZCM = { transfer_state = PREV }
+				}
+			}
+			else_if = {
+				limit = { is_on_continent = south_america }
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZAD } } }
+					ZAD = { transfer_state = PREV }
+				}
+			}
+			else = {
+				if = {
+					limit = { NOT = { OWNER = { has_country_flag = cp77_heir_ZSE } } }
+					ZSE = { transfer_state = PREV }
+				}
+			}
+		}
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZNC }
+		ZNC = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZFT }
+		ZFT = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZFP }
+		ZFP = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZBL }
+		ZBL = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZNU }
+		ZNU = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZJP }
+		ZJP = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZCA }
+		ZCA = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZMX }
+		ZMX = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZCM }
+		ZCM = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZBR }
+		ZBR = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZAD }
+		ZAD = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZSC }
+		ZSC = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZEU }
+		ZEU = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZUK }
+		ZUK = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZEE }
+		ZEE = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZSV }
+		ZSV = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZME }
+		ZME = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZAF }
+		ZAF = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZSH }
+		ZSH = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZCH }
+		ZCH = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZIN }
+		ZIN = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZSE }
+		ZSE = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } has_country_flag = cp77_heir_ZAU }
+		ZAU = { annex_country = { target = PREV transfer_troops = no } }
+	}
+	every_country = {
+		limit = { exists = yes NOT = { cp77_is_cp_tag = yes } }
+		ZSE = { annex_country = { target = PREV transfer_troops = no } }
 	}
 	USA = { every_core_state = { remove_core_of = PREV } }
 	CAN = { every_core_state = { remove_core_of = PREV } }
@@ -341,11 +1160,32 @@ cp77_setup_world = {
 	ZFT = { if = { limit = { owns_state = 375 } set_capital = { state = 375 } } }
 	ZFP = { if = { limit = { owns_state = 386 } set_capital = { state = 386 } } }
 	ZBL = { if = { limit = { owns_state = 379 } set_capital = { state = 379 } } }
+	ZNU = { if = { limit = { owns_state = 361 } set_capital = { state = 361 } } }
+	ZJP = { if = { limit = { owns_state = 282 } set_capital = { state = 282 } } }
+	ZCA = { if = { limit = { owns_state = 276 } set_capital = { state = 276 } } }
+	ZMX = { if = { limit = { owns_state = 277 } set_capital = { state = 277 } } }
+	ZCM = { if = { limit = { owns_state = 304 } set_capital = { state = 304 } } }
+	ZBR = { if = { limit = { owns_state = 500 } set_capital = { state = 500 } } }
+	ZAD = { if = { limit = { owns_state = 306 } set_capital = { state = 306 } } }
+	ZSC = { if = { limit = { owns_state = 278 } set_capital = { state = 278 } } }
 	ZEU = { if = { limit = { owns_state = 16 } set_capital = { state = 16 } } }
 	ZUK = { if = { limit = { owns_state = 126 } set_capital = { state = 126 } } }
+	ZEE = { if = { limit = { owns_state = 10 } set_capital = { state = 10 } } }
 	ZSV = { if = { limit = { owns_state = 219 } set_capital = { state = 219 } } }
-	ZJP = { if = { limit = { owns_state = 282 } set_capital = { state = 282 } } }
-	ZSE = { if = { limit = { owns_state = 336 } set_capital = { state = 336 } } }
+	ZME = { if = { limit = { owns_state = 49 } set_capital = { state = 49 } } }
+	ZAF = { if = { limit = { owns_state = 275 } set_capital = { state = 275 } } }
+	ZSH = { if = { limit = { owns_state = 907 } set_capital = { state = 907 } } }
+	ZCH = { if = { limit = { owns_state = 598 } set_capital = { state = 598 } } }
+	ZIN = { if = { limit = { owns_state = 439 } set_capital = { state = 439 } } }
+	ZSE = { if = { limit = { owns_state = 289 } set_capital = { state = 289 } } }
+	ZAU = { if = { limit = { owns_state = 285 } set_capital = { state = 285 } } }
+	every_country = {
+		limit = { cp77_is_cp_tag = yes }
+		every_owned_state = {
+			limit = { NOT = { is_fully_controlled_by = PREV } }
+			PREV = { transfer_state = PREV }
+		}
+	}
 }
 
 cp77_spawn_armies = {
@@ -1054,9 +1894,6 @@ cp77_start_diplomacy = {
 		set_global_flag = cp77_diplomacy_ready
 		ZNC = { set_variable = { cp77_cyberpsychosis = 20 } }
 		if = { limit = { ZNU = { exists = yes } ZCM = { exists = yes } } ZNU = { puppet = ZCM } }
-		every_country = {
-			limit = { cp77_is_cp_tag = yes NOT = { tag = ZNU } }
-			every_owned_state = { limit = { is_core_of = ZNU } ZNU = { add_state_claim = PREV } }
-		}
+		ZNU = { add_state_claim = 375 add_state_claim = 376 add_state_claim = 377 add_state_claim = 378 add_state_claim = 379 add_state_claim = 380 add_state_claim = 381 add_state_claim = 382 add_state_claim = 385 add_state_claim = 386 add_state_claim = 387 add_state_claim = 388 }
 	}
 }

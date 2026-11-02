@@ -21,7 +21,7 @@ import tree_others  # noqa: E402
 import nations as N  # noqa: E402
 from content_common import country_names  # noqa: E402
 
-VERSION = "1.0.0"
+VERSION = "1.1.0"
 
 
 # --------------------------------------------------------------- решения
@@ -214,8 +214,15 @@ ALL_TAGS = ["ZNC", "ZFT", "ZFP", "ZBL", "ZNU", "ZJP"] + list(N.NATIONS)
 
 # ---- распределение мира: первые совпавшие правила побеждают
 # (цель, условие в области штата). Ванильные теги используются только как «география».
-RULES = [
-    ("ZNC", "state = 378"),
+# Столицы всех держав (номера штатов HOI4). Задаются и в истории, и первыми правилами раздачи:
+# страна со штатами, но без валидной столицы, роняет игру на первом дневном тике.
+CAPITALS = {"ZNC": 378, "ZFT": 375, "ZFP": 386, "ZBL": 379, "ZNU": 361, "ZJP": 282,
+            "ZCA": 276, "ZMX": 277, "ZCM": 304, "ZBR": 500, "ZAD": 306, "ZSC": 278,
+            "ZEU": 16, "ZUK": 126, "ZEE": 10, "ZSV": 219, "ZME": 49, "ZAF": 275, "ZSH": 907,
+            "ZCH": 598, "ZIN": 439, "ZSE": 289, "ZAU": 285}
+
+RULES = [(t, f"state = {s}") for t, s in CAPITALS.items()] + [
+    ("ZSE", "state = 336"),
     ("ZFT", "OR = { state = 375 state = 376 }"),
     ("ZBL", "OR = { state = 379 state = 377 }"),
     ("ZFP", "OR = { state = 385 state = 386 state = 380 state = 381 state = 382 state = 387 state = 388 }"),
@@ -241,12 +248,6 @@ RULES = [
     ("ZAD", "is_on_continent = south_america"),
     ("ZSE", "always = yes"),
 ]
-# столица ванильного «донора» передаётся первой, чтобы стать столицей новой державы
-CAPITAL_DONORS = {"ZNU": "USA", "ZCA": "CAN", "ZMX": "MEX", "ZCM": "PAN", "ZBR": "BRA", "ZSC": "ARG", "ZAD": "COL",
-                  "ZUK": "ENG", "ZEU": "FRA", "ZEE": "POL", "ZSV": "SOV", "ZME": "TUR", "ZAF": "SAF", "ZSH": "EGY",
-                  "ZCH": "CHI", "ZJP": "JAP", "ZIN": "RAJ", "ZSE": "SIA", "ZAU": "AST"}
-KNOWN_CAPITALS = {"ZNC": 378, "ZFT": 375, "ZFP": 386, "ZBL": 379, "ZEU": 16, "ZUK": 126, "ZSV": 219, "ZJP": 282,
-                  "ZSE": 336}
 # ванильные теги, чьи ядра надо стереть, чтобы старые страны нельзя было освободить
 VANILLA_TAGS = ("USA CAN MEX GUA HON ELS NIC COS PAN CUB HAI DOM BRA ARG CHL URG PAR COL VEN ECU PRU BOL "
                 "ENG IRE SCO WLS SOV EST LAT LIT MON TAN POL CZE SLO HUN ROM YUG CRO SER MNT BUL ALB GRE "
@@ -260,30 +261,55 @@ def scripted_triggers():
           "cp77_is_cp_tag = {\n\tOR = {\n" + "\n".join(f"\t\ttag = {t}" for t in ALL_TAGS) + "\n\t}\n}\n")
 
 
-def scripted_effects():
-    # 1. столицы доноров
-    caps = []
-    for tag, donor in CAPITAL_DONORS.items():
-        caps.append(f"{donor} = {{\n\tif = {{\n\t\tlimit = {{ exists = yes NOT = {{ cp77_is_cp_tag = yes }} }}\n"
-                    f"\t\tcapital_scope = {{ {tag} = {{ transfer_state = PREV }} }}\n\t}}\n}}")
-    # 2. все остальные штаты по правилам
-    branches = []
+def _rule_chain(action):
+    """Цепочка if/else_if по RULES; action(tag) — код для совпавшего правила."""
+    out = []
     for i, (tag, cond) in enumerate(RULES):
-        kw = "if" if i == 0 else "else_if"
         if cond == "always = yes":
-            branches.append(f"else = {{ {tag} = {{ transfer_state = PREV }} }}")
+            out.append("else = {\n" + indent(action(tag), 1) + "\n}")
         else:
-            branches.append(f"{kw} = {{\n\tlimit = {{ {cond} }}\n\t{tag} = {{ transfer_state = PREV }}\n}}")
-    rules = ("every_country = {\n\tlimit = { NOT = { cp77_is_cp_tag = yes } }\n\tevery_owned_state = {\n"
-             + indent("\n".join(branches), 2) + "\n\t}\n}")
-    # 3. ядра: старые стираем, новые ставим
+            out.append(f"{'if' if i == 0 else 'else_if'} = {{\n\tlimit = {{ {cond} }}\n" + indent(action(tag), 1) + "\n}")
+    return "\n".join(out)
+
+
+def scripted_effects():
+    old = "NOT = { cp77_is_cp_tag = yes }"
+    # 1. Наследник каждой старой страны — держава, которой достаётся её столица.
+    mark = lambda t: f"PREV = {{ set_country_flag = cp77_heir_{t} set_country_flag = cp77_heir_set }}"
+    heirs = ("every_country = {\n\tlimit = { exists = yes " + old + " }\n"
+             "\tcapital_scope = {\n" + indent(_rule_chain(mark), 2) + "\n\t}\n"
+             "\tif = {\n\t\tlimit = { NOT = { has_country_flag = cp77_heir_set } }\n"
+             "\t\trandom_owned_state = {\n" + indent(_rule_chain(mark), 3) + "\n\t\t}\n\t}\n}")
+    # 2. Столицы новых держав забираем сразу, если у владельца останутся другие штаты.
+    caps = []
+    for t, c in CAPITALS.items():
+        caps.append(f"{c} = {{\n\tif = {{\n\t\tlimit = {{\n\t\t\tNOT = {{ OWNER = {{ cp77_is_cp_tag = yes }} }}\n"
+                    f"\t\t\tOWNER = {{ any_owned_state = {{ NOT = {{ state = {c} }} }} }}\n\t\t}}\n"
+                    f"\t\t{t} = {{ transfer_state = {c} }}\n\t}}\n}}")
+    # 3. Штаты, которые уходят не наследнику, передаём по правилам.
+    give = lambda t: (f"if = {{\n\tlimit = {{ NOT = {{ OWNER = {{ has_country_flag = cp77_heir_{t} }} }} }}\n"
+                      f"\t{t} = {{ transfer_state = PREV }}\n}}")
+    split = ("every_country = {\n\tlimit = { exists = yes " + old + " }\n\tevery_owned_state = {\n"
+             + indent(_rule_chain(give), 2) + "\n\t}\n}")
+    # 4. Остаток старой страны аннексирует наследник: движок сам закрывает её войны,
+    #    фракции, вассалитет и удаляет армии, поэтому «стран-зомби» не остаётся.
+    annex = []
+    for t in ALL_TAGS:
+        annex.append(f"every_country = {{\n\tlimit = {{ exists = yes {old} has_country_flag = cp77_heir_{t} }}\n"
+                     f"\t{t} = {{ annex_country = {{ target = PREV transfer_troops = no }} }}\n}}")
+    annex.append("every_country = {\n\tlimit = { exists = yes " + old + " }\n"
+                 "\tZSE = { annex_country = { target = PREV transfer_troops = no } }\n}")
+    # 5. Ядра: старые стираем, новые ставим. Столицы выставляем явно.
     cores = "\n".join(f"{t} = {{ every_core_state = {{ remove_core_of = PREV }} }}" for t in VANILLA_TAGS)
     cores += "\nevery_country = {\n\tlimit = { cp77_is_cp_tag = yes }\n\tevery_owned_state = { add_core_of = PREV }\n}"
-    capitals = "\n".join(f"{t} = {{ if = {{ limit = {{ owns_state = {s} }} set_capital = {{ state = {s} }} }} }}" for t, s in KNOWN_CAPITALS.items())
-    setup = ("# Перекраивает мир 2077 года. Идемпотентно: трогает только штаты ванильных стран,\n"
-             "# поэтому вызывается из истории стран, из закладки и из on_startup без вреда.\n"
-             "cp77_setup_world = {\n" + indent("\n".join(caps), 1) + "\n" + indent(rules, 1) + "\n"
-             + indent(cores, 1) + "\n" + indent(capitals, 1) + "\n}\n")
+    capitals = "\n".join(f"{t} = {{ if = {{ limit = {{ owns_state = {s} }} set_capital = {{ state = {s} }} }} }}" for t, s in CAPITALS.items())
+    # 6. Оккупация из истории 1939 года (Китай, Испания): контроль над штатами возвращается владельцу,
+    #    иначе провинции остаются у страны, которая с владельцем не воюет.
+    capitals += ("\nevery_country = {\n\tlimit = { cp77_is_cp_tag = yes }\n\tevery_owned_state = {\n"
+                 "\t\tlimit = { NOT = { is_fully_controlled_by = PREV } }\n\t\tPREV = { transfer_state = PREV }\n\t}\n}")
+    setup = ("# Перекраивает мир 2077 года. Идемпотентно: работает только со старыми странами,\n"
+             "# поэтому вызывается из истории, из закладки и из on_startup без вреда.\n"
+             "cp77_setup_world = {\n" + "\n".join(indent(x, 1) for x in (heirs, "\n".join(caps), split, "\n".join(annex), cores, capitals)) + "\n}\n")
 
     spawn = []
     for tag, armies in ARMIES.items():
@@ -305,8 +331,7 @@ def scripted_effects():
     diplomacy = ("cp77_start_diplomacy = {\n\tif = {\n\t\tlimit = { NOT = { has_global_flag = cp77_diplomacy_ready } }\n\t\tset_global_flag = cp77_diplomacy_ready\n"
                  "\t\tZNC = { set_variable = { cp77_cyberpsychosis = 20 } }\n"
                  "\t\tif = { limit = { ZNU = { exists = yes } ZCM = { exists = yes } } ZNU = { puppet = ZCM } }\n"
-                 "\t\tevery_country = {\n\t\t\tlimit = { cp77_is_cp_tag = yes NOT = { tag = ZNU } }\n"
-                 "\t\t\tevery_owned_state = { limit = { is_core_of = ZNU } ZNU = { add_state_claim = PREV } }\n\t\t}\n"
+                 "\t\tZNU = { " + " ".join(f"add_state_claim = {x}" for x in (375, 376, 377, 378, 379, 380, 381, 382, 385, 386, 387, 388)) + " }\n"
                  "\t}\n}\n")
     write("common/scripted_effects/cp77_scripted_effects.txt", setup + "\n" + spawn_txt + "\n" + diplomacy)
 
@@ -375,7 +400,7 @@ def countries():
         for ide, (short, long_) in h["parties"].items():
             loc("cp77_countries", f"{tag}_{ide}_party", short)
             loc("cp77_countries", f"{tag}_{ide}_party_long", long_)
-        capital = f"capital = {h['capital']}\n\n" if h["capital"] else ""
+        capital = f"capital = {CAPITALS[tag]}\n\n"
         write(f"history/countries/{tag} - {d['file']}.txt",
               f"{capital}set_research_slots = 3\nset_stability = {h['stab']}\nset_war_support = {h['ws']}\nset_convoys = 50\n\n"
               f"{set_tech()}\n\nset_politics = {{\n\truling_party = {h['party']}\n\tlast_election = \"2076.11.3\"\n\telection_frequency = 48\n\telections_allowed = no\n}}\n"
@@ -390,6 +415,7 @@ def countries():
         write(f"common/countries/{n['file']}.txt",
               f"graphical_culture = {gfx}_gfx\ngraphical_culture_2d = {gfx}_2d\n\ncolor = {{ {r} {g} {b} }}\n")
         country_names(tag, n["name"], n["adj"], n["name"], n["flag"])
+        n["capital"] = CAPITALS[tag]
         hist = N.build_history(n, set_tech())
         if tag == SETUP_TAG:
             hist += ("\n# Последняя загружаемая история: к этому моменту у всех ванильных стран уже есть столицы,\n"
@@ -601,7 +627,7 @@ def main():
 
     descriptor = (f'version="{VERSION}"\ntags={{\n\t"Alternative History"\n\t"National Focuses"\n\t"Events"\n\t"Gameplay"\n}}\n'
                   'name="Cyberpunk 2077: Night City Wars"\nsupported_version="1.*"\n'
-                  'replace_path="common/bookmarks"\nreplace_path="common/national_focus"\n')
+                  'replace_path="common/bookmarks"\nreplace_path="common/national_focus"\nreplace_path="history/units"\n')
     write("descriptor.mod", descriptor)
     with open(os.path.join(os.path.dirname(MOD_DIR), "cyberpunk2077.mod"), "w", encoding="utf-8", newline="\n") as fh:
         fh.write(descriptor + 'path="mod/cyberpunk2077"\n')
