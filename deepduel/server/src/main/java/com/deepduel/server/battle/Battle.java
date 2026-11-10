@@ -112,6 +112,21 @@ public final class Battle {
         s.flashRevealed = Math.max(0, s.flashRevealed - dt);
         s.stun = Math.max(0, s.stun - dt);
         s.slow = Math.max(0, s.slow - dt);
+        if (s.burnT > 0) {
+            s.burnT -= dt;
+            if (phase == 1) {
+                double d = s.burn * dt * (1 - s.st.armor);
+                s.hp = Math.max(0, s.hp - d);
+                subs[s.burnFrom].damageDealt += d;
+                s.burnAcc += d;
+            }
+            s.burnTick -= dt;
+            if (s.burnTick <= 0 || s.burnT <= 0) {
+                s.burnTick = 0.5;
+                if (s.burnAcc >= 1) ev("burn", s.x, s.y - s.st.radius, Math.round(s.burnAcc), s.idx);
+                s.burnAcc = 0;
+            }
+        }
         s.sonarCd = Math.max(0, s.sonarCd - dt);
         for (int i = 0; i < s.gunCd.length; i++) s.gunCd[i] = Math.max(0, s.gunCd[i] - dt);
         for (int i = 0; i < s.torpCd.length; i++) s.torpCd[i] = Math.max(0, s.torpCd[i] - dt);
@@ -216,7 +231,8 @@ public final class Battle {
         double dmg = d.dmgAt(slot.level);
         double r = s.st.radius;
         double cos = Math.cos(s.a), sin = Math.sin(s.a);
-        if (d.kind.equals("mine")) {
+        if (d.drop) {
+            boolean isMine = d.kind.equals("mine");
             int mines = 0;
             Projectile oldest = null;
             for (Projectile p : projs) {
@@ -225,23 +241,31 @@ public final class Battle {
                     if (oldest == null || p.age > oldest.age) oldest = p;
                 }
             }
-            if (mines >= MAX_MINES && oldest != null) {
+            if (isMine && mines >= MAX_MINES && oldest != null) {
                 oldest.dead = true;
                 ev("spark", oldest.x, oldest.y, 0, 0);
             }
             Projectile p = make(s, d, dmg, s.x - cos * (r + 18), s.y - sin * (r + 18),
                     s.vx * 0.3 - cos * d.speed, s.vy * 0.3 - sin * d.speed);
-            p.mine = true;
+            p.mine = isMine;
             spawned.add(p);
             ev("drop", p.x, p.y, s.idx, p.kind);
             return;
         }
         double px = s.x + cos * (r + 6), py = s.y + sin * (r + 6);
         for (int k = 0; k < d.count; k++) {
-            double ang = s.a;
-            if (d.count > 1) ang += d.spread * ((double) k / (d.count - 1) - 0.5) * 2 + (rng.nextDouble() - 0.5) * 0.05;
-            else ang += (rng.nextDouble() - 0.5) * 2 * d.spread;
-            Projectile p = make(s, d, dmg, px, py,
+            double ang = s.a, ox = 0, oy = 0;
+            if (d.parallel) {
+                double off = (k - (d.count - 1) / 2.0) * 10;
+                ox = -sin * off;
+                oy = cos * off;
+                ang += (rng.nextDouble() - 0.5) * 2 * d.spread;
+            } else if (d.count > 1) {
+                ang += d.spread * ((double) k / (d.count - 1) - 0.5) * 2 + (rng.nextDouble() - 0.5) * 0.05;
+            } else {
+                ang += (rng.nextDouble() - 0.5) * 2 * d.spread;
+            }
+            Projectile p = make(s, d, dmg, px + ox, py + oy,
                     Math.cos(ang) * d.speed + s.vx * 0.6, Math.sin(ang) * d.speed + s.vy * 0.6);
             spawned.add(p);
         }
@@ -273,6 +297,12 @@ public final class Battle {
         p.arm = d.arm;
         p.pierce = d.pierce;
         p.cluster = d.kind.equals("torp_cluster");
+        p.grav = d.grav;
+        p.burn = d.burn;
+        p.burnTime = d.burnTime;
+        p.drain = d.drain;
+        p.knock = d.knock;
+        p.stealth = d.stealth;
         return p;
     }
 
@@ -289,12 +319,16 @@ public final class Battle {
                 double decay = Math.pow(0.2, dt);
                 p.vx *= decay;
                 p.vy = p.vy * decay + Math.sin(p.age * 1.7) * 3 * dt;
-                if (p.age >= p.arm && dist(p.x, p.y, target.x, target.y) < p.proximity + tr) {
-                    explode(p, target, true);
-                    continue;
-                }
             }
-            if (p.homing > 0 && p.age > 0.25) {
+            if (p.grav > 0) {
+                p.vy += p.grav * dt;
+                if (p.def != null && p.def.drop) p.vx *= Math.pow(0.3, dt);
+            }
+            if (p.proximity > 0 && p.age >= p.arm && dist(p.x, p.y, target.x, target.y) < p.proximity + tr) {
+                explode(p, target, true);
+                continue;
+            }
+            if (p.homing > 0 && p.age > (p.homing > 5 ? 0 : 0.25)) {
                 double dx = target.x - p.x, dy = target.y - p.y;
                 double dd = Math.sqrt(dx * dx + dy * dy);
                 if (dd < p.seek) {
@@ -343,7 +377,26 @@ public final class Battle {
                 }
                 if (p.slow > 0) {
                     target.slow = Math.max(target.slow, p.slow);
-                    ev("freeze", target.x, target.y, target.idx, 0);
+                    ev("freeze", target.x, target.y, target.idx, p.kind);
+                }
+                if (p.burn > 0) {
+                    target.burn = p.burn;
+                    target.burnT = Math.max(target.burnT, p.burnTime);
+                    target.burnFrom = p.owner;
+                    ev("acid", target.x, target.y, target.idx, 0);
+                }
+                if (p.drain > 0) {
+                    target.energy = Math.max(0, target.energy - p.drain);
+                    if (target.energy <= 0) target.boostLock = true;
+                    ev("drain", target.x, target.y, target.idx, 0);
+                }
+                if (p.knock > 0) {
+                    double sp = Math.hypot(p.vx, p.vy);
+                    if (sp > 1) {
+                        target.vx += p.vx / sp * p.knock;
+                        target.vy += p.vy / sp * p.knock;
+                    }
+                    ev("knock", target.x, target.y, target.idx, 0);
                 }
                 subs[p.owner].hits++;
                 p.dead = true;
@@ -470,7 +523,7 @@ public final class Battle {
         num(sb, Math.ceil(me.hp)).append(',');
         num(sb, me.energy).append(',');
         sb.append(me.boosting ? 1 : 0).append(',').append(me.stun > 0 ? 1 : 0).append(',').append(me.slow > 0 ? 1 : 0)
-                .append(',').append(me.boostLock ? 1 : 0).append("],\"gc\":");
+                .append(',').append(me.boostLock ? 1 : 0).append(',').append(me.burnT > 0 ? 1 : 0).append("],\"gc\":");
         cds(sb, me.gunCd, me.st.guns);
         sb.append(",\"tc\":");
         cds(sb, me.torpCd, me.st.torps);
@@ -485,7 +538,7 @@ public final class Battle {
             num(sb, op.vx).append(',');
             num(sb, op.vy).append(',');
             sb.append(op.boosting ? 1 : 0).append(',').append(op.stun > 0 ? 1 : 0).append(',').append(op.slow > 0 ? 1 : 0)
-                    .append(',').append(op.sonarRevealed > 0 ? 1 : 0).append(']');
+                    .append(',').append(op.sonarRevealed > 0 ? 1 : 0).append(',').append(op.burnT > 0 ? 1 : 0).append(']');
         }
         sb.append(",\"det\":").append(me.sonarRevealed > 0 ? 1 : 0);
         sb.append(",\"pr\":[");
@@ -496,6 +549,7 @@ public final class Battle {
             if (p.owner != idx) {
                 double dx = p.x - me.x, dy = p.y - me.y;
                 if (dx * dx + dy * dy > vis2) continue;
+                if (p.stealth && dx * dx + dy * dy > 230 * 230) continue;
             }
             if (!first) sb.append(',');
             first = false;
@@ -509,16 +563,16 @@ public final class Battle {
     }
 
     /** Static info sent once when the battle starts (or when a player reconnects). */
-    public String startJson(int idx) {
+    public String startJson(int idx, boolean revealBots) {
         StringBuilder sb = new StringBuilder(2048);
         sb.append("{\"t\":\"match\",\"bid\":\"").append(id).append("\",\"you\":").append(idx)
-                .append(",\"bot\":").append(vsBot).append(",\"duration\":").append(duration)
+                .append(",\"bot\":").append(vsBot && revealBots).append(",\"duration\":").append(duration)
                 .append(",\"phase\":").append(phase).append(",\"map\":").append(map.toJson()).append(",\"subs\":[");
         for (int i = 0; i < 2; i++) {
             Sub s = subs[i];
             if (i > 0) sb.append(',');
             sb.append("{\"name\":").append(new com.google.gson.JsonPrimitive(s.name).toString());
-            sb.append(",\"bot\":").append(s.isBot()).append(",\"trophies\":").append(s.trophies)
+            sb.append(",\"bot\":").append(s.isBot() && revealBots).append(",\"trophies\":").append(s.trophies)
                     .append(",\"level\":").append(s.level)
                     .append(",\"league\":").append(Catalog.league(s.trophies))
                     .append(",\"skin\":\"").append(s.st.skin).append('"')

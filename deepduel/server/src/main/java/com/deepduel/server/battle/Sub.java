@@ -18,6 +18,9 @@ public final class Sub {
     /** Seconds this sub stays visible to the enemy: after a sonar ping / after shooting or being hit. */
     public double sonarRevealed, flashRevealed;
     public double stun, slow;
+    /** acid damage over time */
+    public double burn, burnT, burnAcc, burnTick;
+    public int burnFrom;
 
     // controls
     public double jx, jy;

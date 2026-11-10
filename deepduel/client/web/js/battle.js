@@ -90,6 +90,7 @@ window.DD = window.DD || {};
         B.lastCount = -1;
         B.opLast = null;
         B.buildWorld();
+        m.subs.forEach(sub => DD.subArt.get(S.cat.skins[sub.skin] || DD.DEFAULT_SKIN, DD.subArt.tierOf(sub.hull || 1)));
       }
       B.active = true;
       B.endPending = false;
@@ -330,11 +331,11 @@ window.DD = window.DD || {};
         return { x: lerp(a[0], b[0], t), y: lerp(a[1], b[1], t), a: lerpAng(a[2], b[2], t), vx: lerp(a[3], b[3], t), vy: lerp(a[4], b[4], t) };
       };
       const me = subAt(s0.me, s1.me);
-      me.hp = s1.me[5]; me.en = s1.me[6]; me.boost = s1.me[7]; me.stun = s1.me[8]; me.slow = s1.me[9]; me.lock = s1.me[10];
+      me.hp = s1.me[5]; me.en = s1.me[6]; me.boost = s1.me[7]; me.stun = s1.me[8]; me.slow = s1.me[9]; me.lock = s1.me[10]; me.burn = s1.me[11];
       let op = null;
       if (s1.op) {
         op = subAt(s0.op || s1.op, s1.op);
-        op.boost = s1.op[5]; op.stun = s1.op[6]; op.slow = s1.op[7]; op.pinged = s1.op[8];
+        op.boost = s1.op[5]; op.stun = s1.op[6]; op.slow = s1.op[7]; op.pinged = s1.op[8]; op.burn = s1.op[9];
       }
       const prev = {};
       (s0.pr || []).forEach(p => { prev[p[0]] = p; });
@@ -369,7 +370,9 @@ window.DD = window.DD || {};
         case 'fire': {
           B.lights.push({ x, y, r: 60, life: 0.12, max: 0.12, c: '255,230,160' });
           const kind = B.M.kinds[p2] || '';
-          DD.sfx.play(kind === 'bullet' ? 'rapid' : kind === 'rail' || kind === 'plasma' || kind === 'cryo' || kind === 'sonic' ? 'zap' : kind === 'pellet' ? 'heavyshot' : 'shot', vol * (p1 === meIdx ? 0.55 : 0.8), pan);
+          const snd = { bullet: 'rapid', rail: 'zap', plasma: 'zap', cryo: 'zap', sonic: 'zap', ion: 'zap', tesla: 'zap', vortex: 'zap', pellet: 'heavyshot', mortar: 'heavyshot' }[kind] || 'shot';
+          DD.sfx.play(snd, vol * (p1 === meIdx ? 0.55 : 0.8), pan);
+          if (kind === 'tesla') B.lights.push({ x, y, r: 120, life: 0.15, max: 0.15, c: '150,230,255' });
           break;
         }
         case 'launch':
@@ -404,6 +407,25 @@ window.DD = window.DD || {};
           B.lights.push({ x, y, r: 160, life: 0.5, max: 0.5, c: '120,240,255' });
           if (p1 === meIdx) B.alert('Системы отключены!', 'blue', 2);
           DD.sfx.play('zap', vol, pan);
+          break;
+        case 'acid':
+          for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.6, max: 0.6, c: '140,255,90', s: 3.5 });
+          if (p1 === meIdx) B.alert('Корпус разъедает кислота!', 'red', 1.5);
+          DD.sfx.play('hit', vol, pan);
+          break;
+        case 'burn':
+          B.texts.push({ x: x + (Math.random() - 0.5) * 24, y, txt: '-' + p1, life: 0.9, max: 0.9, c: '#9dff5d', big: false });
+          if (Math.random() < 0.6) B.bubble(x, y + 20, 2 + Math.random() * 2, 0, -40);
+          break;
+        case 'drain':
+          for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 260, vy: (Math.random() - 0.5) * 260, life: 0.5, max: 0.5, c: '160,140,255', s: 3 });
+          B.lights.push({ x, y, r: 110, life: 0.3, max: 0.3, c: '150,130,255' });
+          if (p1 === meIdx) B.alert('Аккумулятор разряжен!', 'blue', 1.4);
+          DD.sfx.play('zap', vol, pan);
+          break;
+        case 'knock':
+          B.rings.push({ x, y, r: 10, vr: 500, life: 0.45, max: 0.45, c: '160,230,255', w: 3 });
+          if (p1 === meIdx) { B.shake = Math.max(B.shake, 10); UI.vibrate(60); }
           break;
         case 'freeze':
           for (let i = 0; i < 8; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 140, vy: (Math.random() - 0.5) * 140, life: 0.7, max: 0.7, c: '200,245,255', s: 3 });
@@ -474,7 +496,7 @@ window.DD = window.DD || {};
       // torpedo trails
       for (const p of cur.pr) {
         const kind = B.M.kinds[p.k];
-        if (kind && kind.startsWith('torp') || kind === 'bomblet') {
+        if (kind && kind.startsWith('torp') || kind === 'bomblet' || kind === 'depth') {
           if (Math.random() < dt * 30) B.bubble(p.x - Math.cos(p.a) * 14, p.y - Math.sin(p.a) * 14, 1 + Math.random() * 2.5, (Math.random() - 0.5) * 20, -15 - Math.random() * 20);
         }
       }
@@ -666,8 +688,9 @@ window.DD = window.DD || {};
       const vis = B.me.vision;
       const opInside = op && Math.hypot(op.x - me.x, op.y - me.y) < vis * 0.9;
       const skinOf = (sub) => S.cat.skins[sub.skin] || DD.DEFAULT_SKIN;
-      if (op && opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, prop: B.prop.op, light: !low, hit: B.hitFlash.op, stun: op.stun, slow: op.slow });
-      DD.drawSub(ctx, me.x, me.y, me.a, B.me.r, skinOf(B.me), { t, prop: B.prop.me, light: !low, hit: B.hitFlash.me, stun: me.stun, slow: me.slow });
+      const tierOf = (sub) => DD.subArt.tierOf(sub.hull || 1);
+      if (op && opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, tier: tierOf(B.op), prop: B.prop.op, light: !low, hit: B.hitFlash.op, stun: op.stun, slow: op.slow, burn: op.burn });
+      DD.drawSub(ctx, me.x, me.y, me.a, B.me.r, skinOf(B.me), { t, tier: tierOf(B.me), prop: B.prop.me, light: !low, hit: B.hitFlash.me, stun: me.stun, slow: me.slow, burn: me.burn });
       // particles
       for (const p of B.particles) {
         const a = Math.max(0, p.life / p.max);
@@ -723,7 +746,7 @@ window.DD = window.DD || {};
         ctx.fillRect(p.x - rr, p.y - rr, rr * 2, rr * 2);
       }
       ctx.globalCompositeOperation = 'source-over';
-      if (op && !opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, prop: B.prop.op, hit: B.hitFlash.op, outline: '#ff4d5e', stun: op.stun, slow: op.slow });
+      if (op && !opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, tier: tierOf(B.op), prop: B.prop.op, hit: B.hitFlash.op, outline: '#ff4d5e', stun: op.stun, slow: op.slow, burn: op.burn });
       for (const r of B.rings) {
         const a = r.life / r.max;
         ctx.strokeStyle = `rgba(${r.c},${a * (r.ping ? 0.7 : 0.8)})`;
@@ -862,16 +885,68 @@ window.DD = window.DD || {};
           ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
           break;
         }
+        case 'twin':
+          ctx.fillStyle = '#ffd36b';
+          ctx.beginPath(); ctx.ellipse(0, 0, 8, 3.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,200,100,0.35)'; ctx.fillRect(-22, -1.8, 16, 3.6);
+          break;
+        case 'mortar': {
+          ctx.rotate(-p.a + t * 6);
+          const g = ctx.createRadialGradient(-2, -2, 1, 0, 0, 8);
+          g.addColorStop(0, '#8a96a3'); g.addColorStop(1, '#262d36');
+          ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, 0, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = Math.sin(t * 20) > 0 ? '#ffb03b' : '#ff5a1f'; ctx.beginPath(); ctx.arc(5, -5, 2.2, 0, Math.PI * 2); ctx.fill();
+          break;
+        }
+        case 'acid':
+          ctx.fillStyle = 'rgba(140,255,90,0.35)'; ctx.beginPath(); ctx.arc(0, 0, 11, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#9dff5d'; ctx.beginPath(); ctx.ellipse(0, 0, 7, 5, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#eaffd9'; ctx.beginPath(); ctx.arc(2, -1.5, 1.8, 0, Math.PI * 2); ctx.fill();
+          break;
+        case 'ion':
+          ctx.fillStyle = 'rgba(150,130,255,0.4)'; ctx.beginPath(); ctx.ellipse(-6, 0, 18, 6, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#e6e0ff'; ctx.beginPath(); ctx.ellipse(0, 0, 9, 2.6, 0, 0, Math.PI * 2); ctx.fill();
+          break;
+        case 'vortex':
+          ctx.rotate(t * 14);
+          ctx.strokeStyle = 'rgba(170,235,255,0.9)'; ctx.lineWidth = 3;
+          for (let i = 0; i < 3; i++) { ctx.rotate(Math.PI * 2 / 3); ctx.beginPath(); ctx.arc(0, 0, 12, 0, 1.6); ctx.stroke(); }
+          ctx.fillStyle = 'rgba(200,245,255,0.5)'; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+          break;
+        case 'tesla': {
+          ctx.strokeStyle = 'rgba(150,230,255,0.55)'; ctx.lineWidth = 6;
+          const zig = () => { ctx.beginPath(); ctx.moveTo(8, 0); for (let i = 1; i <= 6; i++) ctx.lineTo(8 - i * 12, (Math.random() - 0.5) * 14); ctx.stroke(); };
+          zig();
+          ctx.strokeStyle = '#f2fdff'; ctx.lineWidth = 2; zig();
+          break;
+        }
+        case 'depth': {
+          ctx.rotate(-p.a + Math.sin(t * 3 + p.id) * 0.3);
+          ctx.fillStyle = '#5d6b78'; ctx.fillRect(-8, -11, 16, 22);
+          ctx.fillStyle = '#ffd34d'; ctx.fillRect(-8, -7, 16, 3); ctx.fillRect(-8, 4, 16, 3);
+          ctx.strokeStyle = '#1b2733'; ctx.lineWidth = 1.5; ctx.strokeRect(-8, -11, 16, 22);
+          ctx.fillStyle = Math.sin(t * 9) > 0 ? (p.mine ? '#4dffd2' : '#ff3030') : '#401010';
+          ctx.beginPath(); ctx.arc(0, 0, 2.5, 0, Math.PI * 2); ctx.fill();
+          break;
+        }
         default: {
           // torpedoes
           const heavy = kind === 'torp_heavy';
-          const L = heavy ? 34 : kind === 'bomblet' ? 14 : 26, Hh = heavy ? 9 : kind === 'bomblet' ? 4.5 : 6.5;
-          const tip = { torp: '#d9372b', torp_fast: '#ffd34d', torp_homing: '#ff6b3d', torp_cluster: '#b46cff', torp_heavy: '#d9372b', torp_emp: '#3dfcff', bomblet: '#b46cff' }[kind] || '#d9372b';
-          ctx.fillStyle = '#9fb0c0';
+          const small = kind === 'bomblet' || kind === 'torp_swarm';
+          const L = heavy ? 34 : kind === 'torp_shkval' ? 32 : small ? 16 : 26, Hh = heavy ? 9 : kind === 'torp_shkval' ? 5.5 : small ? 4.6 : 6.5;
+          const tip = { torp: '#d9372b', torp_fast: '#ffd34d', torp_homing: '#ff6b3d', torp_cluster: '#b46cff', torp_heavy: '#d9372b', torp_emp: '#3dfcff', bomblet: '#b46cff', torp_net: '#3fd26b', torp_ghost: '#c9a8ff', torp_swarm: '#ff8a3d', torp_shkval: '#ffd34d' }[kind] || '#d9372b';
+          if (kind === 'torp_ghost') ctx.globalAlpha = p.mine ? 0.55 : 0.4;
+          if (kind === 'torp_shkval') { ctx.fillStyle = 'rgba(230,250,255,0.35)'; ctx.beginPath(); ctx.ellipse(-4, 0, L / 2 + 14, Hh + 6, 0, 0, Math.PI * 2); ctx.fill(); }
+          const tg = ctx.createLinearGradient(0, -Hh, 0, Hh);
+          tg.addColorStop(0, '#eef4f8'); tg.addColorStop(0.45, '#9fb0c0'); tg.addColorStop(1, '#46535f');
+          ctx.fillStyle = tg;
           ctx.beginPath();
           ctx.ellipse(0, 0, L / 2, Hh, 0, 0, Math.PI * 2);
           ctx.fill();
+          ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1;
+          ctx.stroke();
           ctx.fillStyle = tip;
+          ctx.fillRect(-L * 0.12, -Hh, 2.5, Hh * 2);
           ctx.beginPath();
           ctx.ellipse(L / 2 - Hh * 0.6, 0, Hh * 0.9, Hh * 0.9, 0, -Math.PI / 2, Math.PI / 2);
           ctx.fill();

@@ -37,8 +37,6 @@ public final class GameServer implements MiniWebServer.Handler {
     public static final int PROTOCOL = 1;
     private static final int TICK_HZ = 30;
     private static final double DT = 1.0 / TICK_HZ;
-    private static final String[] BOT_NAMES = {"Скат", "Барракуда", "Мурена", "Кальмар", "Каракатица", "Нарвал",
-            "Марлин", "Мако", "Касатка", "Рыба-меч", "Осьминог", "Морской чёрт"};
 
     private static final class Session {
         final WsConnection c;
@@ -88,6 +86,7 @@ public final class GameServer implements MiniWebServer.Handler {
         if (cfg.serverId == null || cfg.serverId.isEmpty()) cfg.serverId = randomHex(8);
         if (cfg.seasonStart == null || cfg.seasonStart.isEmpty()) cfg.seasonStart = java.time.LocalDate.now().toString();
         if (portOverride > 0) cfg.port = portOverride;
+        cfg.migrate();
         storage.saveConfig();
         eco = new Economy(cfg);
         byToken.clear();
@@ -246,7 +245,7 @@ public final class GameServer implements MiniWebServer.Handler {
                 q.addProperty("searching", queue.size());
                 q.addProperty("online", online.size());
                 q.addProperty("waited", (now - queue.get(pid)) / 1000);
-                q.addProperty("botAfter", storage.config.botWaitSeconds);
+                q.addProperty("botAfter", storage.config.showBotTag ? storage.config.botWaitSeconds : 0);
                 s.c.send(q.toString());
             }
         }
@@ -315,7 +314,7 @@ public final class GameServer implements MiniWebServer.Handler {
             if (s.isBot()) continue;
             battleOf.put(s.playerId, b);
             Session ss = online.get(s.playerId);
-            if (ss != null) ss.c.send(b.startJson(s.idx));
+            if (ss != null) ss.c.send(b.startJson(s.idx, storage.config.showBotTag));
         }
     }
 
@@ -354,8 +353,11 @@ public final class GameServer implements MiniWebServer.Handler {
         List<String> guns = pickWeapons("gun", Catalog.gunSlots(hull), maxRarity, wLevel, levels);
         List<String> torps = pickWeapons("torp", Catalog.torpSlots(hull), maxRarity, wLevel, levels);
         List<String> skins = new ArrayList<>(Catalog.SKINS.keySet());
-        SubStats st = SubStats.of(parts, levels, guns, torps, skins.get(rng.nextInt(skins.size())));
-        String name = "Бот «" + BOT_NAMES[rng.nextInt(BOT_NAMES.length)] + "»";
+        String skin = rng.nextInt(10) < 5 ? "classic" : skins.get(rng.nextInt(skins.size()));
+        SubStats st = SubStats.of(parts, levels, guns, torps, skin);
+        Set<String> taken = new HashSet<>();
+        for (PlayerData x : storage.data.players.values()) taken.add(x.name.toLowerCase());
+        String name = BotNames.generate(rng, taken);
         int trophies = Math.max(0, p.trophies + rng.nextInt(81) - 40);
         Sub bot = new Sub(1, null, name, trophies, Math.max(1, p.level + rng.nextInt(3) - 1), st);
         bot.brain = new BotBrain(rng.nextLong(), skill);
@@ -395,7 +397,7 @@ public final class GameServer implements MiniWebServer.Handler {
             r.addProperty("shots", s.shots);
             r.addProperty("hits", s.hits);
             r.addProperty("oppName", o.name);
-            r.addProperty("oppBot", o.isBot());
+            r.addProperty("oppBot", o.isBot() && storage.config.showBotTag);
             Session ss = online.get(s.playerId);
             if (ss != null) {
                 JsonObject m = new JsonObject();
@@ -589,7 +591,7 @@ public final class GameServer implements MiniWebServer.Handler {
                     if (battleOf.containsKey(p.id)) throw new Economy.GameException("Вы уже в бою");
                     if (!queue.containsKey(p.id)) queue.put(p.id, now);
                     JsonObject d = new JsonObject();
-                    d.addProperty("botAfter", storage.config.botWaitSeconds);
+                    d.addProperty("botAfter", storage.config.showBotTag ? storage.config.botWaitSeconds : 0);
                     d.addProperty("online", online.size());
                     reply(s, id, d);
                     return;
@@ -687,7 +689,7 @@ public final class GameServer implements MiniWebServer.Handler {
             for (Sub sub : b.subs) {
                 if (p.id.equals(sub.playerId)) {
                     sub.connected = true;
-                    s.c.send(b.startJson(sub.idx));
+                    s.c.send(b.startJson(sub.idx, storage.config.showBotTag));
                 }
             }
         }
@@ -704,7 +706,7 @@ public final class GameServer implements MiniWebServer.Handler {
         o.playerName = p.name;
         o.product = product;
         o.param = param;
-        o.priceRub = pr.priceRub;
+        o.priceCents = pr.priceCents;
         o.created = now;
         JsonObject res = new JsonObject();
         res.addProperty("orderId", o.id);
@@ -750,7 +752,7 @@ public final class GameServer implements MiniWebServer.Handler {
         Catalog.Product pr = Catalog.PRODUCTS.get(o.product);
         j.addProperty("productName", pr == null ? o.product : pr.name);
         j.addProperty("param", o.param == null ? "" : o.param);
-        j.addProperty("price", o.priceRub);
+        j.addProperty("price", o.priceCents > 0 ? Catalog.usd(o.priceCents) : o.priceRub + " ₽");
         j.addProperty("status", o.status);
         j.addProperty("test", o.test);
         j.addProperty("created", o.created);
@@ -801,7 +803,7 @@ public final class GameServer implements MiniWebServer.Handler {
                 int pending = 0, revenue = 0;
                 for (Storage.Order o : storage.data.orders) {
                     if ("pending".equals(o.status)) pending++;
-                    if ("granted".equals(o.status) && !o.test) revenue += o.priceRub;
+                    if ("granted".equals(o.status) && !o.test) revenue += o.priceCents;
                 }
                 d.addProperty("players", storage.data.players.size());
                 d.addProperty("online", online.size());
@@ -809,13 +811,14 @@ public final class GameServer implements MiniWebServer.Handler {
                 d.addProperty("queue", queue.size());
                 d.addProperty("battlesPlayed", storage.data.battlesPlayed);
                 d.addProperty("pendingOrders", pending);
-                d.addProperty("revenue", revenue);
+                d.addProperty("revenue", Catalog.usd(revenue));
                 JsonObject c = new JsonObject();
                 c.addProperty("serverName", cfg.serverName);
                 c.addProperty("paymentMode", cfg.paymentMode);
                 c.addProperty("dailyCrateLimit", cfg.dailyCrateLimit);
                 c.addProperty("extendedDailyCrateLimit", cfg.extendedDailyCrateLimit);
                 c.addProperty("botWaitSeconds", cfg.botWaitSeconds);
+                c.addProperty("showBotTag", cfg.showBotTag);
                 c.addProperty("battleSeconds", cfg.battleSeconds);
                 c.addProperty("lossOfferMinutes", cfg.lossOfferMinutes);
                 d.add("config", c);
@@ -847,7 +850,7 @@ public final class GameServer implements MiniWebServer.Handler {
                 if (op.equals("approve") && p != null) {
                     o.status = "granted";
                     eco.grantProduct(p, o.product, o.param, now);
-                    p.spentRub += o.priceRub;
+                    p.spentCents += o.priceCents;
                     Session ps = online.get(p.id);
                     if (ps != null) {
                         JsonObject push = new JsonObject();
@@ -886,6 +889,9 @@ public final class GameServer implements MiniWebServer.Handler {
                         break;
                     case "botWaitSeconds":
                         cfg.botWaitSeconds = clampInt(val, 0, 3600);
+                        break;
+                    case "showBotTag":
+                        cfg.showBotTag = val.equals("true") || val.equals("1");
                         break;
                     case "battleSeconds":
                         cfg.battleSeconds = clampInt(val, 30, 1800);
@@ -931,7 +937,7 @@ public final class GameServer implements MiniWebServer.Handler {
                     o.addProperty("gems", p.gems);
                     o.addProperty("online", online.containsKey(p.id));
                     o.addProperty("lastSeen", p.lastSeen);
-                    o.addProperty("spent", p.spentRub);
+                    o.addProperty("spent", Catalog.usd(p.spentCents));
                     list.add(o);
                 }
                 d.add("players", list);

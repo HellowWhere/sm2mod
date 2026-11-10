@@ -125,7 +125,7 @@ public final class BotBrain {
                 for (int i = 0; i < me.torpCd.length; i++) {
                     if (me.torpCd[i] > 0) continue;
                     SubStats.Slot s = me.st.torps.get(i);
-                    boolean ok = s.def.kind.equals("mine") ? (off > 2.2 && dist < 450) : (off < 0.3 && dist < 950);
+                    boolean ok = s.def.drop ? (off > 2.2 && dist < 450) : (off < 0.3 && dist < Math.min(950, s.def.range() * 0.95));
                     if (!ok) continue;
                     me.torpReq = i;
                     torpDelay = 0.8 + rng.nextDouble() * (2.5 - skill * 1.5);

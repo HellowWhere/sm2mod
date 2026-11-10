@@ -438,7 +438,8 @@ public final class Economy {
     // ------------------------------------------------------------------ battles
 
     private String rollBattleCrate(int outcome) {
-        int[] w = outcome > 0 ? new int[]{70, 23, 6, 1} : outcome == 0 ? new int[]{78, 19, 3, 0} : new int[]{85, 13, 2, 0};
+        // per mille: common / rare / epic / legendary crate
+        int[] w = outcome > 0 ? new int[]{740, 215, 42, 3} : outcome == 0 ? new int[]{800, 180, 20, 0} : new int[]{860, 130, 10, 0};
         return Catalog.RARITIES[weightedPick(w)];
     }
 

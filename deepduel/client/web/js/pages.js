@@ -106,7 +106,7 @@ window.DD = window.DD || {};
         const cost = max ? 0 : pt.costs[l - 1];
         const acts = max ? `<div class="maxed">МАКС.</div>` :
           `<button class="btn btn-gold" data-up="${pt.id}" ${p.coins < cost ? 'data-poor="1"' : ''}>${coinI()}${UI.fmt(cost)}</button>
-           ${ins ? `<button class="btn btn-ghost" data-instant="${pt.id}">Сразу · ${ins.price} ₽</button>` : ''}`;
+           ${ins ? `<button class="btn btn-ghost" data-instant="${pt.id}">Сразу · ${ins.priceText}</button>` : ''}`;
         return `<div class="part"><div class="pic">${I.partIcon(pt.id)}</div>
           <div><div class="ttl"><b>${esc(pt.name)}</b><small>ур. ${l}/${pt.max}</small></div><div class="pips">${pips}</div><div class="st">${stats}</div></div>
           <div class="acts">${acts}</div></div>`;
@@ -241,6 +241,7 @@ window.DD = window.DD || {};
           <tr><td>Перезарядка</td><td>${cur.cd.toFixed(2)} с${nxt ? ` → <span class="up">${nxt.cd.toFixed(2)} с</span>` : ''}</td></tr>
           <tr><td>Дальность</td><td>${UI.fmt(w.range)}</td></tr>
           ${w.splash ? `<tr><td>Радиус взрыва</td><td>${w.splash}</td></tr>` : ''}
+          ${w.effects && w.effects.length ? `<tr><td>Особое</td><td>${esc(w.effects.join(', '))}</td></tr>` : ''}
           <tr><td>Уровень</td><td>${own ? lvl + ' / 10' : 'не получено'}</td></tr>
           ${own && lvl < 10 ? `<tr><td>Чертежи</td><td>${own.cards} / ${w.cards[lvl - 1]}</td></tr>` : ''}
         </table></div></div>
@@ -416,7 +417,7 @@ window.DD = window.DD || {};
             <small>${p.bp.level >= bp.levels ? 'Максимальный уровень' : inLvl + ' / ' + per + ' опыта'} · победа +${bp.xpWin}, поражение +${bp.xpLoss} · до конца сезона ${UI.fmtTime(p.bp.endsAt - UI.now())}</small></div></div>
           ${claimable ? `<button class="btn btn-teal" id="bp-all">Забрать всё (${claimable})</button>` : ''}
           ${p.bp.premium ? `<div class="pill" style="color:var(--gold)"><i data-icon="star"></i>Премиум активен</div>` :
-            `<button class="btn btn-gold" id="bp-buy"><i data-icon="star"></i>Премиум · ${prem ? prem.price : ''} ₽</button>`}
+            `<button class="btn btn-gold" id="bp-buy"><i data-icon="star"></i>Премиум · ${prem ? prem.priceText : ''}</button>`}
         </div>
         <div class="track-wrap"><div class="track-labels"><div class="tl-free"><i data-icon="gift"></i>Бесплатно</div><div class="tl-prem"><i data-icon="star"></i>Премиум</div></div>
           <div class="track">${cols}</div></div></div>`;
@@ -466,7 +467,7 @@ window.DD = window.DD || {};
       const keep = $('.shop', el);
       const scroll = keep ? keep.scrollTop : 0;
       const banner = mode === 'test' ? `<div class="shop-banner test"><i data-icon="info"></i>Тестовый режим сервера: покупки выдаются сразу и бесплатно, реальные деньги не списываются.</div>`
-        : mode === 'manual' ? `<div class="shop-banner manual"><i data-icon="info"></i>Покупки за ₽ подтверждает администратор сервера после оплаты. Номер заказа появится после нажатия «Купить».</div>`
+        : mode === 'manual' ? `<div class="shop-banner manual"><i data-icon="info"></i>Покупки за $ подтверждает администратор сервера после оплаты. Номер заказа появится после нажатия «Купить».</div>`
           : `<div class="shop-banner off"><i data-icon="info"></i>Покупки за реальные деньги на этом сервере отключены.</div>`;
       const prodIcon = (pr) => {
         switch (pr.icon) {
@@ -486,7 +487,7 @@ window.DD = window.DD || {};
         let note = '';
         if (id === 'reward_week' && p.daily.extUntil > UI.now()) note = `<small style="color:var(--green)">Активно ещё ${UI.fmtTime(p.daily.extUntil - UI.now())}</small>`;
         return `<div class="offer ${extraCls || ''} ${owned ? 'owned' : ''}"><div class="opic">${prodIcon(pr)}</div><b>${esc(pr.name)}</b><small>${esc(pr.desc)}</small>${note}
-          <button class="btn ${owned ? 'btn-ghost' : 'btn-gold'}" data-buy="${id}" ${owned || mode === 'off' ? 'disabled' : ''}>${owned ? 'Куплено' : pr.price + ' ₽'}</button></div>`;
+          <button class="btn ${owned ? 'btn-ghost' : 'btn-gold'}" data-buy="${id}" ${owned || mode === 'off' ? 'disabled' : ''}>${owned ? 'Куплено' : pr.priceText}</button></div>`;
       };
       const gemItem = (g) => {
         const owned = g.reward.type === 'skin' && p.skins.includes(g.reward.id);
@@ -497,7 +498,7 @@ window.DD = window.DD || {};
       el.innerHTML = `<div class="shop scroll">${banner}
         ${loss ? `<div class="offer hot big" style="margin-bottom:8px"><span class="ribbon">ТОЛЬКО СЕЙЧАС</span><div class="opic">${prodIcon(loss)}</div>
           <div class="otext"><b>${esc(loss.name)}</b><small>${esc(loss.desc)}</small><small>Осталось: <b class="timer" data-until="${p.lossOfferUntil}">${UI.fmtTime(p.lossOfferUntil - UI.now())}</b></small></div>
-          <div style="width:140px"><button class="btn btn-gold" data-buy="loss_bonus" ${mode === 'off' ? 'disabled' : ''}>${loss.price} ₽</button></div></div>` : ''}
+          <div style="width:140px"><button class="btn btn-gold" data-buy="loss_bonus" ${mode === 'off' ? 'disabled' : ''}>${loss.priceText}</button></div></div>` : ''}
         <h3>Предложения</h3><div class="shop-grid">${prod('bp_premium', 'hot')}${prod('bp_premium_plus')}${prod('reward_day')}${prod('reward_week')}</div>
         <h3>Ящики</h3><div class="shop-grid">${prod('pack_rare')}${prod('pack_epic')}${prod('pack_legend', 'hot')}${c.gemItemList.filter(g => g.reward.type === 'crate').map(gemItem).join('')}</div>
         <h3 id="shop-currency">Жемчуг и монеты</h3><div class="shop-grid">${c.productList.filter(x => x.section === 'currency').map(x => prod(x.id)).join('')}${c.gemItemList.filter(g => g.reward.type === 'coins').map(gemItem).join('')}</div>
@@ -534,7 +535,7 @@ window.DD = window.DD || {};
         : '<div class="hint">После нажатия создастся заказ. Администратор сервера выдаст товар после оплаты.</div>';
       const ok = await UI.confirm(`<div class="row" style="gap:14px"><div style="width:70px;height:60px">${pr.icon === 'upgrade' ? `<i data-icon="up" style="font-size:52px;color:var(--green)"></i>` : ''}</div>
         <div><b style="font-size:16px">${esc(pr.name)}${paramName ? ': ' + esc(paramName) : ''}</b><div class="muted">${esc(pr.desc)}</div></div></div>${note}`,
-      `Купить за ${pr.price} ₽`, { title: 'Покупка' });
+      `Купить за ${pr.priceText}`, { title: 'Покупка' });
       if (!ok) return;
       const r = await UI.run(null, () => DD.net.req('buy', { product: id, param: param || '' }));
       if (!r) return;
@@ -548,7 +549,7 @@ window.DD = window.DD || {};
         P.rewardsModal('Покупка получена!', given, sub);
         if (up) P.levelUps(up.levelUps);
       } else {
-        const m = UI.modal(`<h2>Заказ №${r.result.orderId} создан</h2><div>«${esc(pr.name)}» за ${pr.price} ₽.</div>
+        const m = UI.modal(`<h2>Заказ №${r.result.orderId} создан</h2><div>«${esc(pr.name)}» за ${pr.priceText}.</div>
           <div class="hint">Свяжитесь с владельцем сервера для оплаты и назовите номер заказа. Товар появится сразу после подтверждения.</div>
           <div class="modal-actions"><button class="btn btn-gold" data-ok>Понятно</button></div>`);
         $('[data-ok]', m.el).onclick = () => m.close();
@@ -588,7 +589,7 @@ window.DD = window.DD || {};
       const r = await UI.run(null, () => DD.net.req('my_orders'));
       if (!r) return;
       const st = { pending: 'ожидает оплаты', granted: 'выдан', rejected: 'отклонён' };
-      UI.modal(`<h2>Мои заказы</h2><div class="admin-orders">${r.orders.length ? r.orders.slice().reverse().map(o => `<div class="order ${o.status}"><div><b>№${o.id} · ${esc(o.productName)}</b><br><small>${new Date(o.created).toLocaleString('ru-RU')} · ${o.price} ₽</small></div><div><b>${st[o.status] || o.status}</b></div></div>`).join('') : '<div class="muted">Заказов пока нет</div>'}</div>`);
+      UI.modal(`<h2>Мои заказы</h2><div class="admin-orders">${r.orders.length ? r.orders.slice().reverse().map(o => `<div class="order ${o.status}"><div><b>№${o.id} · ${esc(o.productName)}</b><br><small>${new Date(o.created).toLocaleString('ru-RU')} · ${esc(o.price)}</small></div><div><b>${st[o.status] || o.status}</b></div></div>`).join('') : '<div class="muted">Заказов пока нет</div>'}</div>`);
     },
 
     // ============================================================ RATING
@@ -701,7 +702,7 @@ window.DD = window.DD || {};
         <div id="adm-body"></div>`, { wide: true });
       const body = $('#adm-body', m.el);
       const showStats = (s) => {
-        $('#adm-stats', m.el).innerHTML = `Игроков: <b>${s.players}</b> · онлайн: <b>${s.online}</b> · боёв идёт: <b>${s.battles}</b> · всего боёв: <b>${s.battlesPlayed}</b> · ждут подтверждения: <b>${s.pendingOrders}</b> · выручка: <b>${UI.fmt(s.revenue)} ₽</b>`;
+        $('#adm-stats', m.el).innerHTML = `Игроков: <b>${s.players}</b> · онлайн: <b>${s.online}</b> · боёв идёт: <b>${s.battles}</b> · всего боёв: <b>${s.battlesPlayed}</b> · ждут подтверждения: <b>${s.pendingOrders}</b> · выручка: <b>${esc(s.revenue)}</b>`;
       };
       showStats(stats);
       const tabs = {
@@ -709,7 +710,7 @@ window.DD = window.DD || {};
           const r = await A('orders');
           const st = { pending: 'ожидает', granted: 'выдан', rejected: 'отклонён' };
           body.innerHTML = `<div class="admin-orders">${r.orders.length ? r.orders.map(o => `<div class="order ${o.status}"><div><b>№${o.id} · ${esc(o.productName)}${o.param ? ' (' + esc(o.param) + ')' : ''}</b><br>
-            <small>${esc(o.player)} · ${o.price} ₽ · ${new Date(o.created).toLocaleString('ru-RU')}${o.test ? ' · тест' : ''}</small></div>
+            <small>${esc(o.player)} · ${esc(o.price)} · ${new Date(o.created).toLocaleString('ru-RU')}${o.test ? ' · тест' : ''}</small></div>
             <div class="row">${o.status === 'pending' ? `<button class="btn btn-teal btn-sm" data-ap="${o.id}">Выдать</button><button class="btn btn-red btn-sm" data-rj="${o.id}">Отклонить</button>` : `<small>${st[o.status]}</small>`}</div></div>`).join('') : '<div class="muted">Заказов нет</div>'}</div>`;
           $$('[data-ap]', body).forEach(b => b.onclick = async () => { if (await UI.run(b, () => A('approve', { order: +b.dataset.ap }))) { UI.toast('Товар выдан', 'ok'); tabs.orders(); showStats(await A('stats')); } });
           $$('[data-rj]', body).forEach(b => b.onclick = async () => { if (await UI.run(b, () => A('reject', { order: +b.dataset.rj }))) { tabs.orders(); showStats(await A('stats')); } });
@@ -717,7 +718,7 @@ window.DD = window.DD || {};
         async players() {
           const r = await A('players');
           body.innerHTML = `<div class="admin-orders">${r.players.map(p => `<div class="order"><div><b>${esc(p.name)}</b>${p.online ? ' <span style="color:var(--green)">● онлайн</span>' : ''}<br>
-            <small>ур. ${p.level} · кубки ${p.trophies} · монеты ${UI.fmt(p.coins)} · жемчуг ${UI.fmt(p.gems)} · потрачено ${p.spent} ₽</small></div>
+            <small>ур. ${p.level} · кубки ${p.trophies} · монеты ${UI.fmt(p.coins)} · жемчуг ${UI.fmt(p.gems)} · потрачено ${esc(p.spent)}</small></div>
             <div><button class="btn btn-ghost btn-sm" data-gift="${esc(p.name)}">Подарок</button></div></div>`).join('')}</div>`;
           $$('[data-gift]', body).forEach(b => b.onclick = () => { tabs.gift(b.dataset.gift); setTab('gift', true); });
         },
@@ -733,10 +734,15 @@ window.DD = window.DD || {};
             ${field('dailyCrateLimit', 'Ящиков за бои в день', c.dailyCrateLimit)}
             ${field('extendedDailyCrateLimit', 'Лимит с продлением на 7 дней', c.extendedDailyCrateLimit)}
             ${field('botWaitSeconds', 'Бот, если нет соперника, через (сек, 0 — никогда)', c.botWaitSeconds)}
+            <div class="field-label">Боты</div>
+            <div class="row" style="flex-wrap:wrap"><button class="btn btn-sm ${c.showBotTag ? 'btn-ghost' : 'btn-gold'}" data-bottag="false">Как обычные игроки</button><button class="btn btn-sm ${c.showBotTag ? 'btn-gold' : 'btn-ghost'}" data-bottag="true">Помечать «БОТ»</button></div>
             ${field('battleSeconds', 'Длительность боя (сек)', c.battleSeconds)}
             ${field('lossOfferMinutes', 'Утешительный набор доступен (мин)', c.lossOfferMinutes)}</div></div>`;
           $$('[data-mode]', body).forEach(b => b.onclick = async () => {
             if (await UI.run(b, () => A('set_config', { name: 'paymentMode', value: b.dataset.mode }))) { if (S.server) S.server.paymentMode = b.dataset.mode; UI.toast('Сохранено', 'ok'); tabs.config(); }
+          });
+          $$('[data-bottag]', body).forEach(b => b.onclick = async () => {
+            if (await UI.run(b, () => A('set_config', { name: 'showBotTag', value: b.dataset.bottag }))) { UI.toast('Сохранено', 'ok'); tabs.config(); }
           });
           $$('[data-save]', body).forEach(b => b.onclick = async () => {
             const k = b.dataset.save;
@@ -824,7 +830,7 @@ window.DD = window.DD || {};
         </div>
         <div class="result-side">${rows.join('')}
           ${offer ? `<div class="loss-offer"><b>Не повезло? ${esc(lb.name)}!</b><small>${esc(lb.desc)}</small>
-            <div class="row"><span class="muted">Осталось <span class="timer" data-until="${res.lossOfferUntil}">${UI.fmtTime(res.lossOfferUntil - UI.now())}</span></span><div class="spacer"></div><button class="btn btn-gold btn-sm" id="res-loss">${lb.price} ₽</button></div></div>` : ''}
+            <div class="row"><span class="muted">Осталось <span class="timer" data-until="${res.lossOfferUntil}">${UI.fmtTime(res.lossOfferUntil - UI.now())}</span></span><div class="spacer"></div><button class="btn btn-gold btn-sm" id="res-loss">${lb.priceText}</button></div></div>` : ''}
         </div></div>`;
       $('#modal-root').appendChild(root);
       I.hydrate(root);

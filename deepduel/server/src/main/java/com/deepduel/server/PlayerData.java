@@ -49,8 +49,9 @@ public class PlayerData {
     public long lossOfferUntil = 0;
 
     public int wins, losses, draws;
-    /** Total real-money spending in roubles (test purchases are counted separately). */
+    /** Total confirmed real-money spending (test purchases are not counted). */
     public int spentRub = 0;
+    public int spentCents = 0;
 
     public static class WeaponOwn {
         public int level = 1;

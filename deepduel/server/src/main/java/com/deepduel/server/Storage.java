@@ -22,7 +22,9 @@ public final class Storage {
     public static class Order {
         public long id;
         public String playerId, playerName, product, param;
+        /** old orders (before the switch to dollars) */
         public int priceRub;
+        public int priceCents;
         /** pending / granted / rejected */
         public String status;
         public boolean test;

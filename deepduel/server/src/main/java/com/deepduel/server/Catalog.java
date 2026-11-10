@@ -57,8 +57,18 @@ public final class Catalog {
     public static final class WeaponDef {
         public String id, name, desc, type, rarity, kind;
         public double dmg, cd, speed, life, radius = 5, spread, splashR, splashFrac, homing, seek, stun, slow, proximity, arm;
+        /** sinking speed gain (mortar shells, depth charges) */
+        public double grav;
+        /** acid: damage per second and duration */
+        public double burn, burnTime;
+        /** energy removed from the target's battery */
+        public double drain;
+        /** push given to the target on hit */
+        public double knock;
         public int count = 1;
-        public boolean pierce;
+        /** pierce: flies through rocks; drop: released behind the stern; parallel: twin barrels;
+         *  stealth: the enemy sees it only up close */
+        public boolean pierce, drop, parallel, stealth;
 
         public double dmgAt(int l) { return dmg * (1 + 0.1 * (l - 1)); }
         public double cdAt(int l) { return cd * (1 - 0.02 * (l - 1)); }
@@ -86,34 +96,58 @@ public final class Catalog {
         d.dmg = 70; d.cd = 0.55; d.speed = 720; d.life = 1.05; d.radius = 5; d.spread = 0.02;
         d = w("rapid", "gun", "common", "bullet", "Скорострел", "Низкий урон, огромная скорострельность.");
         d.dmg = 26; d.cd = 0.15; d.speed = 850; d.life = 0.85; d.radius = 4; d.spread = 0.07;
+        d = w("twin", "gun", "common", "twin", "Спаренная пушка", "Два ствола стреляют одновременно.");
+        d.dmg = 38; d.count = 2; d.parallel = true; d.cd = 0.6; d.speed = 740; d.life = 1.0; d.radius = 5; d.spread = 0.015;
         d = w("scatter", "gun", "rare", "pellet", "Картечница", "Веер из 5 зарядов. Страшна вблизи.");
         d.dmg = 24; d.count = 5; d.cd = 0.95; d.speed = 680; d.life = 0.55; d.radius = 4; d.spread = 0.32;
         d = w("sonic", "gun", "rare", "sonic", "Звуковая пушка", "Широкая волна проходит сквозь скалы.");
         d.dmg = 85; d.cd = 1.1; d.speed = 520; d.life = 1.3; d.radius = 20; d.pierce = true;
+        d = w("mortar", "gun", "rare", "mortar", "Бомбомёт", "Тонущие бомбы рвутся и бьют по площади. Стреляйте сверху.");
+        d.dmg = 110; d.cd = 1.4; d.speed = 430; d.life = 1.8; d.radius = 8; d.splashR = 80; d.splashFrac = 0.6; d.grav = 260;
+        d = w("acid", "gun", "rare", "acid", "Кислотник", "Кислота разъедает корпус: 14 урона в секунду ещё 4 с.");
+        d.dmg = 30; d.cd = 0.65; d.speed = 620; d.life = 1.0; d.radius = 7; d.burn = 14; d.burnTime = 4;
         d = w("cryo", "gun", "epic", "cryo", "Крио-пушка", "Замораживает винт: цель замедляется на 1,5 с.");
         d.dmg = 60; d.cd = 0.7; d.speed = 650; d.life = 1.0; d.radius = 7; d.slow = 1.5;
+        d = w("ion", "gun", "epic", "ion", "Ионная пушка", "Разряжает аккумулятор цели — враг не сможет уйти на форсаже.");
+        d.dmg = 75; d.cd = 0.8; d.speed = 900; d.life = 0.9; d.radius = 6; d.drain = 30;
+        d = w("vortex", "gun", "epic", "vortex", "Вихревая пушка", "Водоворот отбрасывает подлодку врага.");
+        d.dmg = 90; d.cd = 1.2; d.speed = 560; d.life = 1.2; d.radius = 14; d.knock = 280;
         d = w("rail", "gun", "epic", "rail", "Рельсотрон", "Сверхбыстрый снаряд с огромным уроном.");
         d.dmg = 240; d.cd = 2.3; d.speed = 1700; d.life = 0.75; d.radius = 4;
         d = w("plasma", "gun", "legendary", "plasma", "Плазмомёт", "Сгусток плазмы взрывается и бьёт по площади.");
         d.dmg = 140; d.cd = 1.3; d.speed = 600; d.life = 1.4; d.radius = 9; d.splashR = 95; d.splashFrac = 0.6;
+        d = w("tesla", "gun", "legendary", "tesla", "Тесла-разрядник", "Молния сама находит цель вблизи и бьёт без промаха.");
+        d.dmg = 115; d.cd = 0.95; d.speed = 2600; d.life = 0.15; d.radius = 12; d.homing = 14; d.seek = 420;
         // ---- torpedoes (one shot per button press, long reload)
         d = w("mk1", "torp", "common", "torp", "Торпеда МК-1", "Классическая торпеда. Мощный взрыв.");
         d.dmg = 260; d.cd = 4.0; d.speed = 400; d.life = 3.6; d.radius = 8; d.splashR = 60; d.splashFrac = 0.5;
         d = w("swift", "torp", "common", "torp_fast", "Торпеда «Стриж»", "Быстрая и лёгкая, перезаряжается быстрее.");
         d.dmg = 170; d.cd = 3.0; d.speed = 640; d.life = 2.4; d.radius = 7; d.splashR = 40; d.splashFrac = 0.4;
+        d = w("depth", "torp", "common", "depth", "Глубинная бомба", "Сбрасывается за кормой, тонет и взрывается рядом с врагом.");
+        d.dmg = 280; d.cd = 5.0; d.speed = 40; d.life = 6; d.radius = 10; d.splashR = 90; d.splashFrac = 0.7;
+        d.drop = true; d.grav = 140; d.proximity = 70; d.arm = 0.6;
         d = w("homing", "torp", "rare", "torp_homing", "Самонаводящаяся", "Сама находит цель в секторе впереди.");
         d.dmg = 210; d.cd = 5.5; d.speed = 330; d.life = 5.0; d.radius = 8; d.splashR = 55; d.splashFrac = 0.5;
         d.homing = 1.9; d.seek = 650;
         d = w("mine", "torp", "rare", "mine", "Мина-ловушка", "Сбрасывается за кормой и взрывается рядом с врагом.");
         d.dmg = 330; d.cd = 6.5; d.speed = 60; d.life = 25; d.radius = 12; d.splashR = 85; d.splashFrac = 0.7;
-        d.proximity = 75; d.arm = 1.0;
+        d.proximity = 75; d.arm = 1.0; d.drop = true;
+        d = w("net", "torp", "rare", "torp_net", "Сетевая торпеда", "Опутывает винт сетью: враг замедлен на 3 с.");
+        d.dmg = 120; d.cd = 6.0; d.speed = 460; d.life = 3.0; d.radius = 10; d.slow = 3.0;
         d = w("cluster", "torp", "epic", "torp_cluster", "Кассетная торпеда", "Через мгновение распадается на 4 боеголовки.");
         d.dmg = 110; d.cd = 6.5; d.speed = 420; d.life = 3.0; d.radius = 7; d.splashR = 45; d.splashFrac = 0.5; d.arm = 0.7;
         d = w("heavy", "torp", "epic", "torp_heavy", "Тяжёлая торпеда «Кит»", "Медленная, но разносит всё вокруг.");
         d.dmg = 520; d.cd = 8.5; d.speed = 250; d.life = 6.0; d.radius = 11; d.splashR = 110; d.splashFrac = 0.6;
+        d = w("ghost", "torp", "epic", "torp_ghost", "Торпеда-призрак", "Не видна врагу, пока не подойдёт вплотную.");
+        d.dmg = 300; d.cd = 7.0; d.speed = 380; d.life = 4.0; d.radius = 8; d.splashR = 60; d.splashFrac = 0.5; d.stealth = true;
         d = w("emp", "torp", "legendary", "torp_emp", "ЭМИ-торпеда", "Наводится и выключает системы врага на 2 с.");
         d.dmg = 190; d.cd = 7.5; d.speed = 430; d.life = 3.5; d.radius = 8; d.splashR = 50; d.splashFrac = 0.5;
         d.homing = 0.9; d.seek = 600; d.stun = 2.2;
+        d = w("swarm", "torp", "legendary", "torp_swarm", "Рой", "Залп из трёх мини-торпед с самонаведением.");
+        d.dmg = 120; d.count = 3; d.spread = 0.35; d.cd = 8.0; d.speed = 380; d.life = 4.0; d.radius = 6;
+        d.splashR = 40; d.splashFrac = 0.5; d.homing = 2.4; d.seek = 700;
+        d = w("shkval", "torp", "legendary", "torp_shkval", "Суперторпеда «Шквал»", "Суперкавитация: почти мгновенно долетает до цели.");
+        d.dmg = 380; d.cd = 8.0; d.speed = 1100; d.life = 1.6; d.radius = 8; d.splashR = 70; d.splashFrac = 0.5;
     }
 
     public static List<WeaponDef> weaponsOfRarity(int rarity) {
@@ -171,14 +205,15 @@ public final class Catalog {
     }
 
     static {
-        crate("common", "Обычный ящик", "#8fa7bd", 60, 120, 2, new int[]{80, 18, 2, 0},
+        // weights are per mille: common / rare / epic / legendary weapon cards
+        crate("common", "Обычный ящик", "#8fa7bd", 60, 120, 2, new int[]{800, 185, 15, 0},
                 new int[][]{{3, 5}, {1, 2}, {1, 1}, {1, 1}}, 0.05, 2, 5, -1);
-        crate("rare", "Редкий ящик", "#3fa9f5", 200, 350, 3, new int[]{55, 35, 9, 1},
+        crate("rare", "Редкий ящик", "#3fa9f5", 200, 350, 3, new int[]{600, 330, 68, 2},
                 new int[][]{{6, 10}, {2, 4}, {1, 2}, {1, 1}}, 0.15, 5, 10, 1);
-        crate("epic", "Эпический ящик", "#b46cff", 600, 900, 4, new int[]{35, 40, 22, 3},
+        crate("epic", "Эпический ящик", "#b46cff", 600, 900, 4, new int[]{380, 420, 185, 15},
                 new int[][]{{12, 20}, {5, 8}, {2, 4}, {1, 1}}, 0.3, 10, 20, 2);
-        crate("legendary", "Легендарный ящик", "#ffb52e", 1800, 2600, 5, new int[]{25, 35, 30, 10},
-                new int[][]{{25, 40}, {10, 15}, {4, 8}, {1, 2}}, 0.5, 25, 50, 3);
+        crate("legendary", "Легендарный ящик", "#ffb52e", 1800, 2600, 5, new int[]{280, 380, 300, 40},
+                new int[][]{{25, 40}, {10, 15}, {4, 8}, {1, 1}}, 0.5, 25, 50, 2);
     }
 
     // ------------------------------------------------------------------ player level
@@ -289,7 +324,8 @@ public final class Catalog {
     /** Real-money product. */
     public static final class Product {
         public String id, name, desc, section, icon;
-        public int priceRub;
+        /** price in US cents */
+        public int priceCents;
         public boolean hidden;
         public List<Reward> rewards = new ArrayList<>();
     }
@@ -301,7 +337,7 @@ public final class Catalog {
         p.id = id;
         p.section = section;
         p.icon = icon;
-        p.priceRub = price;
+        p.priceCents = price;
         p.name = name;
         p.desc = desc;
         for (Reward r : rewards) p.rewards.add(r);
@@ -310,32 +346,41 @@ public final class Catalog {
     }
 
     static {
-        product("gems_80", "currency", "gems1", 79, "Горсть жемчуга", "80 жемчужин", gems(80));
-        product("gems_550", "currency", "gems2", 399, "Мешочек жемчуга", "500 + 50 в подарок", gems(550));
-        product("gems_1400", "currency", "gems3", 799, "Шкатулка жемчуга", "1200 + 200 в подарок", gems(1400));
-        product("gems_3200", "currency", "gems4", 1490, "Сундук жемчуга", "2600 + 600 в подарок", gems(3200));
-        product("gems_8500", "currency", "gems5", 2990, "Сокровищница", "6500 + 2000 в подарок", gems(8500));
-        product("coins_20000", "currency", "coins", 199, "Мешок монет", "20 000 монет на улучшения", coins(20000));
-        product("bp_premium", "offers", "bp", 349, "Премиум боевой пропуск",
+        product("gems_80", "currency", "gems1", 199, "Горсть жемчуга", "80 жемчужин", gems(80));
+        product("gems_550", "currency", "gems2", 999, "Мешочек жемчуга", "500 + 50 в подарок", gems(550));
+        product("gems_1400", "currency", "gems3", 1999, "Шкатулка жемчуга", "1200 + 200 в подарок", gems(1400));
+        product("gems_3200", "currency", "gems4", 4999, "Сундук жемчуга", "2600 + 600 в подарок", gems(3200));
+        product("gems_8500", "currency", "gems5", 9999, "Сокровищница", "6500 + 2000 в подарок", gems(8500));
+        product("gems_20000", "currency", "gems6", 19999, "Королевская сокровищница", "14 000 + 6 000 в подарок", gems(20000));
+        product("coins_20000", "currency", "coins", 499, "Мешок монет", "20 000 монет на улучшения", coins(20000));
+        product("bp_premium", "offers", "bp", 999, "Премиум боевой пропуск",
                 "Вторая линия наград сезона: эксклюзивные окраски, ящики и жемчуг.");
-        product("bp_premium_plus", "offers", "bp_plus", 799, "Премиум пропуск + 10 уровней",
+        product("bp_premium_plus", "offers", "bp_plus", 2499, "Премиум пропуск + 10 уровней",
                 "Премиум-линия и сразу +10 уровней пропуска.");
-        product("reward_day", "offers", "ext1", 59, "Продление наград на сегодня",
+        product("reward_day", "offers", "ext1", 299, "Продление наград на сегодня",
                 "+10 ящиков к дневному лимиту за бои.");
-        product("reward_week", "offers", "ext7", 249, "Продление наград на 7 дней",
+        product("reward_week", "offers", "ext7", 999, "Продление наград на 7 дней",
                 "Дневной лимит ящиков за бои 20 вместо 10 целую неделю.");
-        product("pack_rare", "chests", "pack1", 149, "3 редких ящика", "Оружие, монеты и шанс на жемчуг.",
+        product("pack_rare", "chests", "pack1", 499, "3 редких ящика", "Оружие, монеты и шанс на жемчуг.",
                 crates("rare", 3));
-        product("pack_epic", "chests", "pack2", 449, "Набор «Эпический»", "3 эпических и 5 редких ящиков.",
+        product("pack_epic", "chests", "pack2", 1999, "Набор «Эпический»", "3 эпических и 5 редких ящиков.",
                 crates("epic", 3), crates("rare", 5));
-        product("pack_legend", "chests", "pack3", 990, "Набор «Легенда»", "2 легендарных и 5 эпических ящиков.",
+        product("pack_legend", "chests", "pack3", 4999, "Набор «Легенда»", "2 легендарных и 5 эпических ящиков.",
                 crates("legendary", 2), crates("epic", 5));
-        Product p = product("instant_upgrade", "upgrade", "upgrade", 59, "Мгновенное улучшение",
+        Product p = product("instant_upgrade", "upgrade", "upgrade", 399, "Мгновенное улучшение",
                 "+1 уровень выбранной детали без затрат монет.");
         p.hidden = true;
-        p = product("loss_bonus", "offers", "loss", 29, "Утешительный набор",
+        p = product("loss_bonus", "offers", "loss", 199, "Утешительный набор",
                 "Только сейчас: 4 000 монет, 2 редких ящика и 60 жемчуга.", coins(4000), crates("rare", 2), gems(60));
         p.hidden = true;
+    }
+
+    private static String fmt1(double v) {
+        return v == Math.floor(v) ? String.valueOf((int) v) : String.valueOf(Math.round(v * 10) / 10.0).replace('.', ',');
+    }
+
+    public static String usd(int cents) {
+        return "$" + (cents / 100) + "." + String.format("%02d", cents % 100);
     }
 
     /** Purchase for in-game gems. */
@@ -447,6 +492,19 @@ public final class Catalog {
             o.addProperty("cd", d.cd);
             o.addProperty("range", Math.round(d.range()));
             o.addProperty("splash", d.splashR);
+            JsonArray fx = new JsonArray();
+            if (d.homing > 0) fx.add(d.homing > 5 ? "автонаведение" : "самонаведение");
+            if (d.stun > 0) fx.add("отключает системы на " + fmt1(d.stun) + " с");
+            if (d.slow > 0) fx.add("замедляет на " + fmt1(d.slow) + " с");
+            if (d.burn > 0) fx.add("кислота " + Math.round(d.burn) + "/с, " + fmt1(d.burnTime) + " с");
+            if (d.drain > 0) fx.add("−" + Math.round(d.drain) + " энергии");
+            if (d.knock > 0) fx.add("отбрасывает");
+            if (d.stealth) fx.add("невидима для врага");
+            if (d.pierce) fx.add("сквозь скалы");
+            if (d.grav > 0) fx.add("тонет");
+            if (d.drop) fx.add("сброс за корму");
+            if (d.kind.equals("torp_cluster")) fx.add("4 боеголовки");
+            o.add("effects", fx);
             JsonArray cards = new JsonArray();
             JsonArray coins = new JsonArray();
             for (int l = 1; l < MAX_WEAPON; l++) {
@@ -534,7 +592,8 @@ public final class Catalog {
             o.addProperty("desc", p.desc);
             o.addProperty("section", p.section);
             o.addProperty("icon", p.icon);
-            o.addProperty("price", p.priceRub);
+            o.addProperty("price", p.priceCents);
+            o.addProperty("priceText", usd(p.priceCents));
             o.addProperty("hidden", p.hidden);
             JsonArray rw = new JsonArray();
             for (Reward r : p.rewards) rw.add(r.toJson());
