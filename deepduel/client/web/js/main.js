@@ -1,6 +1,8 @@
 /* Boot, connection flow, account handling, host-server screen (Android) and battle wiring. */
 window.DD = window.DD || {};
-DD.VERSION = '1.0.0';
+DD.VERSION = '1.1.0';
+/** The main game server the app connects to by default. */
+DD.OFFICIAL_SERVER = '89.208.96.69:8765';
 (function () {
   const UI = DD.ui, $ = UI.$, $$ = UI.$$, esc = UI.esc, S = UI.state;
   const A = () => window.DeepDuelAndroid || null;
@@ -27,6 +29,7 @@ DD.VERSION = '1.0.0';
 
       if (A()) $('#host-block').classList.remove('hidden');
       $('#btn-host').onclick = () => { DD.sfx.init(); M.showHost(); };
+      $('#btn-official').onclick = () => { DD.sfx.init(); M.goFullscreen(); M.connect(DD.OFFICIAL_SERVER); };
       $('#btn-connect').onclick = () => { DD.sfx.init(); M.goFullscreen(); M.connect($('#inp-addr').value); };
       $('#inp-addr').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btn-connect').click(); });
       $('#btn-register').onclick = (e) => M.register(e.currentTarget);
@@ -75,7 +78,9 @@ DD.VERSION = '1.0.0';
         const recent = store.get('dd_recent', []);
         if (recent.length) $('#inp-addr').value = recent[0].addr;
         UI.show('connect');
-        if (recent.length && store.get('dd_autoconnect', true)) M.connect(recent[0].addr, true);
+        // first launch: go straight to the main server; later: to the server used last time
+        const target = recent.length ? recent[0].addr : DD.OFFICIAL_SERVER;
+        if (store.get('dd_autoconnect', true)) M.connect(target, true);
       }
     },
 

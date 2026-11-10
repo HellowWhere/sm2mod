@@ -545,3 +545,4 @@ i[data-icon] svg { width: 100%; height: 100%; display: block; }
 @keyframes lootFly { from { transform: translateY(-90px) scale(0.15) rotate(-12deg); opacity: 0; } 60% { opacity: 1; } }
 .loot-wrap .row { margin-top: 12px; }
 .opening.revealed .cr-lid { opacity: 0; transition: opacity 0.35s; }
+.btn-play-online { height: 52px; font-size: 17px; letter-spacing: 0.06em; }
