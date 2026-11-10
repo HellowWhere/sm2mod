@@ -543,7 +543,10 @@ window.DD = window.DD || {};
         DD.sfx.play('upgrade');
         UI.vibrate(40);
         const given = (r.result.given || []).filter(g => g.type && ['coins', 'gems', 'crate', 'skin'].includes(g.type));
-        P.rewardsModal('Покупка получена!', given, pr.name);
+        const up = (r.result.given || []).find(g => g.part);
+        const sub = up ? `${pr.name}: ${S.cat.parts[up.part].name} — уровень ${up.level}` : pr.name;
+        P.rewardsModal('Покупка получена!', given, sub);
+        if (up) P.levelUps(up.levelUps);
       } else {
         const m = UI.modal(`<h2>Заказ №${r.result.orderId} создан</h2><div>«${esc(pr.name)}» за ${pr.price} ₽.</div>
           <div class="hint">Свяжитесь с владельцем сервера для оплаты и назовите номер заказа. Товар появится сразу после подтверждения.</div>
