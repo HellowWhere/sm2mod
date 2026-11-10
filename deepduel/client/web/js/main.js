@@ -174,15 +174,22 @@ DD.VERSION = '1.0.0';
       setTimeout(() => $('#inp-name').focus(), 100);
     },
 
+    cachedCatalog() {
+      const c = store.get('dd_catalog_' + M.serverId, null);
+      return c && c.v && c.data ? c : null;
+    },
+
     async auth(reconnect) {
-      const d = await DD.net.req('auth', { token: M.token });
+      const c = M.cachedCatalog();
+      const d = await DD.net.req('auth', { token: M.token, cv: c ? c.v : '' });
       M.enter(d, reconnect);
     },
 
     async register(btn) {
       const name = $('#inp-name').value.trim();
       DD.sfx.init();
-      const d = await UI.run(btn, () => DD.net.req('register', { name }));
+      const c = M.cachedCatalog();
+      const d = await UI.run(btn, () => DD.net.req('register', { name, cv: c ? c.v : '' }));
       if (!d) return;
       M.token = d.token;
       M.rememberAccount(d.profile.name);
@@ -211,7 +218,8 @@ DD.VERSION = '1.0.0';
         const code = $('#rs-code', m.el).value.trim();
         if (!code) return;
         M.token = code;
-        const d = await UI.run(e.currentTarget, () => DD.net.req('auth', { token: code }));
+        const c = M.cachedCatalog();
+        const d = await UI.run(e.currentTarget, () => DD.net.req('auth', { token: code, cv: c ? c.v : '' }));
         if (!d) { M.token = null; return; }
         m.close();
         M.rememberAccount(d.profile.name);
@@ -221,7 +229,10 @@ DD.VERSION = '1.0.0';
 
     enter(d, reconnect) {
       if (d.token) M.token = d.token;
-      UI.setCatalog(d.catalog);
+      if (d.catalog) store.set('dd_catalog_' + M.serverId, { v: d.catalogVersion, data: d.catalog });
+      const catalog = d.catalog || (M.cachedCatalog() || {}).data;
+      if (!catalog) throw new Error('Нет каталога игры');
+      UI.setCatalog(catalog);
       S.server = d.server;
       M.rememberAccount(d.profile.name);
       const inBattle = S.screen === 'battle' && DD.battle.active;

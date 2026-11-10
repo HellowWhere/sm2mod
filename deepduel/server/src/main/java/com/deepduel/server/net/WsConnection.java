@@ -35,7 +35,7 @@ public final class WsConnection {
         this.in = in;
         this.out = out;
         this.remote = String.valueOf(socket.getRemoteSocketAddress());
-        Thread w = new Thread(this::writeLoop, "dd-ws-writer");
+        Thread w = new Thread(null, this::writeLoop, "dd-ws-writer", 128 * 1024);
         w.setDaemon(true);
         w.start();
     }

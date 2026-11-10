@@ -12,6 +12,8 @@ import java.util.Random;
  */
 public final class Battle {
     public static final double COUNTDOWN = 3.5;
+    public static final int TICK_HZ = 30;
+    public static final int SNAP_EVERY = 2;
     private static final int MAX_MINES = 3;
 
     public final String id;
@@ -64,7 +66,6 @@ public final class Battle {
     public void tick(double dt) {
         if (phase == 2) return;
         ticks++;
-        events.setLength(0);
         if (phase == 0) {
             countdown -= dt;
             if (countdown <= 0) {
@@ -92,6 +93,11 @@ public final class Battle {
             double f0 = subs[0].hp / subs[0].st.maxHp, f1 = subs[1].hp / subs[1].st.maxHp;
             finish(Math.abs(f0 - f1) < 0.005 ? -1 : (f0 > f1 ? 0 : 1), "time");
         }
+    }
+
+    /** Called by the server after the snapshots of this tick were sent. */
+    public void clearEvents() {
+        events.setLength(0);
     }
 
     public void finish(int winnerIdx, String reason) {
@@ -248,6 +254,7 @@ public final class Battle {
             Projectile p = make(s, d, dmg, s.x - cos * (r + 18), s.y - sin * (r + 18),
                     s.vx * 0.3 - cos * d.speed, s.vy * 0.3 - sin * d.speed);
             p.mine = isMine;
+            p.streamed = isMine;
             spawned.add(p);
             ev("drop", p.x, p.y, s.idx, p.kind);
             return;
@@ -303,10 +310,12 @@ public final class Battle {
         p.drain = d.drain;
         p.knock = d.knock;
         p.stealth = d.stealth;
+        p.streamed = p.homing > 0 || p.stealth || d.kind.equals("mine");
         return p;
     }
 
     private void updateProjectiles(double dt) {
+        for (Projectile q : spawned) if (!q.streamed) evSpawn(q);
         projs.addAll(spawned);
         spawned.clear();
         for (Projectile p : projs) {
@@ -366,10 +375,15 @@ public final class Battle {
                 ev("split", p.x, p.y, p.owner, 0);
                 continue;
             }
+            double ox = p.x, oy = p.y;
             p.x += p.vx * dt;
             p.y += p.vy * dt;
 
-            if (dist(p.x, p.y, target.x, target.y) < p.radius + tr) {
+            // swept test: the whole path of this tick, so fast shells cannot skip over a submarine
+            double[] hitAt = segmentHit(ox, oy, p.x, p.y, target.x, target.y, p.radius + tr);
+            if (hitAt != null) {
+                p.x = hitAt[0];
+                p.y = hitAt[1];
                 damage(target, p.dmg, p.owner);
                 if (p.stun > 0) {
                     target.stun = Math.max(target.stun, p.stun);
@@ -417,7 +431,24 @@ public final class Battle {
                 if (p.explosive()) explode(p, target, false);
             }
         }
+        for (Projectile q : projs) if (q.dead && !q.streamed) evDeath(q);
         projs.removeIf(q -> q.dead);
+    }
+
+    /** First point of segment a->b that comes within r of point c, or null. */
+    private static double[] segmentHit(double ax, double ay, double bx, double by, double cx, double cy, double r) {
+        double dx = bx - ax, dy = by - ay;
+        double fx = ax - cx, fy = ay - cy;
+        double a = dx * dx + dy * dy;
+        double c = fx * fx + fy * fy - r * r;
+        if (c <= 0) return new double[]{ax, ay};
+        if (a < 1e-9) return null;
+        double b = 2 * (fx * dx + fy * dy);
+        double disc = b * b - 4 * a * c;
+        if (disc < 0) return null;
+        double t = (-b - Math.sqrt(disc)) / (2 * a);
+        if (t < 0 || t > 1) return null;
+        return new double[]{ax + dx * t, ay + dy * t};
     }
 
     private void explode(Projectile p, Sub target, boolean full) {
@@ -482,10 +513,24 @@ public final class Battle {
     private void ev(String type, double x, double y, double p1, double p2) {
         if (events.length() > 0) events.append(',');
         events.append("[\"").append(type).append("\",");
-        num(events, x).append(',');
-        num(events, y).append(',');
+        events.append(Math.round(x)).append(',').append(Math.round(y)).append(',');
         num(events, p1).append(',');
         num(events, p2).append(']');
+    }
+
+    /** A straight-flying projectile is announced once; the client simulates its flight itself. */
+    private void evSpawn(Projectile q) {
+        if (events.length() > 0) events.append(',');
+        events.append("[\"p\",").append(q.id).append(',').append(q.kind).append(',')
+                .append(Math.round(q.x)).append(',').append(Math.round(q.y)).append(',')
+                .append(Math.round(q.vx)).append(',').append(Math.round(q.vy)).append(',')
+                .append(q.owner).append(',').append(ticks - 1).append(',');
+        num(events, q.life).append(']');
+    }
+
+    private void evDeath(Projectile q) {
+        if (events.length() > 0) events.append(',');
+        events.append("[\"d\",").append(q.id).append(',').append(ticks).append(']');
     }
 
     private static StringBuilder num(StringBuilder sb, double v) {
@@ -494,8 +539,13 @@ public final class Battle {
         return sb.append(r / 10.0);
     }
 
+    /** angles go over the wire in hundredths of a radian */
     private static StringBuilder ang(StringBuilder sb, double v) {
-        return sb.append(Math.round(v * 1000) / 1000.0);
+        return sb.append(Math.round(v * 100));
+    }
+
+    private static StringBuilder i(StringBuilder sb, double v) {
+        return sb.append(Math.round(v));
     }
 
     private static void cds(StringBuilder sb, double[] cd, List<SubStats.Slot> slots) {
@@ -503,7 +553,7 @@ public final class Battle {
         for (int i = 0; i < cd.length; i++) {
             if (i > 0) sb.append(',');
             SubStats.Slot s = slots.get(i);
-            sb.append(Math.round(cd[i] / s.def.cdAt(s.level) * 100) / 100.0);
+            sb.append(Math.round(cd[i] / s.def.cdAt(s.level) * 100));
         }
         sb.append(']');
     }
@@ -515,28 +565,28 @@ public final class Battle {
         sb.append("{\"t\":\"s\",\"k\":").append(ticks).append(",\"ph\":").append(phase).append(",\"cd\":");
         num(sb, countdown).append(",\"tm\":");
         num(sb, Math.max(0, timeLeft)).append(",\"me\":[");
-        num(sb, me.x).append(',');
-        num(sb, me.y).append(',');
+        i(sb, me.x).append(',');
+        i(sb, me.y).append(',');
         ang(sb, me.a).append(',');
-        num(sb, me.vx).append(',');
-        num(sb, me.vy).append(',');
-        num(sb, Math.ceil(me.hp)).append(',');
-        num(sb, me.energy).append(',');
+        i(sb, me.vx).append(',');
+        i(sb, me.vy).append(',');
+        i(sb, Math.ceil(me.hp)).append(',');
+        i(sb, me.energy).append(',');
         sb.append(me.boosting ? 1 : 0).append(',').append(me.stun > 0 ? 1 : 0).append(',').append(me.slow > 0 ? 1 : 0)
                 .append(',').append(me.boostLock ? 1 : 0).append(',').append(me.burnT > 0 ? 1 : 0).append("],\"gc\":");
         cds(sb, me.gunCd, me.st.guns);
         sb.append(",\"tc\":");
         cds(sb, me.torpCd, me.st.torps);
-        sb.append(",\"sc\":").append(Math.round(me.sonarCd / me.st.sonarCd * 100) / 100.0);
+        sb.append(",\"sc\":").append(Math.round(me.sonarCd / me.st.sonarCd * 100));
         sb.append(",\"oh\":");
-        num(sb, Math.ceil(op.hp));
+        i(sb, Math.ceil(op.hp));
         if (canSee(idx, op.idx)) {
             sb.append(",\"op\":[");
-            num(sb, op.x).append(',');
-            num(sb, op.y).append(',');
+            i(sb, op.x).append(',');
+            i(sb, op.y).append(',');
             ang(sb, op.a).append(',');
-            num(sb, op.vx).append(',');
-            num(sb, op.vy).append(',');
+            i(sb, op.vx).append(',');
+            i(sb, op.vy).append(',');
             sb.append(op.boosting ? 1 : 0).append(',').append(op.stun > 0 ? 1 : 0).append(',').append(op.slow > 0 ? 1 : 0)
                     .append(',').append(op.sonarRevealed > 0 ? 1 : 0).append(',').append(op.burnT > 0 ? 1 : 0).append(']');
         }
@@ -545,7 +595,7 @@ public final class Battle {
         boolean first = true;
         double vis2 = (me.st.vision + 80) * (me.st.vision + 80);
         for (Projectile p : projs) {
-            if (p.dead) continue;
+            if (p.dead || !p.streamed) continue;
             if (p.owner != idx) {
                 double dx = p.x - me.x, dy = p.y - me.y;
                 if (dx * dx + dy * dy > vis2) continue;
@@ -554,8 +604,8 @@ public final class Battle {
             if (!first) sb.append(',');
             first = false;
             sb.append('[').append(p.id).append(',').append(p.kind).append(',');
-            num(sb, p.x).append(',');
-            num(sb, p.y).append(',');
+            i(sb, p.x).append(',');
+            i(sb, p.y).append(',');
             ang(sb, Math.atan2(p.vy, p.vx)).append(',').append(p.owner == idx ? 1 : 0).append(']');
         }
         sb.append("],\"ev\":[").append(events).append("]}");
@@ -583,6 +633,12 @@ public final class Battle {
             num(sb, s.st.maxHp);
             sb.append(",\"vision\":");
             num(sb, s.st.vision);
+            sb.append(",\"spd\":");
+            num(sb, s.st.maxSpeed);
+            sb.append(",\"acc\":");
+            num(sb, s.st.accel);
+            sb.append(",\"turn\":").append(Math.round(s.st.turnRate * 1000) / 1000.0);
+            sb.append(",\"bm\":").append(Math.round(s.st.boostMul * 1000) / 1000.0);
             sb.append(",\"guns\":[");
             for (int k = 0; k < s.st.guns.size(); k++) {
                 if (k > 0) sb.append(',');
@@ -600,7 +656,21 @@ public final class Battle {
             if (i > 0) sb.append(',');
             sb.append('"').append(Projectile.KINDS[i]).append('"');
         }
-        sb.append("]}");
+        // per kind: sinking speed gain and whether horizontal drag applies (depth charges)
+        sb.append("],\"kphys\":[");
+        for (int i = 0; i < Projectile.KINDS.length; i++) {
+            if (i > 0) sb.append(',');
+            double grav = 0;
+            int drag = 0;
+            for (Catalog.WeaponDef d : Catalog.WEAPONS.values()) {
+                if (d.kind.equals(Projectile.KINDS[i])) {
+                    grav = d.grav;
+                    drag = d.drop && !d.kind.equals("mine") ? 1 : 0;
+                }
+            }
+            sb.append('[').append(Math.round(grav)).append(',').append(drag).append(']');
+        }
+        sb.append("],\"tick\":").append(TICK_HZ).append(",\"snap\":").append(SNAP_EVERY).append('}');
         return sb.toString();
     }
 }

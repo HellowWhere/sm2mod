@@ -220,9 +220,11 @@ window.DD = window.DD || {};
       this.c = $('#bg');
       this.ctx = this.c.getContext('2d');
       for (let i = 0; i < 60; i++) this.parts.push(this.newPart(true));
+      let last = 0;
       const loop = (ts) => {
         requestAnimationFrame(loop);
-        if (!this.active) return;
+        if (!this.active || ts - last < 32) return; // the menu background needs only ~30 fps
+        last = ts;
         this.draw(ts / 1000);
       };
       requestAnimationFrame(loop);

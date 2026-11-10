@@ -1,10 +1,22 @@
-/* Battle screen: renders server snapshots with interpolation, handles touch / keyboard controls. */
+/*
+ * Battle screen. Work is split between server and phone:
+ *  - the server simulates the battle (30 Hz) and sends compact snapshots 15 times a second;
+ *  - the phone predicts its own submarine (instant controls), simulates straight-flying
+ *    projectiles itself from one spawn message, interpolates everything else and draws it.
+ */
 window.DD = window.DD || {};
 (function () {
   const UI = DD.ui, $ = UI.$, S = UI.state;
-  const TICK_MS = 1000 / 30;
-  const INTERP_TICKS = 2.2;
+  let TICK_MS = 1000 / 30;
+  let INTERP_TICKS = 3.6;
   const VIEW_H = 560;
+  const FRAME_MIN_MS = 15.5; // render at most ~60 fps, also on 90/120 Hz screens
+
+  function wrap(a) {
+    while (a > Math.PI) a -= Math.PI * 2;
+    while (a < -Math.PI) a += Math.PI * 2;
+    return a;
+  }
 
   const THEMES = [
     { name: 'Коралловая лагуна', water: ['#1a8fb8', '#0b4f7a', '#05284a'], bed: ['#c9a96e', '#6b5333'], rock: ['#5f6f7a', '#2a333b'], far: 'rgba(8,50,80,0.55)', plant: '#3fae5a', coral: ['#ff6f91', '#ffb36b', '#c86bff'], glow: null },
@@ -48,6 +60,20 @@ window.DD = window.DD || {};
     hurtFlash: 0,
     prop: { me: 0, op: 0 },
     alertT: 0,
+    /** straight-flying projectiles simulated on the phone: id -> spawn data */
+    bal: new Map(),
+    /** client-side prediction of our own submarine */
+    pred: null,
+    predHist: [],
+    predTime: 0,
+    predAcc: 0,
+    predPhase: -1,
+    curInput: { x: 0, y: 0, f: 0, b: 0 },
+    /** automatic quality: render resolution drops if frames take too long */
+    dprScale: 1,
+    costAvg: 8,
+    lastQualityCheck: 0,
+    lastDraw: 0,
 
     init() {
       B.canvas = $('#game');
@@ -61,7 +87,7 @@ window.DD = window.DD || {};
     resize() {
       const c = B.canvas;
       const low = S.settings.quality === 'low';
-      B.dpr = Math.min(window.devicePixelRatio || 1, low ? 1 : 1.75);
+      B.dpr = Math.max(0.6, Math.min(window.devicePixelRatio || 1, low ? 1 : 1.75) * B.dprScale);
       B.W = c.clientWidth;
       B.H = c.clientHeight;
       c.width = Math.round(B.W * B.dpr);
@@ -77,7 +103,13 @@ window.DD = window.DD || {};
       B.me = m.subs[m.you];
       B.op = m.subs[1 - m.you];
       B.theme = THEMES[m.map.theme % THEMES.length];
+      TICK_MS = 1000 / (m.tick || 30);
+      INTERP_TICKS = (m.snap || 1) * 1.5 + 0.6;
       if (fresh) {
+        B.bal = new Map();
+        B.pred = null;
+        B.predHist = [];
+        B.predPhase = -1;
         B.snaps = [];
         B.clockOffset = null;
         B.lastEvK = 0;
@@ -89,6 +121,7 @@ window.DD = window.DD || {};
         B.lastPhase = -1;
         B.lastCount = -1;
         B.opLast = null;
+        B.resize();
         B.buildWorld();
         m.subs.forEach(sub => DD.subArt.get(S.cat.skins[sub.skin] || DD.DEFAULT_SKIN, DD.subArt.tierOf(sub.hull || 1)));
       }
@@ -151,6 +184,11 @@ window.DD = window.DD || {};
       }
       B.snow = [];
       for (let i = 0; i < 90; i++) B.snow.push({ x: r() * map.w, y: r() * map.h, s: 0.6 + r() * 1.8, z: 0.4 + r() * 0.8 });
+      // static art is drawn once into off-screen canvases (cheap to draw every frame afterwards)
+      const q = S.settings.quality;
+      B.bedLayer = DD.world.buildBed(map, B.theme, q, B.vents);
+      B.rockArt = B.rocks.map((rk, i) => DD.world.buildRock(rk, B.theme, map.theme % THEMES.length, q, 977 + i * 131));
+      B.plants = B.plants.filter(pl => pl.kind === 'kelp');
     },
 
     buildHud() {
@@ -206,8 +244,112 @@ window.DD = window.DD || {};
       const est = now - s.k * TICK_MS;
       if (B.clockOffset == null || est < B.clockOffset) B.clockOffset = est;
       else B.clockOffset += (est - B.clockOffset) * 0.01;
+      // compact wire format: angles in 1/100 rad, cooldowns in percent
+      s.me[2] /= 100;
+      if (s.op) s.op[2] /= 100;
+      (s.pr || []).forEach(q => { q[4] /= 100; });
+      s.gc = (s.gc || []).map(v => v / 100);
+      s.tc = (s.tc || []).map(v => v / 100);
+      s.sc = (s.sc || 0) / 100;
+      for (const e of s.ev || []) {
+        if (e[0] === 'p') B.bal.set(e[1], { kind: e[2], x0: e[3], y0: e[4], vx: e[5], vy: e[6], o: e[7], k0: e[8], life: e[9], dk: null, off: null });
+        else if (e[0] === 'd') { const b = B.bal.get(e[1]); if (b) b.dk = e[2]; }
+      }
       B.snaps.push(s);
       if (B.snaps.length > 40) B.snaps.shift();
+      B.reconcile(s, now);
+    },
+
+    // ================================================================ own submarine prediction
+    predReset(s, now, lagMs) {
+      const m = s.me, ex = (lagMs || 0) / 1000;
+      B.pred = { x: m[0] + m[3] * ex, y: m[1] + m[4] * ex, a: m[2], vx: m[3], vy: m[4] };
+      B.predHist = [];
+      B.predTime = now;
+      B.predAcc = 0;
+    },
+
+    /** Same movement rules as the server (Battle.updateSub), run locally for instant controls. */
+    predStep(dt, flags) {
+      const p = B.pred, st = B.me, map = B.M.map, inp = B.curInput;
+      let m = Math.min(1, Math.hypot(inp.x, inp.y));
+      if (flags[8]) m = 0;
+      const slow = flags[9], lock = flags[10], en = flags[6];
+      const boosting = inp.b && m > 0.2 && !lock && en > 0;
+      if (m > 0.15) {
+        const d = wrap(Math.atan2(inp.y, inp.x) - p.a);
+        const mt = st.turn * dt * (slow ? 0.6 : 1) * (boosting ? 0.85 : 1);
+        p.a = wrap(p.a + Math.max(-mt, Math.min(mt, d)));
+      }
+      const thrust = st.acc * m * (boosting ? st.bm : 1) * (slow ? 0.55 : 1);
+      const k = st.acc / st.spd;
+      p.vx += (Math.cos(p.a) * thrust - p.vx * k) * dt;
+      p.vy += (Math.sin(p.a) * thrust - p.vy * k) * dt;
+      p.x += p.vx * dt;
+      p.y += p.vy * dt;
+      const r = st.r;
+      if (p.y < r + 40) { p.y = r + 40; if (p.vy < 0) p.vy = 0; }
+      if (p.x < r) { p.x = r; if (p.vx < 0) p.vx = -p.vx * 0.3; }
+      if (p.x > map.w - r) { p.x = map.w - r; if (p.vx > 0) p.vx = -p.vx * 0.3; }
+      const bed = B.bedAt(p.x);
+      if (p.y + r * 0.8 > bed) { p.y = bed - r * 0.8; if (p.vy > 0) p.vy = -p.vy * 0.2; }
+      for (const rk of map.rocks) {
+        const dx = p.x - rk[0], dy = p.y - rk[1];
+        const d = Math.hypot(dx, dy), min = rk[2] + r * 0.85;
+        if (d < min && d > 0.001) {
+          const nx = dx / d, ny = dy / d;
+          p.x = rk[0] + nx * min;
+          p.y = rk[1] + ny * min;
+          const vn = p.vx * nx + p.vy * ny;
+          if (vn < 0) { p.vx -= 1.3 * vn * nx; p.vy -= 1.3 * vn * ny; }
+        }
+      }
+    },
+
+    predAdvance(now) {
+      const s = B.snaps[B.snaps.length - 1];
+      if (!s || !B.pred || s.ph !== 1) return;
+      let steps = 0;
+      while (B.predTime + TICK_MS <= now && steps < 12) {
+        B.predStep(TICK_MS / 1000, s.me);
+        B.predTime += TICK_MS;
+        const p = B.pred;
+        B.predHist.push({ t: B.predTime, x: p.x, y: p.y, vx: p.vx, vy: p.vy, a: p.a });
+        steps++;
+      }
+      if (steps >= 12) B.predTime = now;
+      while (B.predHist.length > 90) B.predHist.shift();
+      B.predAcc = Math.max(0, (now - B.predTime) / 1000);
+    },
+
+    /**
+     * The server state of tick k reflects our inputs from about one round trip ago, so it is
+     * compared with what we predicted back then; a part of the difference is corrected.
+     */
+    reconcile(s, now) {
+      const lag = Math.max(50, DD.net.latency || 0) + 50;
+      if (s.ph !== 1) { B.predReset(s, now, 0); B.predPhase = s.ph; return; }
+      if (!B.pred || B.predPhase !== 1) { B.predReset(s, now, 0); B.predPhase = 1; return; }
+      const h = B.predHist;
+      if (!h.length) return;
+      const target = now - lag;
+      let H = h[0];
+      for (let i = h.length - 1; i >= 0; i--) {
+        if (h[i].t <= target) {
+          const a = h[i], b = h[i + 1] || h[i];
+          const f = b.t > a.t ? (target - a.t) / (b.t - a.t) : 0;
+          H = { x: lerp(a.x, b.x, f), y: lerp(a.y, b.y, f), vx: lerp(a.vx, b.vx, f), vy: lerp(a.vy, b.vy, f), a: lerpAng(a.a, b.a, f) };
+          break;
+        }
+      }
+      const m = s.me;
+      const ex = m[0] - H.x, ey = m[1] - H.y;
+      if (Math.hypot(ex, ey) > 150) { B.predReset(s, now, lag); return; }
+      const k = 0.2;
+      const cx = ex * k, cy = ey * k, cvx = (m[3] - H.vx) * k, cvy = (m[4] - H.vy) * k, ca = wrap(m[2] - H.a) * k;
+      const p = B.pred;
+      p.x += cx; p.y += cy; p.vx += cvx; p.vy += cvy; p.a = wrap(p.a + ca);
+      for (const e of h) { e.x += cx; e.y += cy; e.vx += cvx; e.vy += cvy; e.a += ca; }
     },
 
     // ================================================================ controls
@@ -294,9 +436,11 @@ window.DD = window.DD || {};
       const ky = (k.KeyS || k.ArrowDown ? 1 : 0) - (k.KeyW || k.ArrowUp ? 1 : 0);
       if (kx || ky) { const l = Math.hypot(kx, ky); x = kx / l; y = ky / l; }
       const cur = { x: Math.round(x * 100) / 100, y: Math.round(y * 100) / 100, f: B.input.f ? 1 : 0, b: B.input.b ? 1 : 0 };
+      B.curInput = cur;
       const prev = B.sentInput;
       const changed = !prev || prev.x !== cur.x || prev.y !== cur.y || prev.f !== cur.f || prev.b !== cur.b;
-      if ((changed && now - B.lastSend > 45) || now - B.lastSend > 250) {
+      // at most ~16 input messages per second; the own sub is predicted locally anyway
+      if ((changed && now - B.lastSend > 60) || now - B.lastSend > 400) {
         DD.net.send('input', cur);
         B.sentInput = cur;
         B.lastSend = now;
@@ -319,7 +463,7 @@ window.DD = window.DD || {};
       for (const s of snaps) {
         if (s.k > B.lastEvK && s.k <= rt + 0.001) {
           B.lastEvK = s.k;
-          if (s.ev && s.ev.length) s.ev.forEach(B.event);
+          if (s.ev && s.ev.length) s.ev.forEach(e => { if (e[0] !== 'p' && e[0] !== 'd') B.event(e); });
         }
       }
       const ex = s0 === s1 ? t * TICK_MS / 1000 : 0; // extrapolation seconds
@@ -330,7 +474,12 @@ window.DD = window.DD || {};
         if (ex > 0) return { x: b[0] + b[3] * ex, y: b[1] + b[4] * ex, a: b[2], vx: b[3], vy: b[4] };
         return { x: lerp(a[0], b[0], t), y: lerp(a[1], b[1], t), a: lerpAng(a[2], b[2], t), vx: lerp(a[3], b[3], t), vy: lerp(a[4], b[4], t) };
       };
-      const me = subAt(s0.me, s1.me);
+      const meSrv = subAt(s0.me, s1.me);
+      let me = meSrv;
+      if (B.pred && s1.ph === 1 && B.predPhase === 1) {
+        const pp = B.pred, f = B.predAcc;
+        me = { x: pp.x + pp.vx * f, y: pp.y + pp.vy * f, a: pp.a, vx: pp.vx, vy: pp.vy };
+      }
       me.hp = s1.me[5]; me.en = s1.me[6]; me.boost = s1.me[7]; me.stun = s1.me[8]; me.slow = s1.me[9]; me.lock = s1.me[10]; me.burn = s1.me[11];
       let op = null;
       if (s1.op) {
@@ -344,6 +493,29 @@ window.DD = window.DD || {};
         if (q && ex === 0) return { id: p[0], k: p[1], x: lerp(q[2], p[2], t), y: lerp(q[3], p[3], t), a: lerpAng(q[4], p[4], t), mine: p[5] };
         return { id: p[0], k: p[1], x: p[2], y: p[3], a: p[4], mine: p[5] };
       });
+      // projectiles flying straight (or sinking) are computed here from their spawn message
+      const dts = TICK_MS / 1000, drag = Math.pow(0.3, dts), nowMs = performance.now();
+      for (const [id, b] of B.bal) {
+        if (b.dk != null && rt >= b.dk) { B.bal.delete(id); continue; }
+        const n = rt - b.k0;
+        if (n < 0) continue;
+        if (n * dts > b.life + 0.25) { B.bal.delete(id); continue; }
+        const ph = (B.M.kphys && B.M.kphys[b.kind]) || [0, 0];
+        const g = ph[0];
+        const px = b.x0 + dts * (ph[1] ? b.vx * drag * (1 - Math.pow(drag, n)) / (1 - drag) : b.vx * n);
+        const py = b.y0 + dts * (n * b.vy + g * dts * n * (n + 1) / 2);
+        const vxn = ph[1] ? b.vx * Math.pow(drag, n) : b.vx, vyn = b.vy + g * dts * n;
+        const own = b.o === B.M.you;
+        let ox = 0, oy = 0;
+        if (own) {
+          // our shots leave from where we see our (predicted) sub, then blend into the server path
+          if (!b.off) b.off = { x: me.x - meSrv.x, y: me.y - meSrv.y, t: nowMs };
+          const f = Math.max(0, 1 - (nowMs - b.off.t) / 350);
+          ox = b.off.x * f;
+          oy = b.off.y * f;
+        } else if (Math.hypot(px - me.x, py - me.y) > B.me.vision + 80) continue;
+        pr.push({ id, k: b.kind, x: px + ox, y: py + oy, a: Math.atan2(vyn, vxn), mine: own ? 1 : 0 });
+      }
       return { s: s1, me, op, pr };
     },
 
@@ -457,15 +629,28 @@ window.DD = window.DD || {};
       if (!B.active) return;
       B.raf = requestAnimationFrame(B.frame);
       const now = performance.now();
+      if (now - B.lastDraw < FRAME_MIN_MS) return;
+      B.lastDraw = now;
       const dt = B.lastFrame ? Math.min(0.05, (now - B.lastFrame) / 1000) : 0.016;
       B.lastFrame = now;
       B.sendInput(now);
+      B.predAdvance(now);
       const cur = B.sample(now);
       if (!cur) return;
       B.cur = cur;
       B.update(dt, cur);
       B.draw(dt, cur, ts / 1000);
       B.hud(dt, cur);
+      B.adaptQuality(performance.now() - now, now);
+    },
+
+    /** Lowers the render resolution on slow phones, raises it again when there is headroom. */
+    adaptQuality(cost, now) {
+      B.costAvg = B.costAvg * 0.95 + cost * 0.05;
+      if (now - B.lastQualityCheck < 2500) return;
+      B.lastQualityCheck = now;
+      if (B.costAvg > 12 && B.dprScale > 0.55) { B.dprScale = Math.max(0.55, B.dprScale - 0.15); B.resize(); }
+      else if (B.costAvg < 5 && B.dprScale < 1) { B.dprScale = Math.min(1, B.dprScale + 0.1); B.resize(); }
     },
 
     update(dt, cur) {
@@ -623,41 +808,39 @@ window.DD = window.DD || {};
       }
 
       world();
-      // sea bed
-      const bg = ctx.createLinearGradient(0, map.h - 450, 0, map.h + 100);
-      bg.addColorStop(0, th.bed[0]);
-      bg.addColorStop(1, th.bed[1]);
-      ctx.fillStyle = bg;
-      ctx.fill(B.bedPath);
-      ctx.strokeStyle = 'rgba(255,255,255,0.18)';
-      ctx.lineWidth = 3;
-      ctx.stroke(B.bedPath);
-      // plants
+      // sea bed: one pre-rendered image, only the visible part is copied
+      const L = B.bedLayer;
+      if (L) {
+        const vy0 = B.cam.y - H / sc / 2 - 50, vy1 = B.cam.y + H / sc / 2 + 50;
+        const sx0 = Math.max(0, (vx0 - L.x0) * L.res), sy0 = Math.max(0, (vy0 - L.y0) * L.res);
+        const sx1 = Math.min(L.canvas.width, (vx1 - L.x0) * L.res), sy1 = Math.min(L.canvas.height, (vy1 - L.y0) * L.res);
+        if (sx1 > sx0 && sy1 > sy0) {
+          ctx.drawImage(L.canvas, sx0, sy0, sx1 - sx0, sy1 - sy0,
+            L.x0 + sx0 / L.res, L.y0 + sy0 / L.res, (sx1 - sx0) / L.res, (sy1 - sy0) / L.res);
+        }
+      }
+      // swaying kelp with leaves (animated, so drawn live)
       for (const p of B.plants) {
         if (p.x < vx0 || p.x > vx1) continue;
         const by = B.bedAt(p.x) + 4;
-        if (p.kind === 'kelp') {
-          ctx.strokeStyle = th.plant;
-          ctx.lineWidth = 4;
-          ctx.beginPath();
-          ctx.moveTo(p.x, by);
-          const sw = Math.sin(t * 1.2 + p.ph) * 14;
-          ctx.quadraticCurveTo(p.x + sw, by - p.h * 0.5, p.x + sw * 1.6, by - p.h);
-          ctx.stroke();
-        } else if (p.kind === 'coral') {
-          ctx.fillStyle = th.coral[p.c];
-          if (th.glow) { ctx.globalAlpha = 0.85 + 0.15 * Math.sin(t * 2 + p.ph); }
-          for (let k = 0; k < 3; k++) {
+        const sw = Math.sin(t * 1.2 + p.ph) * 14;
+        const tx = p.x + sw * 1.6, ty = by - p.h, cx = p.x + sw, cy = by - p.h * 0.5;
+        ctx.strokeStyle = DD.color.shade(th.plant, -0.25);
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x, by);
+        ctx.quadraticCurveTo(cx, cy, tx, ty);
+        ctx.stroke();
+        if (!low) {
+          ctx.fillStyle = th.plant;
+          for (let k = 1; k <= 4; k++) {
+            const f = k / 5, inv = 1 - f;
+            const lx = inv * inv * p.x + 2 * inv * f * cx + f * f * tx, ly = inv * inv * by + 2 * inv * f * cy + f * f * ty;
+            const side = k % 2 ? 1 : -1;
             ctx.beginPath();
-            ctx.arc(p.x + (k - 1) * p.w, by - p.w * (1 + (k % 2)), p.w * 0.9, 0, Math.PI * 2);
+            ctx.ellipse(lx + side * 7, ly, 8, 3.2, side * 0.6 + Math.sin(t * 2 + p.ph + k) * 0.2, 0, Math.PI * 2);
             ctx.fill();
           }
-          ctx.globalAlpha = 1;
-        } else {
-          ctx.fillStyle = th.rock[1];
-          ctx.beginPath();
-          ctx.ellipse(p.x, by, p.w * 2, p.w, 0, Math.PI, 0);
-          ctx.fill();
         }
       }
       for (const v of B.vents) {
@@ -669,18 +852,11 @@ window.DD = window.DD || {};
         ctx.fillStyle = vg;
         ctx.fillRect(v.x - 60, by - 60, 120, 120);
       }
-      // rocks
-      for (const r of B.rocks) {
-        if (r.x + r.r < vx0 || r.x - r.r > vx1) continue;
-        const rg = ctx.createLinearGradient(r.x - r.r, r.y - r.r, r.x + r.r, r.y + r.r);
-        rg.addColorStop(0, th.rock[0]);
-        rg.addColorStop(1, th.rock[1]);
-        ctx.fillStyle = rg;
-        ctx.fill(r.p);
-        ctx.strokeStyle = 'rgba(255,255,255,0.12)';
-        ctx.lineWidth = 3;
-        ctx.stroke(r.p);
-      }
+      // rocks (pre-rendered)
+      (B.rockArt || []).forEach(ra => {
+        if (ra.x + ra.size < vx0 || ra.x > vx1) return;
+        ctx.drawImage(ra.canvas, ra.x, ra.y, ra.size, ra.size);
+      });
       // projectiles
       for (const p of cur.pr) B.drawProj(ctx, p, t);
       // subs
@@ -875,14 +1051,525 @@ window.DD = window.DD || {};
           break;
         }
         case 'mine': {
-          ctx.rotate(-p.a + t * 0.5);
-          ctx.fillStyle = '#4d5a66';
-          for (let i = 0; i < 8; i++) { ctx.rotate(Math.PI / 4); ctx.fillRect(-1.5, -17, 3, 7); }
-          ctx.beginPath(); ctx.arc(0, 0, 12, 0, Math.PI * 2); ctx.fillStyle = '#6b7a88'; ctx.fill();
-          ctx.strokeStyle = '#1b2733'; ctx.lineWidth = 2; ctx.stroke();
+          // anchored sea mine: pre-rendered body, swaying chain and blinking light drawn live
+          ctx.rotate(-p.a);
+          ctx.strokeStyle = '#6f7f8d';
+          ctx.lineWidth = 1.6;
+          const sway = Math.sin(t * 1.6 + p.id) * 4;
+          for (let i = 0; i < 6; i++) {
+            ctx.beginPath();
+            ctx.ellipse(sway * i / 6, 16 + i * 5, 1.8, 2.6, 0, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          const spr = DD.world.sprite('mine');
+          ctx.rotate(Math.sin(t * 0.8 + p.id) * 0.15);
+          ctx.drawImage(spr, -spr.width / DD.world.SPR_RES / 2, -spr.height / DD.world.SPR_RES / 2, spr.width / DD.world.SPR_RES, spr.height / DD.world.SPR_RES);
           const blink = Math.sin(t * 8) > 0;
           ctx.fillStyle = p.mine ? (blink ? '#4dffd2' : '#1a8070') : (blink ? '#ff3030' : '#801818');
-          ctx.beginPath(); ctx.arc(0, 0, 4, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(0, -3, 3, 0, Math.PI * 2); ctx.fill();
+          if (blink) { ctx.fillStyle = p.mine ? 'rgba(77,255,210,0.3)' : 'rgba(255,48,48,0.3)'; ctx.beginPath(); ctx.arc(0, -3, 8, 0, Math.PI * 2); ctx.fill(); }
+          break;
+        }
+        case 'twin':
+          ctx.fillStyle = '#ffd36b';
+          ctx.beginPath(); ctx.ellipse(0, 0, 8, 3.2, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,200,100,0.35)'; ctx.fillRect(-22, -1.8, 16, 3.6);
+          break;
+        case 'mortar': {
+          ctx.rotate(-p.a + t * 6);
+          const spr = DD.world.sprite('mortar'), R = DD.world.SPR_RES;
+          ctx.drawImage(spr, -spr.width / R / 2, -spr.height / R / 2, spr.width / R, spr.height / R);
+          ctx.fillStyle = Math.sin(t * 20) > 0 ? '#ffb03b' : '#ff5a1f'; ctx.beginPath(); ctx.arc(0, -10, 2.2, 0, Math.PI * 2); ctx.fill();
+          break;
+        }
+        case 'acid':
+          for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.6, max: 0.6, c: '140,255,90', s: 3.5 });
+          if (p1 === meIdx) B.alert('Корпус разъедает кислота!', 'red', 1.5);
+          DD.sfx.play('hit', vol, pan);
+          break;
+        case 'burn':
+          B.texts.push({ x: x + (Math.random() - 0.5) * 24, y, txt: '-' + p1, life: 0.9, max: 0.9, c: '#9dff5d', big: false });
+          if (Math.random() < 0.6) B.bubble(x, y + 20, 2 + Math.random() * 2, 0, -40);
+          break;
+        case 'drain':
+          for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 260, vy: (Math.random() - 0.5) * 260, life: 0.5, max: 0.5, c: '160,140,255', s: 3 });
+          B.lights.push({ x, y, r: 110, life: 0.3, max: 0.3, c: '150,130,255' });
+          if (p1 === meIdx) B.alert('Аккумулятор разряжен!', 'blue', 1.4);
+          DD.sfx.play('zap', vol, pan);
+          break;
+        case 'knock':
+          B.rings.push({ x, y, r: 10, vr: 500, life: 0.45, max: 0.45, c: '160,230,255', w: 3 });
+          if (p1 === meIdx) { B.shake = Math.max(B.shake, 10); UI.vibrate(60); }
+          break;
+        case 'freeze':
+          for (let i = 0; i < 8; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 140, vy: (Math.random() - 0.5) * 140, life: 0.7, max: 0.7, c: '200,245,255', s: 3 });
+          if (p1 === meIdx) B.alert('Винт заморожен!', 'blue', 1.5);
+          break;
+        case 'split':
+          B.lights.push({ x, y, r: 70, life: 0.2, max: 0.2, c: '220,180,255' });
+          DD.sfx.play('click', vol, pan);
+          break;
+        default: break;
+      }
+    },
+
+    bubble(x, y, r, vx, vy) {
+      if (B.particles.length > 600) return;
+      B.particles.push({ t: 'bubble', x, y, vx, vy, life: 1.5 + Math.random(), max: 2.5, s: r });
+    },
+
+    alert(text, cls, secs) {
+      const el = $('#hud-alert');
+      el.textContent = text;
+      el.className = 'hud-alert show ' + cls;
+      B.alertT = secs;
+    },
+
+    // ================================================================ main loop
+    frame(ts) {
+      B.raf = 0;
+      if (!B.active) return;
+      B.raf = requestAnimationFrame(B.frame);
+      const now = performance.now();
+      if (now - B.lastDraw < FRAME_MIN_MS) return;
+      B.lastDraw = now;
+      const dt = B.lastFrame ? Math.min(0.05, (now - B.lastFrame) / 1000) : 0.016;
+      B.lastFrame = now;
+      B.sendInput(now);
+      B.predAdvance(now);
+      const cur = B.sample(now);
+      if (!cur) return;
+      B.cur = cur;
+      B.update(dt, cur);
+      B.draw(dt, cur, ts / 1000);
+      B.hud(dt, cur);
+      B.adaptQuality(performance.now() - now, now);
+    },
+
+    /** Lowers the render resolution on slow phones, raises it again when there is headroom. */
+    adaptQuality(cost, now) {
+      B.costAvg = B.costAvg * 0.95 + cost * 0.05;
+      if (now - B.lastQualityCheck < 2500) return;
+      B.lastQualityCheck = now;
+      if (B.costAvg > 12 && B.dprScale > 0.55) { B.dprScale = Math.max(0.55, B.dprScale - 0.15); B.resize(); }
+      else if (B.costAvg < 5 && B.dprScale < 1) { B.dprScale = Math.min(1, B.dprScale + 0.1); B.resize(); }
+    },
+
+    update(dt, cur) {
+      const me = cur.me, op = cur.op;
+      const map = B.M.map;
+      // camera
+      const tx = me.x + me.vx * 0.35, ty = me.y + me.vy * 0.25;
+      if (!B.cam.init) { B.cam.x = tx; B.cam.y = ty; B.cam.init = true; }
+      const k = 1 - Math.exp(-dt * 5);
+      B.cam.x += (tx - B.cam.x) * k;
+      B.cam.y += (ty - B.cam.y) * k;
+      const hw = B.W / B.scale / 2, hh = B.H / B.scale / 2;
+      B.cam.x = Math.max(hw - 120, Math.min(map.w - hw + 120, B.cam.x));
+      B.cam.y = Math.max(hh - 140, Math.min(map.h - hh + 60, B.cam.y));
+      // propellers & trails
+      const sp = Math.hypot(me.vx, me.vy);
+      B.prop.me += dt * (4 + sp / 12) * (me.boost ? 1.8 : 1);
+      if (Math.random() < dt * (sp / 18 + (me.boost ? 30 : 0))) B.trail(me, B.me.r);
+      if (op) {
+        const so = Math.hypot(op.vx, op.vy);
+        B.prop.op += dt * (4 + so / 12);
+        if (Math.random() < dt * (so / 18 + (op.boost ? 30 : 0))) B.trail(op, B.op.r);
+        B.opLast = { x: op.x, y: op.y, a: op.a, t: performance.now() };
+      }
+      // low hp smoke
+      const myFrac = me.hp / B.me.maxHp;
+      if (myFrac < 0.35 && Math.random() < dt * 8) B.bubble(me.x + (Math.random() - 0.5) * B.me.r, me.y - B.me.r * 0.6, 2 + Math.random() * 3, (Math.random() - 0.5) * 30, -50);
+      // torpedo trails
+      for (const p of cur.pr) {
+        const kind = B.M.kinds[p.k];
+        if (kind && kind.startsWith('torp') || kind === 'bomblet' || kind === 'depth') {
+          if (Math.random() < dt * 30) B.bubble(p.x - Math.cos(p.a) * 14, p.y - Math.sin(p.a) * 14, 1 + Math.random() * 2.5, (Math.random() - 0.5) * 20, -15 - Math.random() * 20);
+        }
+      }
+      for (const v of B.vents) {
+        if (Math.random() < dt * 6) B.bubble(v.x + (Math.random() - 0.5) * 16, B.bedAt(v.x) - 4, 1.5 + Math.random() * 3, (Math.random() - 0.5) * 10, -60 - Math.random() * 40);
+      }
+      // particles
+      for (const p of B.particles) {
+        p.life -= dt;
+        if (p.t === 'bubble') {
+          p.vx *= Math.pow(0.3, dt);
+          p.vy += (-90 - p.vy) * dt * 1.5;
+          p.x += p.vx * dt + Math.sin(p.life * 6 + p.s) * 0.3;
+          p.y += p.vy * dt;
+          if (p.y < 4) p.life = 0;
+        } else {
+          p.vx *= Math.pow(0.05, dt);
+          p.vy *= Math.pow(0.05, dt);
+          p.x += p.vx * dt;
+          p.y += p.vy * dt;
+          if (p.t === 'smoke') p.s += dt * 40;
+        }
+      }
+      B.particles = B.particles.filter(p => p.life > 0);
+      for (const l of B.lights) l.life -= dt;
+      B.lights = B.lights.filter(l => l.life > 0);
+      for (const r of B.rings) { r.life -= dt; r.r += r.vr * dt; if (!r.ping) r.vr *= Math.pow(0.02, dt); }
+      B.rings = B.rings.filter(r => r.life > 0);
+      for (const t of B.texts) { t.life -= dt; t.y -= 40 * dt; }
+      B.texts = B.texts.filter(t => t.life > 0);
+      B.hitFlash.me = Math.max(0, B.hitFlash.me - dt * 5);
+      B.hitFlash.op = Math.max(0, B.hitFlash.op - dt * 5);
+      B.hurtFlash = Math.max(0, B.hurtFlash - dt * 2);
+      B.shake = Math.max(0, B.shake - dt * 30);
+      if (B.alertT > 0) { B.alertT -= dt; if (B.alertT <= 0) $('#hud-alert').className = 'hud-alert'; }
+    },
+
+    trail(sub, r) {
+      const back = r * 1.45;
+      B.bubble(sub.x - Math.cos(sub.a) * back, sub.y - Math.sin(sub.a) * back, 1 + Math.random() * 3, -Math.cos(sub.a) * 40 + (Math.random() - 0.5) * 30, -Math.sin(sub.a) * 40 - 10);
+    },
+
+    bedAt(x) {
+      const m = B.M.map;
+      const i = Math.max(0, Math.min(m.bed.length - 2, Math.floor(x / m.step)));
+      const t = Math.max(0, Math.min(1, (x - i * m.step) / m.step));
+      return m.bed[i] * (1 - t) + m.bed[i + 1] * t;
+    },
+
+    // ================================================================ drawing
+    draw(dt, cur, t) {
+      const ctx = B.ctx, map = B.M.map, th = B.theme;
+      const W = B.W, H = B.H, dpr = B.dpr, sc = B.scale;
+      const sx = (Math.random() - 0.5) * B.shake, sy = (Math.random() - 0.5) * B.shake;
+      const ox = W / 2 - B.cam.x * sc + sx, oy = H / 2 - B.cam.y * sc + sy;
+      const world = () => ctx.setTransform(sc * dpr, 0, 0, sc * dpr, ox * dpr, oy * dpr);
+      const screen = () => ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const low = S.settings.quality === 'low';
+      const vx0 = B.cam.x - W / sc / 2 - 50, vx1 = B.cam.x + W / sc / 2 + 50;
+
+      // water
+      screen();
+      const g = ctx.createLinearGradient(0, oy, 0, oy + map.h * sc);
+      g.addColorStop(0, th.water[0]);
+      g.addColorStop(0.45, th.water[1]);
+      g.addColorStop(1, th.water[2]);
+      ctx.fillStyle = g;
+      ctx.fillRect(0, 0, W, H);
+      // surface band
+      if (oy > -40) {
+        ctx.fillStyle = 'rgba(200,245,255,0.25)';
+        ctx.beginPath();
+        ctx.moveTo(0, oy);
+        for (let x = 0; x <= W; x += 20) ctx.lineTo(x, oy + Math.sin(x * 0.03 + t * 2) * 3 + 4);
+        ctx.lineTo(W, 0);
+        ctx.lineTo(0, 0);
+        ctx.fill();
+        if (oy > 0) { ctx.fillStyle = '#9ed8f0'; ctx.fillRect(0, 0, W, oy); }
+      }
+      // far silhouettes (parallax)
+      for (let L = 0; L < 2; L++) {
+        const par = L ? 0.6 : 0.35;
+        ctx.fillStyle = L ? th.far : th.far.replace(/[\d.]+\)$/, '0.35)');
+        const fox = W / 2 - B.cam.x * sc * par, foy = H / 2 - B.cam.y * sc * par + (1 - par) * map.h * sc * 0.5;
+        ctx.beginPath();
+        ctx.moveTo(fox - 400 * sc, H + 10);
+        for (const f of B.far[L]) {
+          const x = fox + f.x * sc * par;
+          if (x < -400 || x > W + 400) continue;
+          const base = foy + map.h * sc * par;
+          ctx.lineTo(x, base);
+          ctx.lineTo(x + f.w * 0.3 * sc * par, base - f.h * sc * par);
+          ctx.lineTo(x + f.w * 0.7 * sc * par, base - f.h * 0.85 * sc * par);
+          ctx.lineTo(x + f.w * sc * par, base);
+        }
+        ctx.lineTo(W + 400, H + 10);
+        ctx.fill();
+      }
+      // light rays
+      if (!low) {
+        ctx.globalCompositeOperation = 'lighter';
+        for (let i = 0; i < 7; i++) {
+          const x = ((i * 260 - B.cam.x * sc * 0.5) % (W + 400) + W + 400) % (W + 400) - 200 + Math.sin(t * 0.3 + i) * 30;
+          const top = Math.max(0, oy);
+          const rg = ctx.createLinearGradient(0, top, 0, top + H * 0.9);
+          rg.addColorStop(0, 'rgba(170,230,255,0.13)');
+          rg.addColorStop(1, 'rgba(170,230,255,0)');
+          ctx.fillStyle = rg;
+          ctx.beginPath();
+          ctx.moveTo(x - 25, top);
+          ctx.lineTo(x + 25, top);
+          ctx.lineTo(x + 170, top + H);
+          ctx.lineTo(x + 60, top + H);
+          ctx.fill();
+        }
+        ctx.globalCompositeOperation = 'source-over';
+      }
+      // marine snow
+      ctx.fillStyle = 'rgba(220,240,255,0.35)';
+      for (const p of B.snow) {
+        const x = ((p.x - B.cam.x * p.z) * sc + W / 2 + t * 6 * p.z) % W;
+        const y = (((p.y - B.cam.y * p.z) * sc + H / 2 + t * 10 * p.z) % H + H) % H;
+        ctx.fillRect((x + W) % W, y, p.s, p.s);
+      }
+
+      world();
+      // sea bed: one pre-rendered image, only the visible part is copied
+      const L = B.bedLayer;
+      if (L) {
+        const vy0 = B.cam.y - H / sc / 2 - 50, vy1 = B.cam.y + H / sc / 2 + 50;
+        const sx0 = Math.max(0, (vx0 - L.x0) * L.res), sy0 = Math.max(0, (vy0 - L.y0) * L.res);
+        const sx1 = Math.min(L.canvas.width, (vx1 - L.x0) * L.res), sy1 = Math.min(L.canvas.height, (vy1 - L.y0) * L.res);
+        if (sx1 > sx0 && sy1 > sy0) {
+          ctx.drawImage(L.canvas, sx0, sy0, sx1 - sx0, sy1 - sy0,
+            L.x0 + sx0 / L.res, L.y0 + sy0 / L.res, (sx1 - sx0) / L.res, (sy1 - sy0) / L.res);
+        }
+      }
+      // swaying kelp with leaves (animated, so drawn live)
+      for (const p of B.plants) {
+        if (p.x < vx0 || p.x > vx1) continue;
+        const by = B.bedAt(p.x) + 4;
+        const sw = Math.sin(t * 1.2 + p.ph) * 14;
+        const tx = p.x + sw * 1.6, ty = by - p.h, cx = p.x + sw, cy = by - p.h * 0.5;
+        ctx.strokeStyle = DD.color.shade(th.plant, -0.25);
+        ctx.lineWidth = 3.5;
+        ctx.beginPath();
+        ctx.moveTo(p.x, by);
+        ctx.quadraticCurveTo(cx, cy, tx, ty);
+        ctx.stroke();
+        if (!low) {
+          ctx.fillStyle = th.plant;
+          for (let k = 1; k <= 4; k++) {
+            const f = k / 5, inv = 1 - f;
+            const lx = inv * inv * p.x + 2 * inv * f * cx + f * f * tx, ly = inv * inv * by + 2 * inv * f * cy + f * f * ty;
+            const side = k % 2 ? 1 : -1;
+            ctx.beginPath();
+            ctx.ellipse(lx + side * 7, ly, 8, 3.2, side * 0.6 + Math.sin(t * 2 + p.ph + k) * 0.2, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+      }
+      for (const v of B.vents) {
+        if (v.x < vx0 || v.x > vx1) continue;
+        const by = B.bedAt(v.x);
+        const vg = ctx.createRadialGradient(v.x, by, 2, v.x, by, 60);
+        vg.addColorStop(0, 'rgba(255,120,40,0.6)');
+        vg.addColorStop(1, 'rgba(255,120,40,0)');
+        ctx.fillStyle = vg;
+        ctx.fillRect(v.x - 60, by - 60, 120, 120);
+      }
+      // rocks (pre-rendered)
+      (B.rockArt || []).forEach(ra => {
+        if (ra.x + ra.size < vx0 || ra.x > vx1) return;
+        ctx.drawImage(ra.canvas, ra.x, ra.y, ra.size, ra.size);
+      });
+      // projectiles
+      for (const p of cur.pr) B.drawProj(ctx, p, t);
+      // subs
+      const me = cur.me, op = cur.op;
+      const vis = B.me.vision;
+      const opInside = op && Math.hypot(op.x - me.x, op.y - me.y) < vis * 0.9;
+      const skinOf = (sub) => S.cat.skins[sub.skin] || DD.DEFAULT_SKIN;
+      const tierOf = (sub) => DD.subArt.tierOf(sub.hull || 1);
+      if (op && opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, tier: tierOf(B.op), prop: B.prop.op, light: !low, hit: B.hitFlash.op, stun: op.stun, slow: op.slow, burn: op.burn });
+      DD.drawSub(ctx, me.x, me.y, me.a, B.me.r, skinOf(B.me), { t, tier: tierOf(B.me), prop: B.prop.me, light: !low, hit: B.hitFlash.me, stun: me.stun, slow: me.slow, burn: me.burn });
+      // particles
+      for (const p of B.particles) {
+        const a = Math.max(0, p.life / p.max);
+        if (p.t === 'bubble') {
+          ctx.globalAlpha = Math.min(1, a * 1.5) * 0.7;
+          ctx.strokeStyle = '#d8f6ff';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+          ctx.stroke();
+        } else if (p.t === 'smoke') {
+          ctx.globalAlpha = a * 0.35;
+          ctx.fillStyle = '#1a2430';
+          ctx.beginPath();
+          ctx.arc(p.x, p.y, p.s, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.globalAlpha = a;
+          ctx.fillStyle = `rgb(${p.c})`;
+          ctx.fillRect(p.x - p.s / 2, p.y - p.s / 2, p.s, p.s);
+        }
+      }
+      ctx.globalAlpha = 1;
+
+      // darkness beyond sonar vision
+      screen();
+      const mx = (me.x - B.cam.x) * sc + W / 2 + sx, my = (me.y - B.cam.y) * sc + H / 2 + sy;
+      const dg = ctx.createRadialGradient(mx, my, vis * 0.62 * sc, mx, my, vis * 1.02 * sc);
+      dg.addColorStop(0, 'rgba(1,6,16,0)');
+      dg.addColorStop(1, 'rgba(1,6,16,0.84)');
+      ctx.fillStyle = dg;
+      ctx.fillRect(0, 0, W, H);
+
+      // things visible through the dark: lights, enemy contact, projectile lights, rings
+      world();
+      ctx.globalCompositeOperation = 'lighter';
+      for (const l of B.lights) {
+        const a = l.life / l.max;
+        const lg = ctx.createRadialGradient(l.x, l.y, 1, l.x, l.y, l.r);
+        lg.addColorStop(0, `rgba(${l.c},${0.7 * a})`);
+        lg.addColorStop(1, `rgba(${l.c},0)`);
+        ctx.fillStyle = lg;
+        ctx.fillRect(l.x - l.r, l.y - l.r, l.r * 2, l.r * 2);
+      }
+      for (const p of cur.pr) {
+        const kind = B.M.kinds[p.k];
+        const c = p.mine ? '80,255,220' : (kind === 'mine' ? '255,60,60' : '255,220,150');
+        const rr = kind && kind.startsWith('torp') ? 26 : 14;
+        const lg = ctx.createRadialGradient(p.x, p.y, 1, p.x, p.y, rr);
+        lg.addColorStop(0, `rgba(${c},0.55)`);
+        lg.addColorStop(1, `rgba(${c},0)`);
+        ctx.fillStyle = lg;
+        ctx.fillRect(p.x - rr, p.y - rr, rr * 2, rr * 2);
+      }
+      ctx.globalCompositeOperation = 'source-over';
+      if (op && !opInside) DD.drawSub(ctx, op.x, op.y, op.a, B.op.r, skinOf(B.op), { t, tier: tierOf(B.op), prop: B.prop.op, hit: B.hitFlash.op, outline: '#ff4d5e', stun: op.stun, slow: op.slow, burn: op.burn });
+      for (const r of B.rings) {
+        const a = r.life / r.max;
+        ctx.strokeStyle = `rgba(${r.c},${a * (r.ping ? 0.7 : 0.8)})`;
+        ctx.lineWidth = r.w / (r.ping ? sc : 1);
+        ctx.beginPath();
+        ctx.arc(r.x, r.y, r.r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+
+      // screen-space overlays
+      screen();
+      ctx.textAlign = 'center';
+      for (const tx of B.texts) {
+        const a = Math.min(1, tx.life / tx.max * 2);
+        const px = (tx.x - B.cam.x) * sc + W / 2, py = (tx.y - B.cam.y) * sc + H / 2;
+        ctx.globalAlpha = a;
+        ctx.font = `900 ${tx.big ? 26 : 18}px Segoe UI, Roboto, sans-serif`;
+        ctx.lineWidth = 4;
+        ctx.strokeStyle = 'rgba(0,0,0,0.7)';
+        ctx.strokeText(tx.txt, px, py);
+        ctx.fillStyle = tx.c;
+        ctx.fillText(tx.txt, px, py);
+      }
+      ctx.globalAlpha = 1;
+      // enemy name tag
+      if (op) {
+        const px = (op.x - B.cam.x) * sc + W / 2 + sx, py = (op.y - B.cam.y) * sc + H / 2 + sy - B.op.r * sc * 1.9;
+        ctx.font = '800 12px Segoe UI, Roboto, sans-serif';
+        ctx.lineWidth = 3;
+        ctx.strokeStyle = 'rgba(0,0,0,0.65)';
+        ctx.strokeText(B.op.name, px, py);
+        ctx.fillStyle = '#ff8a96';
+        ctx.fillText(B.op.name, px, py);
+        const hpw = 46, f = Math.max(0, cur.s.oh / B.op.maxHp);
+        ctx.fillStyle = 'rgba(0,0,0,0.55)';
+        ctx.fillRect(px - hpw / 2, py + 4, hpw, 5);
+        ctx.fillStyle = '#ff4d5e';
+        ctx.fillRect(px - hpw / 2, py + 4, hpw * f, 5);
+      }
+      // off-screen enemy indicator / last known position
+      const target = op || (B.opLast && performance.now() - B.opLast.t < 6000 ? B.opLast : null);
+      if (target) {
+        const px = (target.x - B.cam.x) * sc + W / 2, py = (target.y - B.cam.y) * sc + H / 2;
+        const off = px < 20 || px > W - 20 || py < 20 || py > H - 20;
+        const fade = op ? 1 : Math.max(0.15, 1 - (performance.now() - B.opLast.t) / 6000);
+        if (off) {
+          const ang = Math.atan2(py - H / 2, px - W / 2);
+          const ex = Math.max(28, Math.min(W - 28, W / 2 + Math.cos(ang) * W));
+          const ey = Math.max(70, Math.min(H - 28, H / 2 + Math.sin(ang) * W));
+          const cx2 = Math.max(28, Math.min(W - 28, ex)), cy2 = Math.max(70, Math.min(H - 28, ey));
+          ctx.save();
+          ctx.globalAlpha = fade;
+          ctx.translate(cx2, cy2);
+          ctx.rotate(ang);
+          ctx.fillStyle = op ? '#ff4d5e' : '#ff9aa5';
+          ctx.beginPath();
+          ctx.moveTo(14, 0);
+          ctx.lineTo(-8, -10);
+          ctx.lineTo(-8, 10);
+          ctx.fill();
+          ctx.restore();
+          ctx.globalAlpha = fade;
+          ctx.font = '800 11px Segoe UI, Roboto, sans-serif';
+          ctx.fillStyle = '#ffd0d5';
+          ctx.fillText(Math.round(Math.hypot(target.x - me.x, target.y - me.y)) + (op ? '' : ' ?'), cx2 - Math.cos(ang) * 22, cy2 - Math.sin(ang) * 22 + 4);
+          ctx.globalAlpha = 1;
+        } else if (!op) {
+          ctx.globalAlpha = fade * 0.8;
+          ctx.strokeStyle = '#ff6b7a';
+          ctx.setLineDash([5, 5]);
+          ctx.lineWidth = 2;
+          ctx.beginPath();
+          ctx.arc(px, py, B.op.r * sc * 1.5, 0, Math.PI * 2);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          ctx.font = '900 16px Segoe UI, Roboto, sans-serif';
+          ctx.fillStyle = '#ff9aa5';
+          ctx.fillText('?', px, py + 6);
+          ctx.globalAlpha = 1;
+        }
+      }
+      if (B.hurtFlash > 0) {
+        const hg = ctx.createRadialGradient(W / 2, H / 2, Math.min(W, H) * 0.3, W / 2, H / 2, Math.max(W, H) * 0.7);
+        hg.addColorStop(0, 'rgba(255,0,30,0)');
+        hg.addColorStop(1, `rgba(255,0,30,${B.hurtFlash * 0.45})`);
+        ctx.fillStyle = hg;
+        ctx.fillRect(0, 0, W, H);
+      }
+    },
+
+    drawProj(ctx, p, t) {
+      const kind = B.M.kinds[p.k];
+      ctx.save();
+      ctx.translate(p.x, p.y);
+      ctx.rotate(p.a);
+      switch (kind) {
+        case 'shell':
+          ctx.fillStyle = '#ffd36b';
+          ctx.beginPath(); ctx.ellipse(0, 0, 9, 3.5, 0, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = 'rgba(255,200,100,0.35)'; ctx.fillRect(-26, -2, 20, 4);
+          break;
+        case 'bullet':
+          ctx.fillStyle = '#fff3c4'; ctx.fillRect(-8, -1.5, 14, 3);
+          break;
+        case 'pellet':
+          ctx.fillStyle = '#ffb86b'; ctx.beginPath(); ctx.arc(0, 0, 3.5, 0, Math.PI * 2); ctx.fill();
+          break;
+        case 'sonic':
+          ctx.strokeStyle = 'rgba(140,255,240,0.85)'; ctx.lineWidth = 4;
+          ctx.beginPath(); ctx.arc(-12, 0, 22, -0.9, 0.9); ctx.stroke();
+          ctx.strokeStyle = 'rgba(140,255,240,0.4)'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(-22, 0, 22, -0.8, 0.8); ctx.stroke();
+          break;
+        case 'cryo':
+          ctx.fillStyle = 'rgba(190,245,255,0.5)'; ctx.beginPath(); ctx.arc(0, 0, 10, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#e8fdff'; ctx.beginPath(); ctx.arc(0, 0, 5, 0, Math.PI * 2); ctx.fill();
+          break;
+        case 'rail':
+          ctx.fillStyle = 'rgba(120,230,255,0.4)'; ctx.fillRect(-70, -4, 80, 8);
+          ctx.fillStyle = '#e8fbff'; ctx.fillRect(-60, -1.5, 72, 3);
+          break;
+        case 'plasma': {
+          const r = 10 + Math.sin(t * 20) * 2;
+          ctx.fillStyle = 'rgba(140,255,120,0.45)'; ctx.beginPath(); ctx.arc(0, 0, r + 6, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#eaffd9'; ctx.beginPath(); ctx.arc(0, 0, r * 0.6, 0, Math.PI * 2); ctx.fill();
+          break;
+        }
+        case 'mine': {
+          // anchored sea mine: pre-rendered body, swaying chain and blinking light drawn live
+          ctx.rotate(-p.a);
+          ctx.strokeStyle = '#6f7f8d';
+          ctx.lineWidth = 1.6;
+          const sway = Math.sin(t * 1.6 + p.id) * 4;
+          for (let i = 0; i < 6; i++) {
+            ctx.beginPath();
+            ctx.ellipse(sway * i / 6, 16 + i * 5, 1.8, 2.6, 0, 0, Math.PI * 2);
+            ctx.stroke();
+          }
+          const spr = DD.world.sprite('mine');
+          ctx.rotate(Math.sin(t * 0.8 + p.id) * 0.15);
+          ctx.drawImage(spr, -spr.width / DD.world.SPR_RES / 2, -spr.height / DD.world.SPR_RES / 2, spr.width / DD.world.SPR_RES, spr.height / DD.world.SPR_RES);
+          const blink = Math.sin(t * 8) > 0;
+          ctx.fillStyle = p.mine ? (blink ? '#4dffd2' : '#1a8070') : (blink ? '#ff3030' : '#801818');
+          ctx.beginPath(); ctx.arc(0, -3, 3, 0, Math.PI * 2); ctx.fill();
+          if (blink) { ctx.fillStyle = p.mine ? 'rgba(77,255,210,0.3)' : 'rgba(255,48,48,0.3)'; ctx.beginPath(); ctx.arc(0, -3, 8, 0, Math.PI * 2); ctx.fill(); }
           break;
         }
         case 'twin':
@@ -922,44 +1609,32 @@ window.DD = window.DD || {};
         }
         case 'depth': {
           ctx.rotate(-p.a + Math.sin(t * 3 + p.id) * 0.3);
-          ctx.fillStyle = '#5d6b78'; ctx.fillRect(-8, -11, 16, 22);
-          ctx.fillStyle = '#ffd34d'; ctx.fillRect(-8, -7, 16, 3); ctx.fillRect(-8, 4, 16, 3);
-          ctx.strokeStyle = '#1b2733'; ctx.lineWidth = 1.5; ctx.strokeRect(-8, -11, 16, 22);
+          const spr = DD.world.sprite('depth'), R = DD.world.SPR_RES;
+          ctx.drawImage(spr, -spr.width / R / 2, -spr.height / R / 2, spr.width / R, spr.height / R);
           ctx.fillStyle = Math.sin(t * 9) > 0 ? (p.mine ? '#4dffd2' : '#ff3030') : '#401010';
           ctx.beginPath(); ctx.arc(0, 0, 2.5, 0, Math.PI * 2); ctx.fill();
           break;
         }
         default: {
-          // torpedoes
-          const heavy = kind === 'torp_heavy';
-          const small = kind === 'bomblet' || kind === 'torp_swarm';
-          const L = heavy ? 34 : kind === 'torp_shkval' ? 32 : small ? 16 : 26, Hh = heavy ? 9 : kind === 'torp_shkval' ? 5.5 : small ? 4.6 : 6.5;
-          const tip = { torp: '#d9372b', torp_fast: '#ffd34d', torp_homing: '#ff6b3d', torp_cluster: '#b46cff', torp_heavy: '#d9372b', torp_emp: '#3dfcff', bomblet: '#b46cff', torp_net: '#3fd26b', torp_ghost: '#c9a8ff', torp_swarm: '#ff8a3d', torp_shkval: '#ffd34d' }[kind] || '#d9372b';
+          // torpedoes: detailed body is a pre-rendered sprite
+          const spr = DD.world.sprite(kind || 'torp'), R = DD.world.SPR_RES;
+          if (!spr) break;
+          const w = spr.width / R, hh = spr.height / R;
           if (kind === 'torp_ghost') ctx.globalAlpha = p.mine ? 0.55 : 0.4;
-          if (kind === 'torp_shkval') { ctx.fillStyle = 'rgba(230,250,255,0.35)'; ctx.beginPath(); ctx.ellipse(-4, 0, L / 2 + 14, Hh + 6, 0, 0, Math.PI * 2); ctx.fill(); }
-          const tg = ctx.createLinearGradient(0, -Hh, 0, Hh);
-          tg.addColorStop(0, '#eef4f8'); tg.addColorStop(0.45, '#9fb0c0'); tg.addColorStop(1, '#46535f');
-          ctx.fillStyle = tg;
-          ctx.beginPath();
-          ctx.ellipse(0, 0, L / 2, Hh, 0, 0, Math.PI * 2);
-          ctx.fill();
-          ctx.strokeStyle = 'rgba(0,0,0,0.45)'; ctx.lineWidth = 1;
-          ctx.stroke();
-          ctx.fillStyle = tip;
-          ctx.fillRect(-L * 0.12, -Hh, 2.5, Hh * 2);
-          ctx.beginPath();
-          ctx.ellipse(L / 2 - Hh * 0.6, 0, Hh * 0.9, Hh * 0.9, 0, -Math.PI / 2, Math.PI / 2);
-          ctx.fill();
-          ctx.fillStyle = '#5d7084';
-          ctx.fillRect(-L / 2 - 3, -Hh - 2, 5, Hh * 2 + 4);
+          if (kind === 'torp_shkval') { ctx.fillStyle = 'rgba(230,250,255,0.35)'; ctx.beginPath(); ctx.ellipse(-4, 0, w / 2 + 6, hh / 2, 0, 0, Math.PI * 2); ctx.fill(); }
+          ctx.drawImage(spr, -w / 2, -hh / 2, w, hh);
+          // spinning propeller
+          const sp = Math.abs(Math.sin(t * 40 + p.id));
+          ctx.fillStyle = 'rgba(200,210,220,0.8)';
+          ctx.fillRect(-w / 2 + 2, -hh * 0.3 * sp, 1.6, hh * 0.6 * sp);
           if (kind === 'torp_emp') {
             ctx.strokeStyle = 'rgba(120,240,255,0.8)'; ctx.lineWidth = 2;
-            ctx.beginPath(); ctx.arc(0, 0, L / 2 + 4 + Math.sin(t * 15) * 2, 0, Math.PI * 2); ctx.stroke();
+            ctx.beginPath(); ctx.arc(0, 0, w / 2 + Math.sin(t * 15) * 2, 0, Math.PI * 2); ctx.stroke();
           }
           if (kind === 'torp_homing' && Math.sin(t * 12) > 0) {
-            ctx.fillStyle = '#ff2020'; ctx.beginPath(); ctx.arc(L / 2 - 2, 0, 2.5, 0, Math.PI * 2); ctx.fill();
+            ctx.fillStyle = '#ff2020'; ctx.beginPath(); ctx.arc(w / 2 - 6, 0, 2.5, 0, Math.PI * 2); ctx.fill();
           }
-          if (!p.mine) { ctx.strokeStyle = 'rgba(255,80,90,0.7)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(0, 0, L / 2 + 2, Hh + 2, 0, 0, Math.PI * 2); ctx.stroke(); }
+          if (!p.mine) { ctx.strokeStyle = 'rgba(255,80,90,0.7)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.ellipse(0, 0, w / 2 - 2, hh / 2 - 2, 0, 0, Math.PI * 2); ctx.stroke(); }
         }
       }
       ctx.restore();

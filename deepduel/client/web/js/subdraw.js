@@ -365,8 +365,11 @@ ${[212, 230, 248].map(x => `<circle cx="${x}" cy="77" r="8" fill="url(#mt)" stro
   // ---------------------------------------------------------------- animated preview stages
   const stages = new Set();
   let raf = 0;
+  let lastStage = 0;
   function loop(ts) {
     raf = 0;
+    if (ts - lastStage < 32) { raf = requestAnimationFrame(loop); return; } // menus: ~30 fps is enough
+    lastStage = ts;
     const t = ts / 1000;
     let any = false;
     stages.forEach(s => {

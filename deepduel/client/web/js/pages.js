@@ -323,7 +323,12 @@ window.DD = window.DD || {};
       const root = document.createElement('div');
       root.className = 'opening';
       root.innerHTML = `<div class="rays"></div><div class="ctitle" style="color:${cr.color}">${esc(cr.name)}</div>
-        <div class="big-crate">${I.crateSvg(cr.color)}</div><div class="tap">Нажмите, чтобы открыть</div>`;
+        <div class="big-crate" style="--cc:${cr.color}">
+          <div class="cr-fx"><div class="cr-beams"></div><div class="cr-glow"></div></div>
+          <div class="cr-layer cr-body">${I.crateSvg(cr.color, 'body')}</div>
+          <div class="cr-layer cr-lid">${I.crateSvg(cr.color, 'lid')}</div>
+          <div class="cr-burst"></div>
+        </div><div class="tap">Нажмите, чтобы открыть</div>`;
       $('#modal-root').appendChild(root);
       const box = $('.big-crate', root);
       let busy = false;
@@ -343,7 +348,30 @@ window.DD = window.DD || {};
         }
         await wait;
         UI.setProfile(r.profile);
-        P.showLoot(root, r.result, type);
+        // the lid flies off, light bursts out, coins and sparks fly, then the loot appears
+        box.classList.remove('shake');
+        box.classList.add('open');
+        const tap = $('.tap', root);
+        if (tap) tap.remove();
+        DD.sfx.play('open');
+        UI.vibrate(40);
+        const burst = $('.cr-burst', box);
+        const best = r.result.cards.reduce((m, cd) => Math.max(m, c.rarityList.findIndex(x => x.id === c.weapons[cd.id].rarity)), 0);
+        const n = 14 + best * 4;
+        for (let i = 0; i < n; i++) {
+          const el = document.createElement('i');
+          const kind = i % 3 === 0 ? 'coin' : i % 3 === 1 ? 'spark' : (r.result.gems ? 'gem' : 'spark');
+          el.className = 'bp bp-' + kind;
+          if (kind !== 'spark') el.innerHTML = I.get(kind);
+          const ang = -Math.PI / 2 + (Math.random() - 0.5) * 2.6;
+          const dist = 90 + Math.random() * 140;
+          el.style.setProperty('--dx', Math.cos(ang) * dist + 'px');
+          el.style.setProperty('--dy', Math.sin(ang) * dist + 'px');
+          el.style.setProperty('--rot', (Math.random() * 720 - 360) + 'deg');
+          el.style.animationDelay = (Math.random() * 0.15) + 's';
+          burst.appendChild(el);
+        }
+        setTimeout(() => P.showLoot(root, r.result, type), 750);
       };
       box.onclick = go;
       $('.tap', root).onclick = go;
@@ -363,12 +391,17 @@ window.DD = window.DD || {};
           <div class="lpic">${I.weaponSvg(w.kind, UI.rarityColor(w.rarity))}</div><b>+${cd.n}</b><small>${esc(w.name)}<br>${cd.isNew ? 'оружие получено' : 'чертежи'}</small></div>`);
       });
       const more = S.profile.crates[type] || 0;
-      root.innerHTML = `<div class="rays"></div><div class="ctitle" style="color:${cr.color}">${esc(cr.name)}</div>
-        <div class="loot">${items.join('')}</div>
+      root.classList.add('revealed');
+      const old = $('.loot-wrap', root);
+      if (old) old.remove();
+      const wrap = document.createElement('div');
+      wrap.className = 'loot-wrap';
+      wrap.innerHTML = `<div class="loot">${items.join('')}</div>
         <div class="row">${more ? `<button class="btn btn-teal" id="loot-more">Открыть ещё (${more})</button>` : ''}<button class="btn btn-gold" id="loot-ok">Отлично!</button></div>`;
+      root.appendChild(wrap);
       $$('.loot-item', root).forEach((it, i) => { it.style.animationDelay = (i * 0.18) + 's'; });
       I.hydrate(root);
-      DD.sfx.play(best >= 3 ? 'legendary' : 'open');
+      DD.sfx.play(best >= 3 ? 'legendary' : 'coin');
       UI.vibrate(best >= 2 ? 60 : 25);
       res.cards.forEach((cd, i) => setTimeout(() => DD.sfx.play('reveal', 0.6), 300 + i * 180));
       $('#loot-ok', root).onclick = () => { root.remove(); P.levelUps(res.levelUps); };

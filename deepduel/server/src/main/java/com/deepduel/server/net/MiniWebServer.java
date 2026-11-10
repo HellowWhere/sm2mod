@@ -17,6 +17,8 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.zip.CRC32;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * Tiny dependency-free HTTP + WebSocket server. Works the same on a desktop JVM and on Android.
@@ -37,6 +39,8 @@ public final class MiniWebServer {
     private final StaticFiles files;
     private final Handler handler;
     private final Set<Socket> sockets = ConcurrentHashMap.newKeySet();
+    /** static files kept in memory: raw bytes, gzip bytes and ETag */
+    private final Map<String, Object[]> fileCache = new ConcurrentHashMap<>();
     private volatile ServerSocket serverSocket;
     private volatile boolean running;
 
@@ -78,7 +82,7 @@ public final class MiniWebServer {
                 s.setTcpNoDelay(true);
                 s.setSoTimeout(70_000);
                 sockets.add(s);
-                Thread t = new Thread(() -> handle(s), "dd-conn");
+                Thread t = new Thread(null, () -> handle(s), "dd-conn", 256 * 1024);
                 t.setDaemon(true);
                 t.start();
             } catch (IOException e) {
@@ -123,7 +127,7 @@ public final class MiniWebServer {
                 handler.onOpen(ws);
                 ws.readLoop(handler);
             } else if (method.equals("GET") || method.equals("HEAD")) {
-                serveFile(out, path, method.equals("HEAD"));
+                serveFile(out, path, method.equals("HEAD"), headers);
             } else {
                 writeSimple(out, 405, "Method Not Allowed");
             }
@@ -144,7 +148,7 @@ public final class MiniWebServer {
         }
     }
 
-    private void serveFile(OutputStream out, String path, boolean headOnly) throws IOException {
+    private void serveFile(OutputStream out, String path, boolean headOnly, Map<String, String> headers) throws IOException {
         int q = path.indexOf('?');
         if (q >= 0) path = path.substring(0, q);
         path = java.net.URLDecoder.decode(path, "UTF-8");
@@ -154,23 +158,53 @@ public final class MiniWebServer {
             writeSimple(out, 403, "Forbidden");
             return;
         }
-        InputStream f = files == null ? null : files.open(path);
-        if (f == null) {
-            writeSimple(out, 404, "Not Found");
+        Object[] entry = fileCache.get(path);
+        if (entry == null) {
+            InputStream f = files == null ? null : files.open(path);
+            if (f == null) {
+                writeSimple(out, 404, "Not Found");
+                return;
+            }
+            byte[] body;
+            try (InputStream fin = f) {
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                byte[] buf = new byte[16384];
+                int r;
+                while ((r = fin.read(buf)) > 0) bo.write(buf, 0, r);
+                body = bo.toByteArray();
+            }
+            CRC32 crc = new CRC32();
+            crc.update(body);
+            String etag = "\"" + Long.toHexString(crc.getValue()) + "-" + body.length + "\"";
+            byte[] gz = null;
+            String m = mime(path);
+            if (m.startsWith("text/") || m.contains("javascript") || m.contains("json") || m.contains("svg")) {
+                ByteArrayOutputStream bo = new ByteArrayOutputStream();
+                try (GZIPOutputStream g = new GZIPOutputStream(bo)) {
+                    g.write(body);
+                }
+                if (bo.size() < body.length) gz = bo.toByteArray();
+            }
+            entry = new Object[]{body, gz, etag};
+            if (files.cacheable()) fileCache.put(path, entry);
+        }
+        byte[] body = (byte[]) entry[0];
+        byte[] gz = (byte[]) entry[1];
+        String etag = (String) entry[2];
+        if (etag.equals(headers.get("if-none-match"))) {
+            // the browser already has this exact file
+            out.write(("HTTP/1.1 304 Not Modified\r\nETag: " + etag + "\r\nConnection: close\r\n\r\n").getBytes(StandardCharsets.ISO_8859_1));
+            out.flush();
             return;
         }
-        byte[] body;
-        try (InputStream fin = f) {
-            ByteArrayOutputStream bo = new ByteArrayOutputStream();
-            byte[] buf = new byte[16384];
-            int r;
-            while ((r = fin.read(buf)) > 0) bo.write(buf, 0, r);
-            body = bo.toByteArray();
-        }
-        String head = "HTTP/1.1 200 OK\r\nContent-Type: " + mime(path) + "\r\nContent-Length: " + body.length
-                + "\r\nCache-Control: no-cache\r\nConnection: close\r\n\r\n";
+        String ae = headers.get("accept-encoding");
+        boolean useGz = gz != null && ae != null && ae.contains("gzip");
+        byte[] payload = useGz ? gz : body;
+        String head = "HTTP/1.1 200 OK\r\nContent-Type: " + mime(path) + "\r\nContent-Length: " + payload.length
+                + (useGz ? "\r\nContent-Encoding: gzip" : "") + "\r\nETag: " + etag
+                + "\r\nCache-Control: no-cache\r\nVary: Accept-Encoding\r\nConnection: close\r\n\r\n";
         out.write(head.getBytes(StandardCharsets.ISO_8859_1));
-        if (!headOnly) out.write(body);
+        if (!headOnly) out.write(payload);
         out.flush();
     }
 

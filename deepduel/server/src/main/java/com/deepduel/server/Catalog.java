@@ -346,31 +346,31 @@ public final class Catalog {
     }
 
     static {
-        product("gems_80", "currency", "gems1", 199, "Горсть жемчуга", "80 жемчужин", gems(80));
-        product("gems_550", "currency", "gems2", 999, "Мешочек жемчуга", "500 + 50 в подарок", gems(550));
-        product("gems_1400", "currency", "gems3", 1999, "Шкатулка жемчуга", "1200 + 200 в подарок", gems(1400));
-        product("gems_3200", "currency", "gems4", 4999, "Сундук жемчуга", "2600 + 600 в подарок", gems(3200));
-        product("gems_8500", "currency", "gems5", 9999, "Сокровищница", "6500 + 2000 в подарок", gems(8500));
-        product("gems_20000", "currency", "gems6", 19999, "Королевская сокровищница", "14 000 + 6 000 в подарок", gems(20000));
-        product("coins_20000", "currency", "coins", 499, "Мешок монет", "20 000 монет на улучшения", coins(20000));
-        product("bp_premium", "offers", "bp", 999, "Премиум боевой пропуск",
+        product("gems_80", "currency", "gems1", 149, "Горсть жемчуга", "80 жемчужин", gems(80));
+        product("gems_550", "currency", "gems2", 799, "Мешочек жемчуга", "500 + 50 в подарок", gems(550));
+        product("gems_1400", "currency", "gems3", 1499, "Шкатулка жемчуга", "1200 + 200 в подарок", gems(1400));
+        product("gems_3200", "currency", "gems4", 3499, "Сундук жемчуга", "2600 + 600 в подарок", gems(3200));
+        product("gems_8500", "currency", "gems5", 6999, "Сокровищница", "6500 + 2000 в подарок", gems(8500));
+        product("gems_20000", "currency", "gems6", 14999, "Королевская сокровищница", "14 000 + 6 000 в подарок", gems(20000));
+        product("coins_20000", "currency", "coins", 349, "Мешок монет", "20 000 монет на улучшения", coins(20000));
+        product("bp_premium", "offers", "bp", 799, "Премиум боевой пропуск",
                 "Вторая линия наград сезона: эксклюзивные окраски, ящики и жемчуг.");
-        product("bp_premium_plus", "offers", "bp_plus", 2499, "Премиум пропуск + 10 уровней",
+        product("bp_premium_plus", "offers", "bp_plus", 1999, "Премиум пропуск + 10 уровней",
                 "Премиум-линия и сразу +10 уровней пропуска.");
-        product("reward_day", "offers", "ext1", 299, "Продление наград на сегодня",
+        product("reward_day", "offers", "ext1", 199, "Продление наград на сегодня",
                 "+10 ящиков к дневному лимиту за бои.");
-        product("reward_week", "offers", "ext7", 999, "Продление наград на 7 дней",
+        product("reward_week", "offers", "ext7", 799, "Продление наград на 7 дней",
                 "Дневной лимит ящиков за бои 20 вместо 10 целую неделю.");
-        product("pack_rare", "chests", "pack1", 499, "3 редких ящика", "Оружие, монеты и шанс на жемчуг.",
+        product("pack_rare", "chests", "pack1", 399, "3 редких ящика", "Оружие, монеты и шанс на жемчуг.",
                 crates("rare", 3));
-        product("pack_epic", "chests", "pack2", 1999, "Набор «Эпический»", "3 эпических и 5 редких ящиков.",
+        product("pack_epic", "chests", "pack2", 1499, "Набор «Эпический»", "3 эпических и 5 редких ящиков.",
                 crates("epic", 3), crates("rare", 5));
-        product("pack_legend", "chests", "pack3", 4999, "Набор «Легенда»", "2 легендарных и 5 эпических ящиков.",
+        product("pack_legend", "chests", "pack3", 3499, "Набор «Легенда»", "2 легендарных и 5 эпических ящиков.",
                 crates("legendary", 2), crates("epic", 5));
-        Product p = product("instant_upgrade", "upgrade", "upgrade", 399, "Мгновенное улучшение",
+        Product p = product("instant_upgrade", "upgrade", "upgrade", 299, "Мгновенное улучшение",
                 "+1 уровень выбранной детали без затрат монет.");
         p.hidden = true;
-        p = product("loss_bonus", "offers", "loss", 199, "Утешительный набор",
+        p = product("loss_bonus", "offers", "loss", 99, "Утешительный набор",
                 "Только сейчас: 4 000 монет, 2 редких ящика и 60 жемчуга.", coins(4000), crates("rare", 2), gems(60));
         p.hidden = true;
     }
@@ -453,6 +453,17 @@ public final class Catalog {
     }
 
     private static JsonObject cached;
+    private static String cachedVersion;
+
+    /** Short hash of the catalog: clients keep the catalog and re-download it only when this changes. */
+    public static synchronized String version() {
+        if (cachedVersion == null) {
+            java.util.zip.CRC32 crc = new java.util.zip.CRC32();
+            crc.update(toJson().toString().getBytes(java.nio.charset.StandardCharsets.UTF_8));
+            cachedVersion = Long.toHexString(crc.getValue());
+        }
+        return cachedVersion;
+    }
 
     public static synchronized JsonObject toJson() {
         if (cached != null) return cached;

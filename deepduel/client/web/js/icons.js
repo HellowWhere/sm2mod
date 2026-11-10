@@ -7,10 +7,21 @@ window.DD = window.DD || {};
   const id = (p) => p + (++uid);
 
   const coin = () => {
-    const g = id('c');
-    return S('0 0 24 24', `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe680"/><stop offset="1" stop-color="#e0900f"/></linearGradient></defs>
-      <circle cx="12" cy="12" r="10" fill="url(#${g})" stroke="#8a5206" stroke-width="1.4"/><circle cx="12" cy="12" r="6.6" fill="none" stroke="#b86e08" stroke-width="1.4"/>
-      <path d="M12 8.2v7.6M9.8 10.2h4.4" stroke="#8a5206" stroke-width="1.8" stroke-linecap="round"/><ellipse cx="8.4" cy="7.6" rx="2.6" ry="1.4" fill="#fff8" transform="rotate(-30 8.4 7.6)"/>`);
+    const g = id('c'), r = id('cr');
+    // gold coin with a small embossed submarine instead of a cross
+    return S('0 0 24 24', `<defs><linearGradient id="${g}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff0a0"/><stop offset="0.5" stop-color="#ffc43a"/><stop offset="1" stop-color="#d9850c"/></linearGradient>
+      <linearGradient id="${r}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e09a14"/><stop offset="1" stop-color="#ffe27a"/></linearGradient></defs>
+      <circle cx="12" cy="12" r="10.4" fill="url(#${g})" stroke="#8a5206" stroke-width="1.2"/>
+      <circle cx="12" cy="12" r="7.8" fill="url(#${r})" stroke="#b86e08" stroke-width="0.9"/>
+      <g transform="translate(0 0.6)">
+        <path d="M5.6 13.1 L4.4 11.4 L5.1 11.4 L6.6 12.6 Z M5.6 13.9 L4.4 15.6 L5.1 15.6 L6.6 14.4 Z" fill="#9a5d06"/>
+        <path d="M10.2 11.2 L10.8 9 Q10.9 8.6 11.3 8.6 H13.3 Q13.7 8.6 13.8 9 L14.4 11.2 Z" fill="#9a5d06"/>
+        <path d="M12.4 8.6 V7.4 H13.4" fill="none" stroke="#9a5d06" stroke-width="0.7" stroke-linecap="round"/>
+        <path d="M7.6 11 H16.2 Q19 11 19.4 13.5 Q19 16 16.2 16 H7.6 Q5.8 16 5.8 13.5 Q5.8 11 7.6 11 Z" fill="#9a5d06"/>
+        <path d="M7.8 11.7 H16 Q17.6 11.7 18.3 12.6" fill="none" stroke="#ffe9a0" stroke-width="0.6" stroke-linecap="round"/>
+        <circle cx="14.2" cy="13.4" r="0.85" fill="#ffd968"/><circle cx="16.2" cy="13.4" r="0.85" fill="#ffd968"/>
+      </g>
+      <ellipse cx="8" cy="6.6" rx="3" ry="1.3" fill="#ffffff" opacity="0.6" transform="rotate(-30 8 6.6)"/>`);
   };
   const gem = () => {
     const g = id('p');
@@ -56,43 +67,51 @@ window.DD = window.DD || {};
 
   /** Crate picture: a neat, symmetric chest. Metal and decoration depend on the rarity colour. */
   const CRATE_RARITY = { '#8fa7bd': 0, '#3fa9f5': 1, '#b46cff': 2, '#ffb52e': 3 };
-  function crateSvg(color, open) {
+  /**
+   * part: 'all' (closed chest), 'body' (box with a dark open mouth) or 'lid' (lid + lock).
+   * Body and lid share the same viewBox, so stacked on top of each other they form the chest,
+   * and the lid layer can fly off when the chest is opened.
+   */
+  function crateSvg(color, part) {
+    if (part === true) part = 'all';
+    part = part || 'all';
     const rar = CRATE_RARITY[String(color).toLowerCase()] || 0;
     const sh = (hex, f) => (DD.color ? DD.color.shade(hex, f) : hex);
     const b = id('cb'), l = id('cl'), m = id('cm'), mv = id('cv'), g = id('cg');
     const gold = rar >= 2;
     const metal = gold ? ['#fff4c2', '#f3bd3c', '#a8670c'] : ['#f4f8fb', '#aab6c2', '#56636f'];
-    const lidTop = open ? 4 : 16;
-    const lid = open
-      ? `<path d="M14,40 L18,6 Q19,2 26,2 H94 Q101,2 102,6 L106,40 Z" fill="url(#${l})" stroke="#000a" stroke-width="2" opacity="0.9"/>
-         <path d="M20,44 H100 L92,58 H28 Z" fill="${sh(color, -0.6)}"/><path d="M28,58 H92 L100,44" fill="none" stroke="#fff6" stroke-width="1"/>
-         <ellipse cx="60" cy="48" rx="34" ry="8" fill="#fff8d0" opacity="0.9"/>`
-      : `<path d="M12,52 V34 Q12,${lidTop} 30,${lidTop} H90 Q108,${lidTop} 108,34 V52 Z" fill="url(#${l})" stroke="#000a" stroke-width="2"/>
-         <path d="M20,32 Q21,${lidTop + 6} 32,${lidTop + 6} H88 Q99,${lidTop + 6} 100,32" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="2.5" stroke-linecap="round"/>
-         <path d="M14,40 H106" stroke="#0003" stroke-width="1.5"/>`;
-    const strap = (x) => `<rect x="${x}" y="${open ? 50 : lidTop + 1}" width="11" height="${open ? 47 : 97 - lidTop}" rx="2" fill="url(#${mv})" stroke="#0009" stroke-width="1.2"/>
-      ${[open ? 58 : lidTop + 8, 62, 90].map(y => `<circle cx="${x + 5.5}" cy="${y}" r="2" fill="${metal[0]}" stroke="#0007" stroke-width="0.8"/>`).join('')}`;
+    const lidTop = 16;
+    const rivets = (x, ys) => ys.map(y => `<circle cx="${x + 5.5}" cy="${y}" r="2" fill="${metal[0]}" stroke="#0007" stroke-width="0.8"/>`).join('');
+    const strap = (x, y0, y1, ys) => `<rect x="${x}" y="${y0}" width="11" height="${y1 - y0}" rx="2" fill="url(#${mv})" stroke="#0009" stroke-width="1.2"/>${rivets(x, ys)}`;
     const gem = rar >= 2 ? `<circle cx="60" cy="56" r="${rar === 3 ? 5 : 4}" fill="${rar === 3 ? '#ff3d5e' : '#7a3dff'}" stroke="#fff8" stroke-width="1.2"/><circle cx="58.5" cy="54.5" r="1.4" fill="#fff"/>`
       : `<circle cx="60" cy="54" r="2.8" fill="#2a1a05"/><rect x="58.8" y="55" width="2.4" height="7" rx="1" fill="#2a1a05"/>`;
-    const sparkles = rar === 3 ? [[10, 14, 1], [110, 22, 0.8], [104, 92, 0.7], [16, 88, 0.6]].map(([x, y, s2]) =>
+    const sparkles = rar === 3 && part === 'all' ? [[10, 14, 1], [110, 22, 0.8], [104, 92, 0.7], [16, 88, 0.6]].map(([x, y, s2]) =>
       `<path d="M${x},${y - 7 * s2} L${x + 1.8 * s2},${y - 1.8 * s2} L${x + 7 * s2},${y} L${x + 1.8 * s2},${y + 1.8 * s2} L${x},${y + 7 * s2} L${x - 1.8 * s2},${y + 1.8 * s2} L${x - 7 * s2},${y} L${x - 1.8 * s2},${y - 1.8 * s2} Z" fill="#fff6c8"/>`).join('') : '';
-    return S('0 0 120 112', `<defs>
+    const defs = `<defs>
       <linearGradient id="${b}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sh(color, 0.15)}"/><stop offset="0.55" stop-color="${sh(color, -0.15)}"/><stop offset="1" stop-color="${sh(color, -0.6)}"/></linearGradient>
       <linearGradient id="${l}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${sh(color, 0.55)}"/><stop offset="0.6" stop-color="${sh(color, 0.05)}"/><stop offset="1" stop-color="${sh(color, -0.25)}"/></linearGradient>
       <linearGradient id="${m}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${metal[0]}"/><stop offset="0.5" stop-color="${metal[1]}"/><stop offset="1" stop-color="${metal[2]}"/></linearGradient>
       <linearGradient id="${mv}" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="${metal[2]}"/><stop offset="0.35" stop-color="${metal[0]}"/><stop offset="0.7" stop-color="${metal[1]}"/><stop offset="1" stop-color="${metal[2]}"/></linearGradient>
-      <radialGradient id="${g}"><stop offset="0" stop-color="${color}" stop-opacity="0.75"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient></defs>
-      ${rar >= 2 || open ? `<circle cx="60" cy="56" r="56" fill="url(#${g})"/>` : ''}
+      <radialGradient id="${g}"><stop offset="0" stop-color="${color}" stop-opacity="0.75"/><stop offset="1" stop-color="${color}" stop-opacity="0"/></radialGradient>
+      <radialGradient id="${g}i" cx="0.5" cy="0.2" r="0.9"><stop offset="0" stop-color="#fff6c8"/><stop offset="0.5" stop-color="${sh(color, 0.3)}"/><stop offset="1" stop-color="${sh(color, -0.7)}"/></radialGradient></defs>`;
+    const body = `${rar >= 2 && part === 'all' ? `<circle cx="60" cy="56" r="56" fill="url(#${g})"/>` : ''}
       <ellipse cx="60" cy="103" rx="48" ry="6" fill="#000" opacity="0.35"/>
       <rect x="14" y="50" width="92" height="48" rx="6" fill="url(#${b})" stroke="#000a" stroke-width="2"/>
       <path d="M16,66 H104 M16,82 H104" stroke="#0004" stroke-width="1.6"/>
       <path d="M18,53 H102" stroke="#fff3" stroke-width="1.2"/>
-      ${lid}
-      ${strap(24)}${strap(85)}
-      <rect x="10" y="${open ? 44 : 46}" width="100" height="8" rx="3" fill="url(#${m})" stroke="#0009" stroke-width="1.2"/>
-      <path d="M14,90 V98 H24 M106,90 V98 H96" fill="none" stroke="url(#${m})" stroke-width="4" stroke-linejoin="round"/>
-      ${open ? '' : `<rect x="49" y="42" width="22" height="26" rx="5" fill="url(#${m})" stroke="#000a" stroke-width="1.4"/>${gem}`}
-      ${sparkles}`);
+      ${part === 'body' ? `<path d="M14,52 L22,40 H98 L106,52 Z" fill="url(#${g}i)" stroke="#000a" stroke-width="1.5"/>` : ''}
+      ${strap(24, 50, 97, [62, 90])}${strap(85, 50, 97, [62, 90])}
+      <rect x="10" y="46" width="100" height="8" rx="3" fill="url(#${m})" stroke="#0009" stroke-width="1.2"/>
+      <path d="M14,90 V98 H24 M106,90 V98 H96" fill="none" stroke="url(#${m})" stroke-width="4" stroke-linejoin="round"/>`;
+    const lid = `<path d="M12,52 V34 Q12,${lidTop} 30,${lidTop} H90 Q108,${lidTop} 108,34 V52 Z" fill="url(#${l})" stroke="#000a" stroke-width="2"/>
+      <path d="M20,32 Q21,${lidTop + 6} 32,${lidTop + 6} H88 Q99,${lidTop + 6} 100,32" fill="none" stroke="#fff" stroke-opacity="0.6" stroke-width="2.5" stroke-linecap="round"/>
+      <path d="M14,40 H106" stroke="#0003" stroke-width="1.5"/>
+      ${strap(24, lidTop + 1, 52, [lidTop + 8, 44])}${strap(85, lidTop + 1, 52, [lidTop + 8, 44])}
+      ${part === 'lid' ? `<rect x="10" y="46" width="100" height="5" rx="2" fill="url(#${m})" stroke="#0009" stroke-width="1"/>` : ''}
+      <rect x="49" y="42" width="22" height="26" rx="5" fill="url(#${m})" stroke="#000a" stroke-width="1.4"/>${gem}`;
+    if (part === 'body') return S('0 0 120 112', defs + body);
+    if (part === 'lid') return S('0 0 120 112', defs + lid);
+    return S('0 0 120 112', defs + body + lid + sparkles);
   }
 
   /** League shield. */
@@ -104,49 +123,104 @@ window.DD = window.DD || {};
       <text x="20" y="27" text-anchor="middle" font-size="15" font-weight="900" fill="#fff" stroke="#0008" stroke-width="0.8" font-family="Arial">${n}</text>`);
   }
 
-  /** Weapon picture drawn from its render kind. */
+  /** Detailed weapon picture drawn from its render kind (64x64). */
   function weaponSvg(kind, color) {
     const c = color || '#9fb3c8';
-    const metal = id('m'), glow = id('g');
-    const defs = `<defs><linearGradient id="${metal}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8f2fa"/><stop offset="0.5" stop-color="#8aa0b4"/><stop offset="1" stop-color="#3b4c5c"/></linearGradient>
-      <radialGradient id="${glow}"><stop offset="0" stop-color="${c}" stop-opacity="0.9"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>`;
-    const torpBody = (tip, extra = '') => `<rect x="10" y="26" width="38" height="12" rx="6" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/>
-      <path d="M48 26 Q58 32 48 38 Z" fill="${tip}" stroke="#1b2733" stroke-width="1.5"/>
-      <path d="M12 26 L5 20 L5 26 Z M12 38 L5 44 L5 38 Z" fill="#5d7084" stroke="#1b2733" stroke-width="1.2"/>
-      <rect x="22" y="27" width="4" height="10" fill="${c}"/>${extra}`;
-    const gunBase = `<rect x="6" y="34" width="22" height="14" rx="4" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><circle cx="17" cy="41" r="3.2" fill="${c}"/>`;
+    const shd = (hex, f) => (DD.color ? DD.color.shade(hex, f) : hex);
+    const m = id('m'), md = id('md'), br = id('br'), gl = id('g'), cg = id('cg'), cu = id('cu');
+    const defs = `<defs>
+      <linearGradient id="${m}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6f9fc"/><stop offset="0.35" stop-color="#b3c0cc"/><stop offset="0.7" stop-color="#66747f"/><stop offset="1" stop-color="#2e3a44"/></linearGradient>
+      <linearGradient id="${md}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8b99a7"/><stop offset="0.5" stop-color="#465360"/><stop offset="1" stop-color="#1c242c"/></linearGradient>
+      <linearGradient id="${br}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff2b8"/><stop offset="0.5" stop-color="#e6b23a"/><stop offset="1" stop-color="#8a5a06"/></linearGradient>
+      <linearGradient id="${cu}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0a0"/><stop offset="0.5" stop-color="#c27a3a"/><stop offset="1" stop-color="#6a3a14"/></linearGradient>
+      <linearGradient id="${cg}" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="${shd(c, 0.55)}"/><stop offset="0.5" stop-color="${c}"/><stop offset="1" stop-color="${shd(c, -0.55)}"/></linearGradient>
+      <radialGradient id="${gl}"><stop offset="0" stop-color="${c}" stop-opacity="0.95"/><stop offset="1" stop-color="${c}" stop-opacity="0"/></radialGradient></defs>`;
+    const K = '#141c24';
+    const bolt = (x, y) => `<circle cx="${x}" cy="${y}" r="1.1" fill="#d7e0e8" stroke="${K}" stroke-width="0.5"/>`;
+    const hl = (x, y, w) => `<rect x="${x}" y="${y}" width="${w}" height="1.1" rx="0.5" fill="#fff" opacity="0.65"/>`;
+    // gun turret: base plate, slewing ring, armoured housing with a status light
+    const turret = () => `<path d="M3 51 H31 L28 57 H6 Z" fill="url(#${md})" stroke="${K}" stroke-width="1"/>${bolt(8, 54)}${bolt(17, 54)}${bolt(26, 54)}
+      <ellipse cx="17" cy="50" rx="13" ry="3.2" fill="url(#${m})" stroke="${K}" stroke-width="0.9"/>
+      <path d="M7 49 V39 Q7 33 13 33 H25 Q30 33 30 38 V49 Z" fill="url(#${m})" stroke="${K}" stroke-width="1.2"/>
+      <path d="M8 44 H29" stroke="${K}" stroke-opacity="0.35" stroke-width="0.8"/>${hl(10, 35, 16)}
+      <path d="M10 46.5 h6 M10 48 h6" stroke="${K}" stroke-opacity="0.5" stroke-width="0.7"/>
+      <circle cx="23.5" cy="40" r="4.5" fill="url(#${gl})" opacity="0.8"/><circle cx="23.5" cy="40" r="2.2" fill="url(#${cg})" stroke="${K}" stroke-width="0.6"/>`;
+    const barrel = (x, y, len, h, muzzle) => `<rect x="${x}" y="${y}" width="${len}" height="${h}" rx="${h / 3}" fill="url(#${m})" stroke="${K}" stroke-width="1"/>
+      ${hl(x + 2, y + 1, len - 6)}<rect x="${x + len * 0.35}" y="${y - 0.6}" width="2" height="${h + 1.2}" fill="url(#${md})"/>
+      ${muzzle !== false ? `<rect x="${x + len - 4}" y="${y - 1.4}" width="5" height="${h + 2.8}" rx="1.2" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>` : ''}`;
+    // torpedo body with nose cone, warhead band, panel lines, rivets, fins and propeller
+    const torpedo = (tip, opts) => {
+      opts = opts || {};
+      const y = opts.y || 32, h = opts.h || 7, x0 = opts.x0 || 10, x1 = opts.x1 || 46, n = opts.nose || 12;
+      return `<path d="M${x0 + 3} ${y - h} L${x0 - 3} ${y - h - 8} L${x0} ${y - h - 8} L${x0 + 9} ${y - h} Z M${x0 + 3} ${y + h} L${x0 - 3} ${y + h + 8} L${x0} ${y + h + 8} L${x0 + 9} ${y + h} Z" fill="url(#${md})" stroke="${K}" stroke-width="0.9"/>
+        <ellipse cx="${x0 - 3.5}" cy="${y}" rx="2" ry="${h + 1}" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>
+        <path d="M${x0 - 3.5} ${y - h - 1} V${y + h + 1}" stroke="#c9d3dc" stroke-width="1.2"/>
+        <path d="M${x0} ${y - h * 0.8} Q${x0 - 1} ${y} ${x0} ${y + h * 0.8} L${x0 + 2} ${y + h} H${x1} V${y - h} H${x0 + 2} Z" fill="url(#${m})" stroke="${K}" stroke-width="1"/>
+        <path d="M${x1} ${y - h} Q${x1 + n} ${y - h} ${x1 + n + 3} ${y} Q${x1 + n} ${y + h} ${x1} ${y + h} Z" fill="${tip}" stroke="${K}" stroke-width="1"/>
+        <path d="M${x1 + 1} ${y - h + 1.5} Q${x1 + n * 0.7} ${y - h + 1.5} ${x1 + n} ${y - 2}" fill="none" stroke="#fff" stroke-opacity="0.55" stroke-width="1.2"/>
+        <rect x="${x1 - 5}" y="${y - h}" width="3" height="${h * 2}" fill="url(#${cg})"/>
+        <path d="M${x0 + 12} ${y - h} V${y + h} M${x0 + 22} ${y - h} V${y + h}" stroke="${K}" stroke-opacity="0.35" stroke-width="0.7"/>
+        ${[0, 1, 2, 3, 4, 5].map(i => `<circle cx="${x0 + 5 + i * 5.5}" cy="${y + h * 0.55}" r="0.55" fill="${K}" opacity="0.5"/>`).join('')}
+        ${hl(x0 + 3, y - h + 1.6, x1 - x0 - 6)}${opts.extra || ''}`;
+    };
     let body;
     switch (kind) {
-      case 'shell': body = gunBase + `<rect x="24" y="28" width="32" height="8" rx="2" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><path d="M56 32 l5 -3 v6z" fill="#e0a10c"/>`; break;
-      case 'bullet': body = gunBase + `<rect x="24" y="26" width="30" height="4" rx="1" fill="url(#${metal})" stroke="#1b2733"/><rect x="24" y="31" width="30" height="4" rx="1" fill="url(#${metal})" stroke="#1b2733"/><rect x="24" y="36" width="30" height="4" rx="1" fill="url(#${metal})" stroke="#1b2733"/>`; break;
-      case 'pellet': body = gunBase + `<path d="M24 30 L50 22 L54 30 L54 38 L50 46 L24 38 Z" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><circle cx="57" cy="26" r="2" fill="${c}"/><circle cx="59" cy="32" r="2" fill="${c}"/><circle cx="57" cy="38" r="2" fill="${c}"/>`; break;
-      case 'sonic': body = gunBase + `<path d="M24 28 h14 l10 -8 v24 l-10 -8 h-14z" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><path d="M52 22 q6 10 0 20 M57 18 q8 14 0 28" fill="none" stroke="${c}" stroke-width="3" stroke-linecap="round"/>`; break;
-      case 'cryo': body = gunBase + `<rect x="24" y="28" width="26" height="9" rx="3" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><path d="M55 32 l-4 0 M55 32 l3 -5 M55 32 l3 5 M55 32 l6 0" stroke="#bff3ff" stroke-width="2.4" stroke-linecap="round"/><circle cx="55" cy="32" r="7" fill="url(#${glow})"/>`; break;
-      case 'rail': body = gunBase + `<rect x="22" y="26" width="38" height="3.5" fill="url(#${metal})" stroke="#1b2733"/><rect x="22" y="34.5" width="38" height="3.5" fill="url(#${metal})" stroke="#1b2733"/><rect x="24" y="30" width="34" height="4" fill="${c}" opacity="0.85"/><circle cx="60" cy="32" r="6" fill="url(#${glow})"/>`; break;
-      case 'plasma': body = gunBase + `<rect x="24" y="28" width="22" height="9" rx="3" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><circle cx="53" cy="32" r="9" fill="url(#${glow})"/><circle cx="53" cy="32" r="4.5" fill="#eaffd9"/>`; break;
-      case 'torp': body = torpBody('#d9372b'); break;
-      case 'torp_fast': body = torpBody('#ffd34d', `<path d="M8 20 L16 24 M6 32 L12 32 M8 44 L16 40" stroke="${c}" stroke-width="2" stroke-linecap="round"/>`); break;
-      case 'torp_homing': body = torpBody('#ff6b3d', `<circle cx="52" cy="32" r="2.4" fill="#ff2a2a"/><path d="M54 18 a14 14 0 0 1 6 8" fill="none" stroke="${c}" stroke-width="2"/>`); break;
-      case 'mine': body = `<circle cx="32" cy="34" r="14" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/>` +
-        [0, 45, 90, 135, 180, 225, 270, 315].map(a => `<rect x="30.5" y="13" width="3" height="8" fill="#5d7084" transform="rotate(${a} 32 34)"/>`).join('') +
-        `<circle cx="32" cy="34" r="4" fill="#ff2a2a"/><circle cx="32" cy="34" r="9" fill="url(#${glow})" opacity="0.6"/>`; break;
-      case 'torp_cluster': body = torpBody('#b46cff', `<rect x="30" y="27" width="3" height="10" fill="#1b2733"/><rect x="36" y="27" width="3" height="10" fill="#1b2733"/><circle cx="58" cy="22" r="2.5" fill="${c}"/><circle cx="60" cy="30" r="2.5" fill="${c}"/><circle cx="60" cy="38" r="2.5" fill="${c}"/>`); break;
-      case 'torp_heavy': body = `<rect x="6" y="22" width="44" height="20" rx="10" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><path d="M50 22 Q62 32 50 42 Z" fill="#d9372b" stroke="#1b2733" stroke-width="1.5"/><rect x="20" y="23" width="6" height="18" fill="${c}"/><path d="M8 22 L2 14 L2 22 Z M8 42 L2 50 L2 42 Z" fill="#5d7084"/>`; break;
-      case 'torp_emp': body = torpBody('#3dfcff', `<path d="M34 18 l-4 8 h5 l-3 8" fill="none" stroke="#ffe680" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="54" cy="32" r="7" fill="url(#${glow})"/>`); break;
-      case 'twin': body = gunBase + `<rect x="24" y="25" width="32" height="6" rx="2" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.3"/><rect x="24" y="33" width="32" height="6" rx="2" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.3"/><path d="M56 28 l4 0 M56 36 l4 0" stroke="#ffd36b" stroke-width="3" stroke-linecap="round"/>`; break;
-      case 'mortar': body = gunBase + `<path d="M20 36 L36 18 L46 26 L30 42 Z" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><ellipse cx="41" cy="22" rx="6" ry="4" transform="rotate(40 41 22)" fill="#2b3440"/><circle cx="52" cy="14" r="6" fill="#3a4450" stroke="#1b2733" stroke-width="1.2"/><path d="M55 9 l3 -4" stroke="#ffb03b" stroke-width="2" stroke-linecap="round"/>`; break;
-      case 'acid': body = gunBase + `<rect x="24" y="28" width="26" height="8" rx="3" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><rect x="26" y="18" width="12" height="11" rx="3" fill="#7dff4d" stroke="#1b2733" stroke-width="1.2" opacity="0.9"/><path d="M54 30 q3 4 0 7 q-3 -3 0 -7z M59 38 q2 3 0 5 q-2 -2 0 -5z" fill="#9dff5d"/><circle cx="55" cy="32" r="7" fill="url(#${glow})"/>`; break;
-      case 'ion': body = gunBase + `<rect x="24" y="28" width="30" height="8" rx="3" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/>${[29, 36, 43].map(x => `<rect x="${x}" y="25" width="3.5" height="14" rx="1.5" fill="#8a7dff" stroke="#1b2733" stroke-width="0.8"/>`).join('')}<circle cx="57" cy="32" r="6" fill="url(#${glow})"/><circle cx="57" cy="32" r="2.6" fill="#e0dcff"/>`; break;
-      case 'vortex': body = gunBase + `<path d="M24 28 h12 l12 -8 v24 l-12 -8 h-12z" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><path d="M56 32 m-7 0 a7 7 0 1 1 7 7 a4.5 4.5 0 1 1 -4.5 -4.5 a2 2 0 1 1 2 2" fill="none" stroke="${c}" stroke-width="2.4" stroke-linecap="round"/>`; break;
-      case 'tesla': body = gunBase + `<rect x="24" y="29" width="14" height="6" rx="2" fill="url(#${metal})" stroke="#1b2733"/><path d="M38 24 h4 v16 h-4z M44 22 h4 v20 h-4z" fill="#b87333" stroke="#1b2733" stroke-width="0.8"/><circle cx="52" cy="32" r="5" fill="url(#${metal})" stroke="#1b2733"/><path d="M55 30 l4 -6 l-1 6 l5 -2 l-6 10 l1 -6z" fill="#e8fbff" stroke="${c}" stroke-width="1"/><circle cx="58" cy="30" r="8" fill="url(#${glow})"/>`; break;
-      case 'depth': body = `<rect x="20" y="16" width="24" height="34" rx="6" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.5"/><rect x="20" y="22" width="24" height="5" fill="#ffd34d"/><rect x="20" y="39" width="24" height="5" fill="#ffd34d"/><rect x="28" y="10" width="8" height="7" rx="2" fill="#5d7084" stroke="#1b2733"/><circle cx="32" cy="33" r="3" fill="#ff3030"/><path d="M32 52 v6 M26 54 v3 M38 54 v3" stroke="#bfefff" stroke-width="1.6" stroke-linecap="round"/>`; break;
-      case 'torp_net': body = torpBody('#3fd26b', `<g stroke="#1b2733" stroke-width="0.9" opacity="0.8"><path d="M34 26 l8 12 M40 26 l8 12 M34 38 l8 -12 M40 38 l8 -12"/></g>`); break;
-      case 'torp_ghost': body = `<g opacity="0.6">${torpBody('#c9a8ff')}</g><rect x="8" y="23" width="52" height="18" rx="9" fill="none" stroke="${c}" stroke-width="1.6" stroke-dasharray="3 3"/>`; break;
-      case 'torp_swarm': body = [18, 32, 46].map(y => `<rect x="14" y="${y - 4}" width="30" height="8" rx="4" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.2"/><path d="M44 ${y - 4} Q51 ${y} 44 ${y + 4} Z" fill="#ff8a3d" stroke="#1b2733"/><path d="M15 ${y - 4} l-5 -3 v6 z" fill="#5d7084"/>`).join(''); break;
-      case 'torp_shkval': body = `<ellipse cx="34" cy="32" rx="28" ry="10" fill="#e8fbff" opacity="0.35" stroke="#bfefff" stroke-width="1"/><rect x="8" y="28" width="46" height="8" rx="4" fill="url(#${metal})" stroke="#1b2733" stroke-width="1.4"/><path d="M54 28 L63 32 L54 36 Z" fill="#ffd34d" stroke="#1b2733"/><path d="M9 28 L3 23 L3 28 Z M9 36 L3 41 L3 36 Z" fill="#5d7084"/><rect x="20" y="29" width="3" height="6" fill="${c}"/><rect x="26" y="29" width="3" height="6" fill="${c}"/>`; break;
+      case 'shell': body = turret() + barrel(27, 33.5, 27, 6) + `<path d="M55 36.5 L62 33 L60 36.5 L62 40 Z" fill="url(#${br})" stroke="${K}" stroke-width="0.8"/><path d="M57 34 l-3 -2 M57 39 l-3 2" stroke="${K}" stroke-width="0.8"/>`; break;
+      case 'bullet': body = turret() + [31.5, 36, 40.5].map(y => barrel(27, y, 28, 3.6, false)).join('') +
+        `<rect x="35" y="30" width="4" height="15" rx="1" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/><rect x="52" y="30" width="4" height="15" rx="1" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>`; break;
+      case 'twin': body = turret() + barrel(27, 31, 28, 4.6) + barrel(27, 38, 28, 4.6) + `<rect x="40" y="30" width="4" height="14" rx="1" fill="url(#${br})" stroke="${K}" stroke-width="0.8"/>`; break;
+      case 'pellet': body = turret() + `<path d="M27 33 L50 28 Q53 28 53 31 V43 Q53 46 50 46 L27 41 Z" fill="url(#${m})" stroke="${K}" stroke-width="1.1"/>${hl(29, 31.5, 20)}
+        <rect x="51" y="27" width="5" height="20" rx="1.5" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>${[30, 34, 38, 42].map(y => `<circle cx="59" cy="${y}" r="1.8" fill="url(#${br})" stroke="${K}" stroke-width="0.5"/>`).join('')}`; break;
+      case 'sonic': body = turret() + barrel(27, 34, 12, 5, false) + `<path d="M38 31 L50 24 V50 L38 43 Z" fill="url(#${m})" stroke="${K}" stroke-width="1.1"/><ellipse cx="50" cy="37" rx="2.5" ry="13" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>
+        <path d="M54 28 q5 9 0 18 M58 24 q8 13 0 26" fill="none" stroke="url(#${cg})" stroke-width="2.6" stroke-linecap="round"/>`; break;
+      case 'mortar': body = turret() + `<g transform="rotate(-40 22 38)"><rect x="20" y="33" width="26" height="10" rx="2" fill="url(#${m})" stroke="${K}" stroke-width="1.1"/>${hl(22, 34.5, 20)}<rect x="43" y="31.5" width="5" height="13" rx="1.2" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/></g>
+        <circle cx="50" cy="12" r="6.5" fill="url(#${md})" stroke="${K}" stroke-width="1"/><ellipse cx="48" cy="10" rx="2.4" ry="1.4" fill="#fff" opacity="0.5"/><rect x="48.5" y="3.5" width="3" height="3" fill="url(#${br})"/><path d="M50 3 l2 -2.5" stroke="#ffb03b" stroke-width="1.6" stroke-linecap="round"/>`; break;
+      case 'acid': body = turret() + barrel(27, 34, 26, 5.5) + `<rect x="31" y="20" width="14" height="13" rx="3" fill="#cfeaff" fill-opacity="0.35" stroke="${K}" stroke-width="1"/><rect x="32" y="25" width="12" height="7" rx="2" fill="#7dff4d"/>
+        <circle cx="36" cy="27" r="1" fill="#eaffd9"/><circle cx="40" cy="29" r="0.8" fill="#eaffd9"/><rect x="36" y="31" width="4" height="3.5" fill="url(#${md})"/>
+        <path d="M56 41 q2.2 3.4 0 5.6 q-2.2 -2.2 0 -5.6z M60 44 q1.6 2.4 0 4 q-1.6 -1.6 0 -4z" fill="#9dff5d" stroke="#2a6a10" stroke-width="0.4"/><circle cx="55" cy="36.5" r="6" fill="url(#${gl})"/>`; break;
+      case 'cryo': body = turret() + barrel(27, 34, 24, 6) + [31, 35, 39, 43].map(x => `<rect x="${x}" y="32.4" width="1.8" height="9.2" rx="0.8" fill="#bff3ff" stroke="${K}" stroke-width="0.4"/>`).join('') +
+        `<circle cx="56" cy="37" r="7" fill="url(#${gl})"/><path d="M56 31 V43 M50.8 34 L61.2 40 M50.8 40 L61.2 34" stroke="#effcff" stroke-width="1.6" stroke-linecap="round"/>`; break;
+      case 'ion': body = turret() + barrel(27, 34, 26, 6) + [32, 38, 44].map(x => `<rect x="${x}" y="30.5" width="3.4" height="13" rx="1.6" fill="url(#${cg})" stroke="${K}" stroke-width="0.7"/>`).join('') +
+        `<circle cx="57" cy="37" r="7" fill="url(#${gl})"/><circle cx="57" cy="37" r="2.8" fill="#f0ecff" stroke="${c}" stroke-width="0.8"/>`; break;
+      case 'vortex': body = turret() + barrel(27, 34, 10, 6, false) + `<path d="M36 32 L48 25 V49 L36 42 Z" fill="url(#${m})" stroke="${K}" stroke-width="1.1"/><ellipse cx="48" cy="37" rx="2.6" ry="12" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>
+        <path d="M58 37 m-6.5 0 a6.5 6.5 0 1 1 6.5 6.5 a4.2 4.2 0 1 1 -4.2 -4.2 a1.8 1.8 0 1 1 1.8 1.8" fill="none" stroke="url(#${cg})" stroke-width="2.4" stroke-linecap="round"/>`; break;
+      case 'rail': body = turret() + `<rect x="25" y="30" width="36" height="3.6" rx="1" fill="url(#${m})" stroke="${K}" stroke-width="0.9"/><rect x="25" y="40.4" width="36" height="3.6" rx="1" fill="url(#${m})" stroke="${K}" stroke-width="0.9"/>
+        <rect x="27" y="34" width="32" height="6" fill="url(#${cg})" opacity="0.85"/><path d="M28 37 H58" stroke="#fff" stroke-width="1" opacity="0.9"/>
+        ${[33, 41, 49].map(x => `<rect x="${x}" y="28" width="3" height="18" rx="1" fill="url(#${md})" stroke="${K}" stroke-width="0.6"/>`).join('')}<circle cx="61" cy="37" r="5" fill="url(#${gl})"/>`; break;
+      case 'plasma': body = turret() + barrel(27, 34, 10, 6, false) + `<ellipse cx="44" cy="37" rx="9" ry="8" fill="url(#${m})" stroke="${K}" stroke-width="1.1"/><ellipse cx="44" cy="37" rx="5.5" ry="4.8" fill="url(#${gl})"/><circle cx="44" cy="37" r="2.6" fill="#eaffd9"/>
+        <rect x="52" y="34.5" width="6" height="5" rx="1.5" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/><circle cx="60" cy="37" r="4.5" fill="url(#${gl})"/>`; break;
+      case 'tesla': body = turret() + barrel(27, 35, 8, 4, false) + `<rect x="34" y="27" width="10" height="20" rx="2" fill="url(#${md})" stroke="${K}" stroke-width="0.9"/>
+        ${[29, 32, 35, 38, 41, 44].map(y => `<rect x="33" y="${y}" width="12" height="2" rx="1" fill="url(#${cu})"/>`).join('')}
+        <rect x="44" y="35.5" width="5" height="3" fill="url(#${md})"/><circle cx="53" cy="37" r="5" fill="url(#${m})" stroke="${K}" stroke-width="0.9"/><circle cx="53" cy="37" r="9" fill="url(#${gl})"/>
+        <path d="M57 33 l3 -5 l-0.5 4 l4 -1.5 l-4.5 7 l0.5 -3.5z" fill="#f2fdff" stroke="${c}" stroke-width="0.6"/>`; break;
+      case 'torp': body = torpedo('#d9372b'); break;
+      case 'torp_fast': body = torpedo('#ffd34d', { extra: `<path d="M3 24 h6 M1 32 h5 M3 40 h6" stroke="${c}" stroke-width="1.6" stroke-linecap="round"/>` }); break;
+      case 'torp_homing': body = torpedo('#ff6b3d', { extra: `<circle cx="55" cy="32" r="2.6" fill="#ff2a2a" stroke="${K}" stroke-width="0.6"/><circle cx="54.3" cy="31.3" r="0.8" fill="#fff"/><path d="M30 25 V18 M27 18 h6" stroke="${K}" stroke-width="1"/>` }); break;
+      case 'torp_net': body = torpedo('#3fd26b', { extra: `<g stroke="#1f5a2a" stroke-width="0.7" opacity="0.85">${[18, 24, 30, 36].map(x => `<path d="M${x} 25 l6 14 M${x + 6} 25 l-6 14"/>`).join('')}</g>` }); break;
+      case 'torp_cluster': body = torpedo('#b46cff', { extra: `${[24, 30, 36].map(x => `<rect x="${x}" y="25" width="1.6" height="14" fill="${K}"/>`).join('')}<circle cx="60" cy="22" r="2.2" fill="url(#${cg})"/><circle cx="62" cy="30" r="2.2" fill="url(#${cg})"/><circle cx="62" cy="38" r="2.2" fill="url(#${cg})"/>` }); break;
+      case 'torp_heavy': body = torpedo('#c92a20', { h: 10, x0: 9, x1: 44, nose: 13, extra: `<rect x="34" y="22" width="3" height="20" fill="url(#${cg})"/>` }); break;
+      case 'torp_ghost': body = `<g opacity="0.55">${torpedo('#c9a8ff')}</g><rect x="4" y="22" width="56" height="20" rx="10" fill="none" stroke="${c}" stroke-width="1.4" stroke-dasharray="3 2.5"/>`; break;
+      case 'torp_emp': body = torpedo('#3dfcff', { extra: `<path d="M28 21 l-4 9 h5 l-3 9" fill="none" stroke="#ffe680" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="56" cy="32" r="8" fill="url(#${gl})"/>` }); break;
+      case 'torp_swarm': body = [16, 32, 48].map(y => torpedo('#ff8a3d', { y, h: 4.2, x0: 14, x1: 44, nose: 7 })).join(''); break;
+      case 'torp_shkval': body = `<ellipse cx="34" cy="32" rx="29" ry="11" fill="#e8fbff" opacity="0.28" stroke="#bfefff" stroke-width="1"/>
+        <circle cx="12" cy="26" r="1.6" fill="none" stroke="#dff8ff" stroke-width="0.8"/><circle cx="8" cy="37" r="2.2" fill="none" stroke="#dff8ff" stroke-width="0.8"/>` +
+        torpedo('#ffd34d', { h: 5, x0: 12, x1: 50, nose: 9 }); break;
+      case 'depth': body = `<rect x="19" y="14" width="26" height="38" rx="5" fill="url(#${m})" stroke="${K}" stroke-width="1.2"/>
+        <rect x="17" y="12" width="30" height="5" rx="2" fill="url(#${md})" stroke="${K}" stroke-width="0.9"/><rect x="17" y="49" width="30" height="5" rx="2" fill="url(#${md})" stroke="${K}" stroke-width="0.9"/>
+        <rect x="19" y="21" width="26" height="5" fill="#f2c230"/><rect x="19" y="40" width="26" height="5" fill="#f2c230"/>
+        ${[21, 27, 33, 39].map(x => `<path d="M${x} 21 l3 5 M${x + 1} 40 l3 5" stroke="${K}" stroke-width="1.6"/>`).join('')}
+        ${hl(22, 28, 3)}<rect x="22" y="27" width="2" height="12" rx="1" fill="#fff" opacity="0.45"/><rect x="28" y="7" width="8" height="5" rx="1.5" fill="url(#${md})" stroke="${K}" stroke-width="0.8"/>
+        <circle cx="32" cy="33" r="3" fill="#ff3030" stroke="${K}" stroke-width="0.6"/><circle cx="32" cy="33" r="6" fill="url(#${gl})" opacity="0.6"/>
+        <path d="M32 56 v5 M26 57 v3 M38 57 v3" stroke="#bfefff" stroke-width="1.5" stroke-linecap="round"/>`; break;
+      case 'mine': body = `${[0, 45, 90, 135, 180, 225, 270, 315].map(a => `<g transform="rotate(${a} 32 31)"><rect x="30.3" y="11" width="3.4" height="8" fill="url(#${m})" stroke="${K}" stroke-width="0.6"/><circle cx="32" cy="11" r="2.4" fill="url(#${br})" stroke="${K}" stroke-width="0.5"/></g>`).join('')}
+        <circle cx="32" cy="31" r="14" fill="url(#${m})" stroke="${K}" stroke-width="1.2"/><rect x="18" y="29.3" width="28" height="3.4" fill="url(#${md})"/>
+        ${[21, 25, 29, 33, 37, 41].map(x => `<circle cx="${x + 0.5}" cy="31" r="0.7" fill="#dfe7ee"/>`).join('')}
+        <ellipse cx="26" cy="24" rx="4" ry="2.2" fill="#fff" opacity="0.55" transform="rotate(-35 26 24)"/>
+        <circle cx="32" cy="38" r="2.6" fill="#ff3030" stroke="${K}" stroke-width="0.5"/><circle cx="32" cy="38" r="6" fill="url(#${gl})" opacity="0.5"/>
+        <path d="M32 45 v3" stroke="${K}" stroke-width="1"/>${[0, 1, 2].map(i => `<ellipse cx="32" cy="${50 + i * 4.5}" rx="1.6" ry="2.2" fill="none" stroke="#8796a5" stroke-width="1.2"/>`).join('')}`; break;
       default: body = `<circle cx="32" cy="32" r="12" fill="${c}"/>`;
     }
-    return S('0 0 64 64', defs + `<circle cx="32" cy="32" r="30" fill="url(#${glow})" opacity="0.35"/>` + body);
+    return S('0 0 64 64', defs + `<circle cx="32" cy="32" r="30" fill="url(#${gl})" opacity="0.3"/>` + body);
   }
 
   function partIcon(id) {

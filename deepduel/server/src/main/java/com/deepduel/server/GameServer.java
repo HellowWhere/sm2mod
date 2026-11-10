@@ -33,15 +33,18 @@ import java.util.concurrent.TimeUnit;
  * touched exclusively from the single "dd-logic" thread, so no locking is needed.
  */
 public final class GameServer implements MiniWebServer.Handler {
-    public static final String VERSION = "1.0.0";
-    public static final int PROTOCOL = 1;
-    private static final int TICK_HZ = 30;
+    public static final String VERSION = "1.1.0";
+    public static final int PROTOCOL = 2;
+    private static final int TICK_HZ = Battle.TICK_HZ;
+    /** a snapshot goes out every N simulation ticks (30 / 2 = 15 per second) */
+    private static final int SNAPSHOT_EVERY = Battle.SNAP_EVERY;
     private static final double DT = 1.0 / TICK_HZ;
 
     private static final class Session {
         final WsConnection c;
         PlayerData p;
         int badAdmin;
+        String catalogVersion = "";
 
         Session(WsConnection c) {
             this.c = c;
@@ -63,8 +66,14 @@ public final class GameServer implements MiniWebServer.Handler {
     private final LinkedHashMap<String, Long> queue = new LinkedHashMap<>();
     private final Map<String, Battle> battleOf = new HashMap<>();
     private final List<Battle> battles = new ArrayList<>();
-    private boolean dirty;
+    /** players whose file must be rewritten on the next save */
+    private final Set<PlayerData> dirtyPlayers = new HashSet<>();
+    private boolean ordersDirty, metaDirty;
     private long lastSave;
+    private java.util.concurrent.ScheduledFuture<?> tickTask;
+    /** leaderboard is sorted at most every few seconds, not on every request */
+    private List<PlayerData> lbCache;
+    private long lbTime;
     private long slowTicks;
 
     private volatile int statOnline, statBattles, statPlayers;
@@ -100,8 +109,12 @@ public final class GameServer implements MiniWebServer.Handler {
             return t;
         });
         running = true;
-        loop.scheduleAtFixedRate(safe(this::tick), 0, 1_000_000 / TICK_HZ, TimeUnit.MICROSECONDS);
+        // the 30 Hz battle loop only runs while at least one battle is going (saves battery on a phone server)
         loop.scheduleAtFixedRate(safe(this::slowTick), 500, 500, TimeUnit.MILLISECONDS);
+        if (storage.needsFullSave()) {
+            dirtyPlayers.addAll(storage.data.players.values());
+            ordersDirty = metaDirty = true;
+        }
         log("server started on port " + cfg.port + ", admin key " + cfg.adminKey + ", data " + storage.dir());
     }
 
@@ -109,8 +122,9 @@ public final class GameServer implements MiniWebServer.Handler {
         if (!running) return;
         running = false;
         try {
-            Future<?> f = loop.submit(() -> storage.saveData());
+            Future<?> f = loop.submit(this::saveNow);
             f.get(5, TimeUnit.SECONDS);
+            storage.flush(5000);
         } catch (Exception e) {
             log("final save failed: " + e);
         }
@@ -191,6 +205,7 @@ public final class GameServer implements MiniWebServer.Handler {
             w.addProperty("version", VERSION);
             w.addProperty("protocol", PROTOCOL);
             w.addProperty("paymentMode", storage.config.paymentMode);
+            w.addProperty("catalogVersion", Catalog.version());
             c.send(w.toString());
         });
     }
@@ -214,21 +229,35 @@ public final class GameServer implements MiniWebServer.Handler {
                 Battle b = battleOf.get(s.p.id);
                 if (b != null) for (Sub sub : b.subs) if (s.p.id.equals(sub.playerId)) sub.connected = false;
                 s.p.lastSeen = System.currentTimeMillis();
+                dirtyPlayers.add(s.p);
             }
         });
     }
 
     // ------------------------------------------------------------------ ticking (game thread)
 
+    private void startTicking() {
+        if (tickTask == null) tickTask = loop.scheduleAtFixedRate(safe(this::tick), 0, 1_000_000 / TICK_HZ, TimeUnit.MICROSECONDS);
+    }
+
     private void tick() {
         for (Battle b : new ArrayList<>(battles)) {
             b.tick(DT);
-            for (Sub sub : b.subs) {
-                if (sub.isBot()) continue;
-                Session ss = online.get(sub.playerId);
-                if (ss != null && battleOf.get(sub.playerId) == b) ss.c.send(b.snapshot(sub.idx));
+            // the world is simulated 30 times a second, but sent only 15 times: clients interpolate
+            // between snapshots and simulate straight-flying projectiles themselves
+            if (b.ticks % SNAPSHOT_EVERY == 0 || b.finished()) {
+                for (Sub sub : b.subs) {
+                    if (sub.isBot()) continue;
+                    Session ss = online.get(sub.playerId);
+                    if (ss != null && battleOf.get(sub.playerId) == b) ss.c.send(b.snapshot(sub.idx));
+                }
+                b.clearEvents();
             }
             if (b.finished()) finishBattle(b);
+        }
+        if (battles.isEmpty() && tickTask != null) {
+            tickTask.cancel(false);
+            tickTask = null;
         }
     }
 
@@ -249,15 +278,17 @@ public final class GameServer implements MiniWebServer.Handler {
                 s.c.send(q.toString());
             }
         }
-        if (dirty && now - lastSave > 15_000) saveNow();
+        if ((!dirtyPlayers.isEmpty() || ordersDirty || metaDirty) && now - lastSave > 10_000) saveNow();
         statOnline = online.size();
         statBattles = battles.size();
         statPlayers = storage.data.players.size();
     }
 
+    /** Writes only what changed since the last save (disk IO happens on a background thread). */
     private void saveNow() {
-        storage.saveData();
-        dirty = false;
+        storage.save(new ArrayList<>(dirtyPlayers), ordersDirty, metaDirty);
+        dirtyPlayers.clear();
+        ordersDirty = metaDirty = false;
         lastSave = System.currentTimeMillis();
     }
 
@@ -310,6 +341,7 @@ public final class GameServer implements MiniWebServer.Handler {
 
     private void register(Battle b) {
         battles.add(b);
+        startTicking();
         for (Sub s : b.subs) {
             if (s.isBot()) continue;
             battleOf.put(s.playerId, b);
@@ -382,6 +414,7 @@ public final class GameServer implements MiniWebServer.Handler {
     private void finishBattle(Battle b) {
         battles.remove(b);
         storage.data.battlesPlayed++;
+        metaDirty = true;
         long now = System.currentTimeMillis();
         for (Sub s : b.subs) {
             if (s.isBot()) continue;
@@ -406,8 +439,8 @@ public final class GameServer implements MiniWebServer.Handler {
                 m.add("profile", eco.profile(p, now));
                 ss.c.send(m.toString());
             }
+            dirtyPlayers.add(p);
         }
-        dirty = true;
     }
 
     // ------------------------------------------------------------------ requests
@@ -479,7 +512,7 @@ public final class GameServer implements MiniWebServer.Handler {
         JsonObject d = new JsonObject();
         if (result != null) d.add("result", result);
         d.add("profile", eco.profile(p, System.currentTimeMillis()));
-        dirty = true;
+        dirtyPlayers.add(p);
         return d;
     }
 
@@ -509,9 +542,11 @@ public final class GameServer implements MiniWebServer.Handler {
                     return;
                 }
                 case "register":
+                    s.catalogVersion = str(m, "cv");
                     register(s, id, str(m, "name"));
                     return;
                 case "auth":
+                    s.catalogVersion = str(m, "cv");
                     auth(s, id, str(m, "token"));
                     return;
                 case "admin":
@@ -646,6 +681,7 @@ public final class GameServer implements MiniWebServer.Handler {
         PlayerData p = eco.newPlayer(pid, randomHex(16), name, now);
         storage.data.players.put(pid, p);
         byToken.put(p.token, p);
+        dirtyPlayers.add(p);
         saveNow();
         log("new player " + name);
         login(s, id, p);
@@ -674,7 +710,10 @@ public final class GameServer implements MiniWebServer.Handler {
         JsonObject d = new JsonObject();
         d.addProperty("token", p.token);
         d.add("profile", eco.profile(p, now));
-        d.add("catalog", Catalog.toJson());
+        // the catalog (~20 KB) is cached by the client and only sent when it changed
+        String cv = Catalog.version();
+        d.addProperty("catalogVersion", cv);
+        if (!cv.equals(s.catalogVersion)) d.add("catalog", Catalog.toJson());
         JsonObject srv = new JsonObject();
         srv.addProperty("name", storage.config.serverName);
         srv.addProperty("serverId", storage.config.serverId);
@@ -683,7 +722,7 @@ public final class GameServer implements MiniWebServer.Handler {
         srv.addProperty("dailyLimit", storage.config.dailyCrateLimit);
         d.add("server", srv);
         reply(s, id, d);
-        dirty = true;
+        dirtyPlayers.add(p);
         Battle b = battleOf.get(p.id);
         if (b != null) {
             for (Sub sub : b.subs) {
@@ -724,6 +763,7 @@ public final class GameServer implements MiniWebServer.Handler {
         }
         storage.data.orders.add(o);
         trimOrders();
+        ordersDirty = metaDirty = true;
         JsonObject d = withProfile(res, p);
         saveNow();
         reply(s, id, d);
@@ -760,8 +800,13 @@ public final class GameServer implements MiniWebServer.Handler {
     }
 
     private JsonObject leaderboard(PlayerData me) {
-        List<PlayerData> all = new ArrayList<>(storage.data.players.values());
-        all.sort((a, b) -> b.trophies != a.trophies ? b.trophies - a.trophies : a.name.compareTo(b.name));
+        long nowMs = System.currentTimeMillis();
+        if (lbCache == null || nowMs - lbTime > 5000) {
+            lbCache = new ArrayList<>(storage.data.players.values());
+            lbCache.sort((a, b) -> b.trophies != a.trophies ? b.trophies - a.trophies : a.name.compareTo(b.name));
+            lbTime = nowMs;
+        }
+        List<PlayerData> all = lbCache;
         JsonArray top = new JsonArray();
         int myRank = 0;
         for (int i = 0; i < all.size(); i++) {
@@ -865,6 +910,8 @@ public final class GameServer implements MiniWebServer.Handler {
                     Session ps = p == null ? null : online.get(p.id);
                     if (ps != null) notice(ps, "Заказ #" + o.id + " отклонён администратором");
                 }
+                if (p != null) dirtyPlayers.add(p);
+                ordersDirty = true;
                 saveNow();
                 break;
             }
@@ -920,6 +967,7 @@ public final class GameServer implements MiniWebServer.Handler {
                     ps.c.send(push.toString());
                     notice(ps, "Администратор отправил вам подарок!");
                 }
+                dirtyPlayers.add(p);
                 saveNow();
                 break;
             }

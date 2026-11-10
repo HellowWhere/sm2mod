@@ -19,6 +19,8 @@ public final class Projectile {
     public double x, y, vx, vy, life, age, dmg, radius, splashR, splashFrac, homing, seek, stun, slow, proximity, arm;
     public double grav, burn, burnTime, drain, knock;
     public boolean pierce, mine, cluster, stealth, dead;
+    /** true: position is sent in every snapshot (homing, stealth, mines); false: client simulates it */
+    public boolean streamed;
 
     public boolean explosive() {
         return splashR > 0;
