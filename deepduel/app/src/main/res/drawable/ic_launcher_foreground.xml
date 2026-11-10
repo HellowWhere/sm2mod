@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp" android:height="108dp"
+    android:viewportWidth="108" android:viewportHeight="108">
+    <!-- bubbles -->
+    <path android:strokeColor="#CCFFFFFF" android:strokeWidth="1.2" android:fillColor="#00000000"
+        android:pathData="M22,46 a2,2 0 1,0 4,0 a2,2 0 1,0 -4,0 M18,38 a1.5,1.5 0 1,0 3,0 a1.5,1.5 0 1,0 -3,0 M24,31 a1.2,1.2 0 1,0 2.4,0 a1.2,1.2 0 1,0 -2.4,0" />
+    <!-- tail fins -->
+    <path android:fillColor="#B07A14" android:pathData="M33,52 L27,43 L36,51 Z M33,66 L27,75 L36,67 Z" />
+    <!-- propeller -->
+    <path android:fillColor="#9FB0C0" android:pathData="M26,52 L29,52 L29,66 L26,66 Z" />
+    <!-- sail -->
+    <path android:fillColor="#D99A1E" android:pathData="M48,51 L51,41 H63 L67,51 Z" />
+    <path android:strokeColor="#3B4652" android:strokeWidth="2" android:fillColor="#00000000" android:pathData="M58,41 V35 H62" />
+    <!-- hull -->
+    <path android:fillColor="#F2B632" android:pathData="M38,50 H76 C84,50 88,56 88,59 C88,62 84,68 76,68 H38 C33,68 29,64 29,59 C29,54 33,50 38,50 Z" />
+    <path android:fillColor="#E85D2A" android:pathData="M30,61 H87 V63.5 H30 Z" />
+    <path android:fillColor="#55FFFFFF" android:pathData="M36,52.5 H78 V54 H36 Z" />
+    <!-- portholes -->
+    <path android:fillColor="#FFF2A8" android:pathData="M61.6,57 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0 M69.6,57 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0 M77.6,57 a2.4,2.4 0 1,0 4.8,0 a2.4,2.4 0 1,0 -4.8,0" />
+    <!-- torpedo -->
+    <path android:fillColor="#D8E2EC" android:pathData="M68,76 H86 C89,76 90,77.5 90,78.5 C90,79.5 89,81 86,81 H68 Z" />
+    <path android:fillColor="#D9372B" android:pathData="M86,76 C89,76 91,77.5 91,78.5 C91,79.5 89,81 86,81 Z" />
+</vector>

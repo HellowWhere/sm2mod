@@ -1,3 +1,5 @@
+> **Глубинная дуэль** — мобильная игра (подводные дуэли, APK + сервер) лежит в папке [`deepduel/`](deepduel/README.md).
+
 # Space Marine 2 Arsenal (NeoForge 1.20.1)
 
 Fan-made mod. Content: Bolter, Bolt Pistol, Bolt Shell, Melta Rifle, Combat Knife, Chainsword,

@@ -1,0 +1,170 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#04101f">
+<meta name="mobile-web-app-capable" content="yes">
+<title>Глубинная дуэль</title>
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+  <canvas id="bg"></canvas>
+
+  <!-- ===================== connect ===================== -->
+  <section class="screen" id="scr-connect">
+    <div class="connect-wrap">
+      <div class="logo">
+        <div class="logo-sub" id="logo-sub"></div>
+        <h1>ГЛУБИННАЯ<span>ДУЭЛЬ</span></h1>
+        <p>Подводные дуэли 1 на 1</p>
+      </div>
+      <div class="connect-panel panel">
+        <div id="host-block" class="hidden">
+          <button class="btn btn-gold btn-wide" id="btn-host">
+            <i data-icon="server"></i> Сервер на этом телефоне
+          </button>
+          <div class="or"><span>или подключиться к другу</span></div>
+        </div>
+        <label class="field-label" for="inp-addr">Адрес сервера</label>
+        <div class="row">
+          <input id="inp-addr" class="input" placeholder="192.168.1.5:8765" autocomplete="off" autocapitalize="off" spellcheck="false">
+          <button class="btn btn-teal" id="btn-connect">Войти</button>
+        </div>
+        <div id="recent" class="recent"></div>
+        <div class="hint" id="connect-hint">Адрес показывает владелец сервера на экране «Сервер на этом телефоне».</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== host server (android) ===================== -->
+  <section class="screen" id="scr-host">
+    <div class="host-wrap">
+      <button class="icon-btn back" data-back="connect"><i data-icon="back"></i></button>
+      <div class="host-main panel">
+        <div class="host-head">
+          <div class="host-status" id="host-status"><span class="dot"></span><b>Сервер выключен</b></div>
+          <div class="row">
+            <label class="field-label small" for="inp-port">Порт</label>
+            <input id="inp-port" class="input small" value="8765" inputmode="numeric">
+            <button class="btn btn-gold" id="btn-host-toggle">Запустить</button>
+          </div>
+        </div>
+        <div class="host-grid">
+          <div>
+            <div class="field-label">Адреса для друзей</div>
+            <div id="host-ips" class="host-ips">—</div>
+            <div class="field-label">Ключ администратора</div>
+            <div class="mono big" id="host-admin">—</div>
+            <div class="host-stats" id="host-stats"></div>
+          </div>
+          <div class="host-help">
+            <b>Как играть с друзьями</b>
+            <ol>
+              <li>Запустите сервер. Телефон с сервером должен оставаться включённым — сервер работает даже со свёрнутым приложением.</li>
+              <li>Друзья подключаются к той же Wi-Fi сети или к точке доступа этого телефона.</li>
+              <li>Они вводят один из адресов слева в поле «Адрес сервера». Можно играть и из браузера: открыть адрес как http://…</li>
+              <li>Все аккаунты и прогресс хранятся на этом телефоне.</li>
+            </ol>
+          </div>
+        </div>
+        <button class="btn btn-teal btn-wide" id="btn-host-play" disabled>Играть на этом сервере</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== register ===================== -->
+  <section class="screen" id="scr-register">
+    <div class="register-wrap panel">
+      <h2>Новый капитан</h2>
+      <p class="muted">Сервер: <b id="reg-server"></b></p>
+      <input id="inp-name" class="input" maxlength="16" placeholder="Имя капитана" autocomplete="off">
+      <button class="btn btn-gold btn-wide" id="btn-register">Начать</button>
+      <button class="btn btn-ghost btn-wide" id="btn-restore">У меня есть код аккаунта</button>
+      <button class="btn btn-ghost btn-wide" data-back="connect">Другой сервер</button>
+    </div>
+  </section>
+
+  <!-- ===================== main ===================== -->
+  <section class="screen" id="scr-main">
+    <header class="topbar">
+      <button class="player-chip" id="chip-player">
+        <span class="lvl-ring" id="tb-level">1</span>
+        <span class="pc-text"><b id="tb-name">—</b><span class="xpbar"><span id="tb-xp"></span></span></span>
+      </button>
+      <div class="pill trophy" id="tb-trophy"><i data-icon="trophy"></i><b id="tb-trophies">0</b></div>
+      <div class="spacer"></div>
+      <button class="pill coin" id="tb-coins-btn"><i data-icon="coin"></i><b id="tb-coins">0</b><span class="plus">+</span></button>
+      <button class="pill gem" id="tb-gems-btn"><i data-icon="gem"></i><b id="tb-gems">0</b><span class="plus">+</span></button>
+      <button class="icon-btn" id="btn-settings"><i data-icon="gear"></i></button>
+    </header>
+    <nav class="rail" id="rail">
+      <button data-page="home" class="active"><i data-icon="battle"></i><span>Бой</span></button>
+      <button data-page="hangar"><i data-icon="wrench"></i><span>Ангар</span></button>
+      <button data-page="arsenal"><i data-icon="torpedo"></i><span>Арсенал</span></button>
+      <button data-page="crates"><i data-icon="crate"></i><span>Ящики</span><em class="badge" id="badge-crates"></em></button>
+      <button data-page="pass"><i data-icon="pass"></i><span>Пропуск</span><em class="badge" id="badge-pass"></em></button>
+      <button data-page="shop"><i data-icon="shop"></i><span>Магазин</span><em class="badge hot" id="badge-shop"></em></button>
+      <button data-page="rating"><i data-icon="podium"></i><span>Рейтинг</span></button>
+    </nav>
+    <main class="content">
+      <div class="page active" id="pg-home"></div>
+      <div class="page" id="pg-hangar"></div>
+      <div class="page" id="pg-arsenal"></div>
+      <div class="page" id="pg-crates"></div>
+      <div class="page" id="pg-pass"></div>
+      <div class="page" id="pg-shop"></div>
+      <div class="page" id="pg-rating"></div>
+    </main>
+  </section>
+
+  <!-- ===================== battle ===================== -->
+  <section class="screen" id="scr-battle">
+    <canvas id="game"></canvas>
+    <div class="hud" id="hud">
+      <div class="hud-top">
+        <div class="hud-side me">
+          <div class="hud-name" id="hud-me-name"></div>
+          <div class="bar hp"><span id="hud-me-hp"></span><em id="hud-me-hpt"></em></div>
+          <div class="bar en"><span id="hud-me-en"></span></div>
+        </div>
+        <div class="hud-center">
+          <div class="hud-timer" id="hud-timer">3:00</div>
+          <canvas id="minimap" width="170" height="98"></canvas>
+        </div>
+        <div class="hud-side op">
+          <div class="hud-name" id="hud-op-name"></div>
+          <div class="bar hp"><span id="hud-op-hp"></span><em id="hud-op-hpt"></em></div>
+          <div class="hud-tag" id="hud-op-tag"></div>
+        </div>
+      </div>
+      <button class="hud-flag" id="btn-surrender" title="Сдаться"><i data-icon="flag"></i></button>
+      <div class="hud-alert" id="hud-alert"></div>
+      <div class="hud-count" id="hud-count"></div>
+      <div class="hud-ping" id="hud-ping"></div>
+      <div class="joy" id="joy"><div class="joy-knob" id="joy-knob"></div></div>
+      <div class="controls">
+        <button class="ctl ctl-fire" id="ctl-fire"><i data-icon="crosshair"></i><span>ОГОНЬ</span><svg class="cd"><circle r="45%" cx="50%" cy="50%"/></svg></button>
+        <div class="ctl-torps" id="ctl-torps"></div>
+        <button class="ctl ctl-small ctl-sonar" id="ctl-sonar"><i data-icon="sonar"></i><span>СОНАР</span><div class="cdfill"></div></button>
+        <button class="ctl ctl-small ctl-boost" id="ctl-boost"><i data-icon="bolt"></i><span>ФОРСАЖ</span></button>
+      </div>
+    </div>
+  </section>
+
+  <div id="modal-root"></div>
+  <div id="toast-root"></div>
+  <div id="overlay-conn" class="overlay-conn hidden"><div class="spinner"></div><span id="overlay-conn-text">Подключение…</span><button class="btn btn-ghost btn-sm" id="overlay-conn-cancel">Отмена</button></div>
+  <div id="rotate-hint" class="rotate-hint"><i data-icon="rotate"></i><span>Поверните телефон горизонтально</span></div>
+</div>
+<script src="js/icons.js"></script>
+<script src="js/sfx.js"></script>
+<script src="js/net.js"></script>
+<script src="js/subdraw.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/pages.js"></script>
+<script src="js/battle.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

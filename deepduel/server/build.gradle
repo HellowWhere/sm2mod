@@ -1,0 +1,30 @@
+plugins {
+    id 'java-library'
+}
+
+java {
+    sourceCompatibility = JavaVersion.VERSION_17
+    targetCompatibility = JavaVersion.VERSION_17
+}
+
+tasks.withType(JavaCompile).configureEach {
+    options.encoding = 'UTF-8'
+}
+
+dependencies {
+    api 'com.google.code.gson:gson:2.11.0'
+}
+
+// Stand-alone server for a PC or VPS: one jar with the web client inside.
+tasks.register('serverJar', Jar) {
+    group = 'build'
+    description = 'Builds deepduel-server.jar (server + web client, runnable with java -jar)'
+    archiveFileName = 'deepduel-server.jar'
+    manifest { attributes 'Main-Class': 'com.deepduel.server.ServerMain' }
+    duplicatesStrategy = DuplicatesStrategy.EXCLUDE
+    from sourceSets.main.output
+    from { configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) } } {
+        exclude 'META-INF/*.SF', 'META-INF/*.DSA', 'META-INF/*.RSA', 'module-info.class'
+    }
+    from(rootProject.file('client')) // -> /web/...
+}

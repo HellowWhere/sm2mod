@@ -1,0 +1,66 @@
+plugins {
+    id 'com.android.application' version '8.7.3'
+}
+
+def ciBuild = (System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer
+
+android {
+    namespace 'com.deepduel.game'
+    compileSdk 35
+
+    defaultConfig {
+        applicationId 'com.deepduel.game'
+        minSdk 26
+        targetSdk 35
+        versionCode ciBuild
+        versionName "1.0.${ciBuild}"
+    }
+
+    // One fixed key for every build, so a new APK installs over the old one
+    // and the server data stored on the phone survives updates.
+    signingConfigs {
+        shared {
+            storeFile file('deepduel.keystore')
+            storePassword 'deepduel'
+            keyAlias 'deepduel'
+            keyPassword 'deepduel'
+        }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.shared
+        }
+        release {
+            minifyEnabled false
+            signingConfig signingConfigs.shared
+        }
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_17
+        targetCompatibility JavaVersion.VERSION_17
+    }
+
+    // The HTML5 client (deepduel/client/web) is packed into the APK as assets/web.
+    sourceSets {
+        main {
+            assets.srcDirs = [rootProject.file('client')]
+        }
+    }
+
+    packaging {
+        resources {
+            excludes += ['META-INF/versions/9/module-info.class', 'META-INF/LICENSE*', 'META-INF/NOTICE*']
+        }
+    }
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+}
+
+dependencies {
+    implementation project(':server')
+}

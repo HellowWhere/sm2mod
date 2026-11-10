@@ -1,0 +1,52 @@
+name: Deep Duel APK
+
+on:
+  push:
+    paths:
+      - 'deepduel/**'
+      - '.github/workflows/deepduel-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - uses: gradle/actions/setup-gradle@v4
+
+      - name: Build APK and stand-alone server
+        working-directory: deepduel
+        run: |
+          chmod +x gradlew
+          ./gradlew --no-daemon assembleRelease :server:serverJar
+
+      - name: Collect files
+        run: |
+          mkdir -p out
+          cp deepduel/app/build/outputs/apk/release/app-release.apk out/DeepDuel.apk
+          cp deepduel/server/build/libs/deepduel-server.jar out/deepduel-server.jar
+          ls -la out
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: DeepDuel
+          path: out/*
+
+      - name: Publish as release "deepduel-latest"
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh release delete deepduel-latest --cleanup-tag -y || true
+          gh release create deepduel-latest out/DeepDuel.apk out/deepduel-server.jar \
+            --prerelease --target "${{ github.sha }}" \
+            --title "Глубинная дуэль — сборка ${{ github.run_number }}" \
+            --notes "DeepDuel.apk — игра для Android (клиент + встроенный сервер). deepduel-server.jar — сервер для ПК/VPS (java -jar deepduel-server.jar). Ветка: ${{ github.ref_name }}."

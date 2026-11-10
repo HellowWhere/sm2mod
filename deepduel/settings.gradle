@@ -1,0 +1,19 @@
+pluginManagement {
+    repositories {
+        google()
+        mavenCentral()
+        gradlePluginPortal()
+    }
+}
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+    }
+}
+rootProject.name = 'deepduel'
+include ':server'
+// The Android app needs the Android SDK. Set DEEPDUEL_SERVER_ONLY=1 to build only the server jar.
+if (System.getenv('DEEPDUEL_SERVER_ONLY') == null) {
+    include ':app'
+}
