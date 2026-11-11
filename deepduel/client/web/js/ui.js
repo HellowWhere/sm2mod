@@ -116,8 +116,17 @@ window.DD = window.DD || {};
     },
 
     setCatalog(c) {
+      // The RuStore build shows prices in rubles: 1 US cent of the server price = 1 ruble ($1.49 -> 149 ₽).
+      if (c && c.products && UI.store() === 'rustore') {
+        c.products.forEach(p => { p.priceText = String(p.price).replace(/\B(?=(\d{3})+$)/g, ' ') + ' ₽'; });
+      }
       state.catalog = c;
       state.cat = indexCatalog(c);
+    },
+
+    /** Which store this build was made for: 'global' or 'rustore' (browser = 'global'). */
+    store() {
+      try { const a = window.DeepDuelAndroid; return a && a.store ? a.store() : 'global'; } catch (e) { return 'global'; }
     },
 
     setProfile(p) {

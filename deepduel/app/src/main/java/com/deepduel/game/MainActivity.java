@@ -221,6 +221,12 @@ public class MainActivity extends Activity {
             });
         }
 
+        /** "global" or "rustore": which store this APK was built for. */
+        @JavascriptInterface
+        public String store() {
+            return BuildConfig.STORE;
+        }
+
         @JavascriptInterface
         public String version() {
             try {

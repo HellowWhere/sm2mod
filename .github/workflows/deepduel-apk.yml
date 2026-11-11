@@ -23,8 +23,26 @@ jobs:
 
       - uses: gradle/actions/setup-gradle@v4
 
-      - name: Build APK and stand-alone server
+      # The RuStore build is signed with a private key kept in repository secrets (see deepduel/README.md).
+      # Without the secrets it is signed with the shared key and gets "-TEST" in its file name.
+      - name: RuStore signing key
+        env:
+          KEYSTORE_B64: ${{ secrets.RUSTORE_KEYSTORE_BASE64 }}
+        run: |
+          if [ -n "$KEYSTORE_B64" ]; then
+            echo "$KEYSTORE_B64" | base64 -d > "$RUNNER_TEMP/rustore.jks"
+            echo "RUSTORE_KEYSTORE_FILE=$RUNNER_TEMP/rustore.jks" >> "$GITHUB_ENV"
+            echo "RUSTORE_APK=DeepDuel-RuStore.apk" >> "$GITHUB_ENV"
+          else
+            echo "RUSTORE_APK=DeepDuel-RuStore-TEST.apk" >> "$GITHUB_ENV"
+          fi
+
+      - name: Build APKs and stand-alone server
         working-directory: deepduel
+        env:
+          RUSTORE_KEYSTORE_PASSWORD: ${{ secrets.RUSTORE_KEYSTORE_PASSWORD }}
+          RUSTORE_KEY_ALIAS: ${{ secrets.RUSTORE_KEY_ALIAS }}
+          RUSTORE_KEY_PASSWORD: ${{ secrets.RUSTORE_KEY_PASSWORD }}
         run: |
           chmod +x gradlew
           ./gradlew --no-daemon assembleRelease :server:serverJar
@@ -32,7 +50,8 @@ jobs:
       - name: Collect files
         run: |
           mkdir -p out
-          cp deepduel/app/build/outputs/apk/release/app-release.apk out/DeepDuel.apk
+          cp deepduel/app/build/outputs/apk/global/release/app-global-release.apk out/DeepDuel.apk
+          cp deepduel/app/build/outputs/apk/rustore/release/app-rustore-release.apk "out/$RUSTORE_APK"
           cp deepduel/server/build/libs/deepduel-server.jar out/deepduel-server.jar
           ls -la out
 
@@ -46,7 +65,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete deepduel-latest --cleanup-tag -y || true
-          gh release create deepduel-latest out/DeepDuel.apk out/deepduel-server.jar \
+          gh release create deepduel-latest out/DeepDuel.apk "out/$RUSTORE_APK" out/deepduel-server.jar \
             --prerelease --target "${{ github.sha }}" \
             --title "Глубинная дуэль — сборка ${{ github.run_number }}" \
-            --notes "DeepDuel.apk — игра для Android (клиент + встроенный сервер). deepduel-server.jar — сервер для ПК/VPS (java -jar deepduel-server.jar). Ветка: ${{ github.ref_name }}."
+            --notes "DeepDuel.apk — игра для Android (клиент + встроенный сервер). $RUSTORE_APK — сборка для RuStore (цены в рублях; с пометкой TEST — подписана общим ключом, в магазин не загружать). deepduel-server.jar — сервер для ПК/VPS (java -jar deepduel-server.jar). Ветка: ${{ github.ref_name }}."

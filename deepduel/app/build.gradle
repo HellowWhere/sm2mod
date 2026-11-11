@@ -3,6 +3,8 @@ plugins {
 }
 
 def ciBuild = (System.getenv('GITHUB_RUN_NUMBER') ?: '1') as Integer
+// Private signing key of the RuStore build. It comes from CI secrets and is never stored in the repository.
+def ruKeystore = System.getenv('RUSTORE_KEYSTORE_FILE')
 
 android {
     namespace 'com.deepduel.game'
@@ -25,6 +27,36 @@ android {
             keyAlias 'deepduel'
             keyPassword 'deepduel'
         }
+        rustore {
+            if (ruKeystore) {
+                storeFile file(ruKeystore)
+                storePassword System.getenv('RUSTORE_KEYSTORE_PASSWORD')
+                keyAlias System.getenv('RUSTORE_KEY_ALIAS')
+                keyPassword System.getenv('RUSTORE_KEY_PASSWORD')
+            }
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    // global  - the APK from GitHub (com.deepduel.game), signed with the shared public key
+    // rustore - the build for RuStore (com.deepduel.game.ru): ruble prices, its own private key.
+    //           Without the key secrets it is signed with the shared key - fine for testing, NOT for the store.
+    flavorDimensions 'store'
+    productFlavors {
+        global {
+            dimension 'store'
+            buildConfigField 'String', 'STORE', '"global"'
+            signingConfig signingConfigs.shared
+        }
+        rustore {
+            dimension 'store'
+            applicationIdSuffix '.ru'
+            buildConfigField 'String', 'STORE', '"rustore"'
+            signingConfig ruKeystore ? signingConfigs.rustore : signingConfigs.shared
+        }
     }
 
     buildTypes {
@@ -33,7 +65,7 @@ android {
         }
         release {
             minifyEnabled false
-            signingConfig signingConfigs.shared
+            // signed per flavor, see productFlavors
         }
     }
 

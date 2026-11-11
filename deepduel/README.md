@@ -48,6 +48,30 @@ curl -fsSL https://raw.githubusercontent.com/HellowWhere/sm2mod/claude/submarine
 Приложение по кнопке «Играть онлайн» (и при первом запуске) подключается к основному серверу,
 его адрес задан в `client/web/js/main.js` (`DD.OFFICIAL_SERVER`).
 
+## Сборка для RuStore
+
+Каждая сборка выпускает два APK:
+
+- `DeepDuel.apk` — обычная версия (`com.deepduel.game`), цены в долларах;
+- `DeepDuel-RuStore.apk` — версия для RuStore (`com.deepduel.game.ru`), цены в рублях
+  (1 цент серверной цены = 1 рубль: $1.49 → 149 ₽). Это отдельное приложение, оно ставится рядом с обычным.
+
+Версию для магазина нужно подписывать **своим закрытым ключом**: общий ключ `deepduel.keystore` лежит
+в открытом репозитории, им может подписаться кто угодно. Пока секретов нет, файл называется
+`DeepDuel-RuStore-TEST.apk` и подписан общим ключом — для проверки на телефоне годится, в магазин его не загружать.
+
+Как подключить свой ключ (один раз):
+
+1. Создайте ключ: `keytool -genkeypair -v -keystore rustore.jks -alias deepduel -keyalg RSA -keysize 2048 -validity 10000`
+   Сохраните файл и пароли в надёжном месте: потеряете — не сможете обновлять игру в магазине.
+2. Переведите файл в текст: `base64 -w0 rustore.jks` (в PowerShell:
+   `[Convert]::ToBase64String([IO.File]::ReadAllBytes("rustore.jks"))`).
+3. В репозитории: Settings → Secrets and variables → Actions → добавьте секреты
+   `RUSTORE_KEYSTORE_BASE64`, `RUSTORE_KEYSTORE_PASSWORD`, `RUSTORE_KEY_ALIAS` (`deepduel`), `RUSTORE_KEY_PASSWORD`.
+
+Перед публикацией в RuStore: настоящая оплата в игру не встроена. Либо поставьте на сервере режим оплаты
+«Выключены», либо подключите RuStore Pay (нужен статус ИП или юрлица) — тестовый и ручной режимы для магазина не подходят.
+
 ## Переезд на постоянный сервер
 
 `deepduel-server.jar` — тот же сервер, что и в APK, плюс веб-клиент. Нужна Java 17+:
