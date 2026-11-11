@@ -124,7 +124,11 @@ window.DD = window.DD || {};
   }
 
   /** Detailed weapon picture drawn from its render kind (64x64). */
+  /* Weapon pictures are files: img/weapons/<kind>.png. Kinds without a file use the built-in drawing below. */
+  const WEAPON_PNG = ('shell bullet twin pellet sonic mortar acid cryo ion vortex rail plasma tesla torp torp_fast torp_homing ' +
+    'torp_net torp_cluster torp_heavy torp_ghost torp_emp torp_swarm torp_shkval depth mine').split(' ');
   function weaponSvg(kind, color) {
+    if (WEAPON_PNG.indexOf(kind) >= 0) return S('0 0 64 64', `<image href="img/weapons/${kind}.png" x="0" y="0" width="64" height="64"/>`);
     const c = color || '#9fb3c8';
     const shd = (hex, f) => (DD.color ? DD.color.shade(hex, f) : hex);
     const m = id('m'), md = id('md'), br = id('br'), gl = id('g'), cg = id('cg'), cu = id('cu');

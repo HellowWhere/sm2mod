@@ -1,4 +1,4 @@
-/* Submarine art (detailed SVG rendered once per skin and hull tier) + animated preview stages for menus. */
+/* Submarine art (PNG pictures from img/subs, one per skin and hull tier) + animated preview stages for menus. */
 window.DD = window.DD || {};
 (function () {
   function hexToRgb(h) {
@@ -267,14 +267,21 @@ ${[212, 230, 248].map(x => `<circle cx="${x}" cy="77" r="8" fill="url(#mt)" stro
     const img = new Image();
     img.onload = () => {
       const c = document.createElement('canvas');
-      c.width = ART_W * ART_RES;
-      c.height = ART_H * ART_RES;
+      c.width = img.naturalWidth || ART_W * ART_RES;
+      c.height = img.naturalHeight || ART_H * ART_RES;
       c.getContext('2d').drawImage(img, 0, 0, c.width, c.height);
       a.canvas = c;
       a.ready = true;
     };
-    img.onerror = () => { a.failed = true; };
-    img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(subSvg(skin, tier));
+    // The picture is a file: img/subs/<skin>_<tier>.png (640x320, same layout as the old drawing).
+    // A skin without a file (added on the server later) falls back to the built-in drawing.
+    let fallback = false;
+    img.onerror = () => {
+      if (fallback) { a.failed = true; return; }
+      fallback = true;
+      img.src = 'data:image/svg+xml;charset=utf-8,' + encodeURIComponent(subSvg(skin, tier));
+    };
+    img.src = 'img/subs/' + (skin.id || 'classic') + '_' + tier + '.png';
     return a;
   }
 
