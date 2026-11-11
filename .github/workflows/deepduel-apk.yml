@@ -52,6 +52,7 @@ jobs:
           mkdir -p out
           cp deepduel/app/build/outputs/apk/global/release/app-global-release.apk out/DeepDuel.apk
           cp deepduel/app/build/outputs/apk/rustore/release/app-rustore-release.apk "out/$RUSTORE_APK"
+          cp deepduel/app/build/outputs/apk/itch/release/app-itch-release.apk out/DeepDuel-EN.apk
           cp deepduel/server/build/libs/deepduel-server.jar out/deepduel-server.jar
           ls -la out
 
@@ -65,7 +66,7 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh release delete deepduel-latest --cleanup-tag -y || true
-          gh release create deepduel-latest out/DeepDuel.apk "out/$RUSTORE_APK" out/deepduel-server.jar \
+          gh release create deepduel-latest out/DeepDuel.apk out/DeepDuel-EN.apk "out/$RUSTORE_APK" out/deepduel-server.jar \
             --prerelease --target "${{ github.sha }}" \
             --title "Глубинная дуэль — сборка ${{ github.run_number }}" \
-            --notes "DeepDuel.apk — игра для Android (клиент + встроенный сервер). $RUSTORE_APK — сборка для RuStore (цены в рублях; с пометкой TEST — подписана общим ключом, в магазин не загружать). deepduel-server.jar — сервер для ПК/VPS (java -jar deepduel-server.jar). Ветка: ${{ github.ref_name }}."
+            --notes "DeepDuel.apk — игра для Android (клиент + встроенный сервер). DeepDuel-EN.apk — английская версия для itch.io. $RUSTORE_APK — сборка для RuStore (цены в рублях; с пометкой TEST — подписана общим ключом, в магазин не загружать). deepduel-server.jar — сервер для ПК/VPS (java -jar deepduel-server.jar). Ветка: ${{ github.ref_name }}."

@@ -221,7 +221,13 @@ public class MainActivity extends Activity {
             });
         }
 
-        /** "global" or "rustore": which store this APK was built for. */
+        /** "ru", "en" or "auto" (follow the phone): the language this APK was built for. */
+        @JavascriptInterface
+        public String lang() {
+            return BuildConfig.LANG;
+        }
+
+        /** "global", "rustore" or "itch": which store this APK was built for. */
         @JavascriptInterface
         public String store() {
             return BuildConfig.STORE;

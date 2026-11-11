@@ -676,6 +676,7 @@ window.DD = window.DD || {};
             <div class="field-label">Звук и управление</div>
             <label class="toggle">Звуки <input type="checkbox" id="set-sound" ${st.sound ? 'checked' : ''}></label>
             <label class="toggle" style="margin-top:6px">Вибрация <input type="checkbox" id="set-vibro" ${st.vibro ? 'checked' : ''}></label>
+            <button class="btn btn-ghost" id="set-lang" style="margin-top:8px">${DD.i18n.lang === 'en' ? 'Language: English → Русский' : 'Язык: Русский → English'}</button>
             <label class="toggle" style="margin-top:6px">Экономия батареи (проще графика) <input type="checkbox" id="set-low" ${st.quality === 'low' ? 'checked' : ''}></label>
           </div>
           <div>
@@ -695,6 +696,7 @@ window.DD = window.DD || {};
       const el = m.el;
       $('#set-sound', el).onchange = (e) => { st.sound = e.target.checked; DD.sfx.enabled = st.sound; DD.main.saveSettings(); };
       $('#set-vibro', el).onchange = (e) => { st.vibro = e.target.checked; DD.main.saveSettings(); };
+      $('#set-lang', el).onclick = () => DD.i18n.set(DD.i18n.lang === 'en' ? 'ru' : 'en');
       $('#set-low', el).onchange = (e) => { st.quality = e.target.checked ? 'low' : 'high'; DD.main.saveSettings(); };
       $('#set-name-ok', el).onclick = async (e) => {
         const r = await UI.run(e.currentTarget, () => DD.net.req('rename', { name: $('#set-name', el).value }));

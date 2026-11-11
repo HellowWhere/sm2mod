@@ -57,27 +57,34 @@ public class ServerService extends Service {
         return START_STICKY;
     }
 
+    /** Text in the language of this build ("auto" follows the phone's language). */
+    private static String tr(String ru, String en) {
+        String l = BuildConfig.LANG;
+        if ("auto".equals(l)) l = "ru".equals(java.util.Locale.getDefault().getLanguage()) ? "ru" : "en";
+        return "en".equals(l) ? en : ru;
+    }
+
     private Notification buildNotification() {
         NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         if (nm != null && nm.getNotificationChannel(CHANNEL) == null) {
-            NotificationChannel ch = new NotificationChannel(CHANNEL, "Игровой сервер", NotificationManager.IMPORTANCE_LOW);
-            ch.setDescription("Показывается, пока на телефоне работает сервер «Глубинной дуэли»");
+            NotificationChannel ch = new NotificationChannel(CHANNEL, tr("Игровой сервер", "Game server"), NotificationManager.IMPORTANCE_LOW);
+            ch.setDescription(tr("Показывается, пока на телефоне работает сервер «Глубинной дуэли»", "Shown while the Deep Duel server is running on this phone"));
             nm.createNotificationChannel(ch);
         }
         int port = ServerHolder.lastPort(this);
         List<String[]> ips = ServerHolder.addresses();
-        String addr = ips.isEmpty() ? "нет сети" : ips.get(0)[0] + ":" + port;
+        String addr = ips.isEmpty() ? tr("нет сети", "no network") : ips.get(0)[0] + ":" + port;
         PendingIntent open = PendingIntent.getActivity(this, 0, new Intent(this, MainActivity.class),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         PendingIntent stop = PendingIntent.getService(this, 1, new Intent(this, ServerService.class).setAction(ACTION_STOP),
                 PendingIntent.FLAG_IMMUTABLE | PendingIntent.FLAG_UPDATE_CURRENT);
         return new Notification.Builder(this, CHANNEL)
                 .setSmallIcon(R.drawable.ic_stat_server)
-                .setContentTitle("Сервер «Глубинной дуэли» работает")
-                .setContentText("Адрес для друзей: " + addr)
+                .setContentTitle(tr("Сервер «Глубинной дуэли» работает", "Deep Duel server is running"))
+                .setContentText(tr("Адрес для друзей: ", "Address for friends: ") + addr)
                 .setOngoing(true)
                 .setContentIntent(open)
-                .addAction(new Notification.Action.Builder(null, "Остановить", stop).build())
+                .addAction(new Notification.Action.Builder(null, tr("Остановить", "Stop"), stop).build())
                 .build();
     }
 

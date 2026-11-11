@@ -41,20 +41,31 @@ android {
         buildConfig true
     }
 
-    // global  - the APK from GitHub (com.deepduel.game), signed with the shared public key
-    // rustore - the build for RuStore (com.deepduel.game.ru): ruble prices, its own private key.
+    // global  - the APK from GitHub (com.deepduel.game), signed with the shared public key;
+    //           language follows the phone (Russian for Russian phones, English otherwise)
+    // rustore - the build for RuStore (com.deepduel.game.ru): Russian, ruble prices, its own private key.
     //           Without the key secrets it is signed with the shared key - fine for testing, NOT for the store.
+    // itch    - the English build for itch.io (com.deepduel.game.en), named "Deep Duel"
     flavorDimensions 'store'
     productFlavors {
         global {
             dimension 'store'
             buildConfigField 'String', 'STORE', '"global"'
+            buildConfigField 'String', 'LANG', '"auto"'
+            signingConfig signingConfigs.shared
+        }
+        itch {
+            dimension 'store'
+            applicationIdSuffix '.en'
+            buildConfigField 'String', 'STORE', '"itch"'
+            buildConfigField 'String', 'LANG', '"en"'
             signingConfig signingConfigs.shared
         }
         rustore {
             dimension 'store'
             applicationIdSuffix '.ru'
             buildConfigField 'String', 'STORE', '"rustore"'
+            buildConfigField 'String', 'LANG', '"ru"'
             signingConfig ruKeystore ? signingConfigs.rustore : signingConfigs.shared
         }
     }
