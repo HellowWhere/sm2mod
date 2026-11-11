@@ -413,7 +413,7 @@ window.DD = window.DD || {};
       if (!list || !list.length) { if (after) after(); return; }
       const last = list[list.length - 1];
       const rewards = list.map(l => `<div class="reward-row"><span class="ic">${UI.rewardIcon({ type: 'crate', id: l.crate })}</span><div><b>Уровень ${l.level}</b><small>${esc(S.cat.crates[l.crate].name)} + ${l.gems} жемчуга</small></div></div>`).join('');
-      DD.sfx.play('win', 0.7);
+      DD.sfx.play('levelup', 0.7);
       const m = UI.modal(`<h2 style="text-align:center;padding:0">Новый уровень капитана: ${last.level}!</h2>
         <div class="muted" style="text-align:center;margin-bottom:10px">Уровень растёт, когда вы улучшаете подлодку и оружие.</div>
         <div style="display:flex;flex-direction:column;gap:6px">${rewards}</div>

@@ -21,15 +21,20 @@ window.DD = window.DD || {};
     toUrl(addr) {
       let a = String(addr || '').trim();
       if (!a) return '';
-      let secure = false;
-      a = a.replace(/^(wss?|https?):\/\//i, (m, p) => { secure = p.toLowerCase() === 'wss' || p.toLowerCase() === 'https'; return ''; });
+      // a page opened over https may only use wss (browsers block ws:// from it)
+      let secure = location.protocol === 'https:';
+      a = a.replace(/^(wss?|https?):\/\//i, (m, p) => { secure = secure || p.toLowerCase() === 'wss' || p.toLowerCase() === 'https'; return ''; });
       a = a.replace(/\/.*$/, '');
-      if (!/:\d+$/.test(a) && !/^\[.*\]$/.test(a)) a += ':8765';
+      // no port given: a secure address (https://play.example.com) means the standard 443 behind a proxy,
+      // a plain one means the game server's own port
+      if (!secure && !/:\d+$/.test(a) && !/^\[.*\]$/.test(a)) a += ':8765';
       return (secure ? 'wss://' : 'ws://') + a + '/ws';
     },
 
     normAddr(addr) {
-      return String(addr || '').trim().replace(/^(wss?|https?):\/\//i, '').replace(/\/.*$/, '');
+      const s = String(addr || '').trim();
+      // keep the https:// mark, otherwise a saved secure address would reconnect without encryption
+      return (/^(wss|https):\/\//i.test(s) ? 'https://' : '') + s.replace(/^(wss?|https?):\/\//i, '').replace(/\/.*$/, '');
     },
 
     connect(addr, timeoutMs = 7000) {

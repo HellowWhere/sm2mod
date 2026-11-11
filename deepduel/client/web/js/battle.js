@@ -583,7 +583,7 @@ window.DD = window.DD || {};
         case 'acid':
           for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.6, max: 0.6, c: '140,255,90', s: 3.5 });
           if (p1 === meIdx) B.alert('Корпус разъедает кислота!', 'red', 1.5);
-          DD.sfx.play('hit', vol, pan);
+          DD.sfx.play('sizzle', vol, pan);
           break;
         case 'burn':
           B.texts.push({ x: x + (Math.random() - 0.5) * 24, y, txt: '-' + p1, life: 0.9, max: 0.9, c: '#9dff5d', big: false });
@@ -1085,7 +1085,7 @@ window.DD = window.DD || {};
         case 'acid':
           for (let i = 0; i < 12; i++) B.particles.push({ t: 'spark', x, y, vx: (Math.random() - 0.5) * 220, vy: (Math.random() - 0.5) * 220, life: 0.6, max: 0.6, c: '140,255,90', s: 3.5 });
           if (p1 === meIdx) B.alert('Корпус разъедает кислота!', 'red', 1.5);
-          DD.sfx.play('hit', vol, pan);
+          DD.sfx.play('sizzle', vol, pan);
           break;
         case 'burn':
           B.texts.push({ x: x + (Math.random() - 0.5) * 24, y, txt: '-' + p1, life: 0.9, max: 0.9, c: '#9dff5d', big: false });

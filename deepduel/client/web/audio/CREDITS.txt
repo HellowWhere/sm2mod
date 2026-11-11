@@ -1,0 +1,23 @@
+Звуки и музыка «Глубинной дуэли» / Deep Duel audio credits
+===========================================================
+
+ambient.mp3 — «Aquaria», автор cynicmusic (http://cynicmusic.com, http://pixelsphere.org)
+  https://opengameart.org/content/aquaria
+  Лицензия: CC0 (общественное достояние). Без изменений, кроме запаса по краям для бесшовной петли.
+
+win.mp3 — на основе «Win Music #2», автор remaxim (заказ OpenGameArt.org)
+  https://opengameart.org/content/win-music-2
+  Лицензия: CC-BY-SA 3.0 (также GPL 2.0 / GPL 3.0).
+  Изменено: смягчены атаки, срезаны резкие верхние частоты, добавлена реверберация.
+
+lose.mp3 — на основе «Lose Music #2» (вариант 1), автор remaxim (заказ OpenGameArt.org)
+  https://opengameart.org/content/lose-music-2
+  Лицензия: CC-BY-SA 3.0 (также GPL 2.0 / GPL 3.0).
+  Изменено: смягчены атаки, срезаны резкие верхние частоты, добавлена реверберация.
+
+hurt.mp3, hit.mp3 — первый звук из набора «Metal clang sounds», автор bart
+  https://opengameart.org/content/metal-clang-sounds
+  Лицензия: CC0. hurt — исходная высота, hit — тот же удар на квинту выше.
+
+win.mp3 и lose.mp3 — производные работы, они распространяются на тех же условиях
+CC-BY-SA 3.0: https://creativecommons.org/licenses/by-sa/3.0/
