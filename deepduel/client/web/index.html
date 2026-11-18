@@ -12,7 +12,25 @@
 <div id="app">
   <canvas id="bg"></canvas>
 
-  <!-- ===================== connect ===================== -->
+  <!-- ===================== start (splash) ===================== -->
+  <section class="screen" id="scr-start">
+    <div class="start-wrap">
+      <div class="logo">
+        <div class="logo-sub" id="start-sub"></div>
+        <h1>ГЛУБИННАЯ<span>ДУЭЛЬ</span></h1>
+        <p>Подводные дуэли 1 на 1</p>
+      </div>
+      <div class="start-state" id="start-loading"><div class="spinner"></div><span>Погружение…</span></div>
+      <div class="start-state hidden" id="start-error">
+        <b>Нет связи с сервером</b>
+        <span class="muted">Проверьте интернет и попробуйте ещё раз</span>
+        <button class="btn btn-gold" id="btn-retry">Повторить</button>
+        <button class="link-btn" id="btn-own-server">Свой сервер</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===================== connect (own servers) ===================== -->
   <section class="screen" id="scr-connect">
     <div class="connect-wrap">
       <div class="logo">
@@ -21,8 +39,6 @@
         <p>Подводные дуэли 1 на 1</p>
       </div>
       <div class="connect-panel panel">
-        <button class="btn btn-gold btn-wide btn-play-online" id="btn-official">Играть онлайн</button>
-        <div class="or"><span>или свой сервер</span></div>
         <div id="host-block" class="hidden">
           <button class="btn btn-ghost btn-wide" id="btn-host">
             <i data-icon="server"></i> Сервер на этом телефоне
@@ -36,6 +52,7 @@
         </div>
         <div id="recent" class="recent"></div>
         <div class="hint" id="connect-hint">Адрес показывает владелец сервера на экране «Сервер на этом телефоне».</div>
+        <button class="btn btn-ghost btn-wide" id="btn-main-server" style="margin-top:10px">Вернуться на основной сервер</button>
       </div>
     </div>
   </section>
@@ -79,12 +96,14 @@
   <!-- ===================== register ===================== -->
   <section class="screen" id="scr-register">
     <div class="register-wrap panel">
-      <h2>Новый капитан</h2>
-      <p class="muted">Сервер: <b id="reg-server"></b></p>
-      <input id="inp-name" class="input" maxlength="16" placeholder="Имя капитана" autocomplete="off">
+      <h2>Как зовут капитана?</h2>
+      <p class="muted">Придумайте имя или выберите случайное</p>
+      <div class="row">
+        <input id="inp-name" class="input" maxlength="16" placeholder="Имя капитана" autocomplete="off">
+        <button class="icon-btn dice" id="btn-random-name" title="Случайное имя">🎲</button>
+      </div>
       <button class="btn btn-gold btn-wide" id="btn-register">Начать</button>
       <button class="btn btn-ghost btn-wide" id="btn-restore">У меня есть код аккаунта</button>
-      <button class="btn btn-ghost btn-wide" data-back="connect">Другой сервер</button>
     </div>
   </section>
 

@@ -29,7 +29,11 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
 
       if (A()) $('#host-block').classList.remove('hidden');
       $('#btn-host').onclick = () => { DD.sfx.init(); M.showHost(); };
-      $('#btn-official').onclick = () => { DD.sfx.init(); M.goFullscreen(); M.connect(DD.OFFICIAL_SERVER); };
+      $('#btn-random-name').onclick = () => { DD.sfx.init(); DD.sfx.play('click'); $('#inp-name').value = M.randomName(); };
+      $('#btn-retry').onclick = () => M.startup();
+      $('#btn-main-server').onclick = () => { store.set('dd_own_server', ''); M.startup(); };
+      $('#btn-own-server').onclick = () => { UI.show('connect'); M.renderRecent(); };
+      M.startStage = new DD.SubStage(M.makeCanvas($('#start-sub')), { water: false, scale: 1.1 });
       $('#btn-connect').onclick = () => { DD.sfx.init(); M.goFullscreen(); M.connect($('#inp-addr').value); };
       $('#inp-addr').addEventListener('keydown', (e) => { if (e.key === 'Enter') $('#btn-connect').click(); });
       $('#btn-register').onclick = (e) => M.register(e.currentTarget);
@@ -77,11 +81,39 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
       } else {
         const recent = store.get('dd_recent', []);
         if (recent.length) $('#inp-addr').value = recent[0].addr;
-        UI.show('connect');
-        // first launch: go straight to the main server; later: to the server used last time
-        const target = recent.length ? recent[0].addr : DD.OFFICIAL_SERVER;
-        if (store.get('dd_autoconnect', true)) M.connect(target, true);
+        M.startup();
       }
+    },
+
+    /** App start: connect straight to the game server, no addresses on screen. */
+    async startup() {
+      $('#start-loading').classList.remove('hidden');
+      $('#start-error').classList.add('hidden');
+      UI.show('start');
+      const recent = store.get('dd_recent', []);
+      // the main server, unless the player chose another one in the settings
+      const own = store.get('dd_own_server', '');
+      const ok = await M.connect(own || DD.OFFICIAL_SERVER, true, true);
+      if (!ok) {
+        $('#start-loading').classList.add('hidden');
+        $('#start-error').classList.remove('hidden');
+      }
+    },
+
+    randomName() {
+      const adj = ['Смелый', 'Тихий', 'Морской', 'Тёмный', 'Быстрый', 'Стальной', 'Хитрый', 'Северный', 'Ночной', 'Ледяной', 'Глубинный', 'Дикий', 'Злой', 'Старый', 'Рыжий'];
+      const noun = ['Кит', 'Скат', 'Краб', 'Кальмар', 'Капитан', 'Адмирал', 'Охотник', 'Шторм', 'Призрак', 'Боцман', 'Пират', 'Моряк', 'Дельфин', 'Нарвал', 'Осьминог'];
+      const en = ['Kraken', 'Shark', 'Orca', 'Nemo', 'Trident', 'Marlin', 'Torpedo', 'Abyss', 'Reef', 'Sonar'];
+      const pick = (a) => a[Math.floor(Math.random() * a.length)];
+      for (let i = 0; i < 20; i++) {
+        const r = Math.random();
+        let n;
+        if (r < 0.45) n = pick(adj) + (Math.random() < 0.5 ? ' ' : '') + pick(noun);
+        else if (r < 0.75) n = pick(noun) + (10 + Math.floor(Math.random() * 990));
+        else n = pick(en) + (Math.random() < 0.5 ? '_' : '') + (1 + Math.floor(Math.random() * 999));
+        if (n.length >= 3 && n.length <= 16) return n;
+      }
+      return 'Капитан' + Math.floor(Math.random() * 9999);
     },
 
     makeCanvas(host) {
@@ -130,12 +162,13 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
     },
 
     // ------------------------------------------------------------ connection & accounts
-    async connect(addr, silent) {
+    async connect(addr, silent, fromStart) {
       addr = (addr || '').trim();
-      if (!addr) { UI.toast('Введите адрес сервера', 'err'); return; }
+      if (!addr) { UI.toast('Введите адрес сервера', 'err'); return false; }
       const ov = $('#overlay-conn');
-      ov.classList.remove('hidden');
-      $('#overlay-conn-text').textContent = 'Подключение к ' + DD.net.normAddr(addr) + '…';
+      if (!fromStart) ov.classList.remove('hidden');
+      $('#overlay-conn-text').textContent = 'Подключение…';
+      if (!fromStart) store.set('dd_own_server', addr === DD.OFFICIAL_SERVER ? '' : DD.net.normAddr(addr));
       try {
         const w = await DD.net.connect(addr);
         M.serverId = w.serverId;
@@ -162,21 +195,23 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
         } else {
           M.showRegister();
         }
+        return true;
       } catch (e) {
         DD.net.close();
         if (!silent) UI.toast(e.message || 'Не удалось подключиться', 'err');
-        else store.set('dd_autoconnect', false);
-        UI.show('connect');
-        M.renderRecent();
+        if (!fromStart) {
+          UI.show('connect');
+          M.renderRecent();
+        }
+        return false;
       } finally {
         ov.classList.add('hidden');
       }
     },
 
     showRegister() {
-      $('#reg-server').textContent = (M.serverName || '') + ' (' + DD.net.addr + ')';
+      if (!$('#inp-name').value) $('#inp-name').value = M.randomName();
       UI.show('register');
-      setTimeout(() => $('#inp-name').focus(), 100);
     },
 
     cachedCatalog() {
@@ -195,7 +230,10 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
       DD.sfx.init();
       const c = M.cachedCatalog();
       const d = await UI.run(btn, () => DD.net.req('register', { name, cv: c ? c.v : '' }));
-      if (!d) return;
+      if (!d) {
+        if (/занято/.test(($('#toast-root').lastChild || {}).textContent || '')) $('#inp-name').value = M.randomName();
+        return;
+      }
       M.token = d.token;
       M.rememberAccount(d.profile.name);
       M.enter(d, false);
@@ -253,7 +291,6 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
       DD.battle.stop();
       DD.pages.hideQueue();
       $('#modal-root').innerHTML = '';
-      store.set('dd_autoconnect', false);
       S.profile = null;
       UI.show('connect');
       M.renderRecent();
@@ -312,7 +349,8 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
       }
       if (S.screen === 'battle') { $('#btn-surrender').click(); return true; }
       if (S.screen === 'main' && DD.pages.current !== 'home') { DD.pages.show('home'); return true; }
-      if (S.screen === 'host' || S.screen === 'register') { UI.show('connect'); return true; }
+      if (S.screen === 'host') { UI.show('connect'); return true; }
+      if (S.screen === 'connect') { M.startup(); return true; }
       return false;
     },
 
