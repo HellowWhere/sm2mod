@@ -105,8 +105,16 @@ DD.OFFICIAL_SERVER = '89.208.96.69:8765';
       const noun = ['Кит', 'Скат', 'Краб', 'Кальмар', 'Капитан', 'Адмирал', 'Охотник', 'Шторм', 'Призрак', 'Боцман', 'Пират', 'Моряк', 'Дельфин', 'Нарвал', 'Осьминог'];
       const en = ['Kraken', 'Shark', 'Orca', 'Nemo', 'Trident', 'Marlin', 'Torpedo', 'Abyss', 'Reef', 'Sonar'];
       const pick = (a) => a[Math.floor(Math.random() * a.length)];
+      const english = DD.i18n && DD.i18n.lang === 'en';
+      const enAdj = ['Brave', 'Silent', 'Dark', 'Swift', 'Steel', 'Sly', 'Night', 'Icy', 'Deep', 'Wild', 'Old', 'Red'];
+      const enNoun = ['Whale', 'Ray', 'Crab', 'Squid', 'Captain', 'Admiral', 'Hunter', 'Storm', 'Ghost', 'Pirate', 'Shark', 'Orca'];
       for (let i = 0; i < 20; i++) {
         const r = Math.random();
+        if (english) {
+          const n = r < 0.5 ? pick(enAdj) + pick(enNoun) : pick(enNoun) + (10 + Math.floor(Math.random() * 990));
+          if (n.length >= 3 && n.length <= 16) return n;
+          continue;
+        }
         let n;
         if (r < 0.45) n = pick(adj) + (Math.random() < 0.5 ? ' ' : '') + pick(noun);
         else if (r < 0.75) n = pick(noun) + (10 + Math.floor(Math.random() * 990));
