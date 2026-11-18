@@ -1,0 +1,79 @@
+<div id="app" class="port">
+  <canvas id="cv" aria-label="Небо и корабли"></canvas>
+
+  <div id="hangar" class="layer">
+    <header class="topbar">
+      <div class="res">
+        <div class="pill" id="hCoinsPill" title="Монеты"><i class="coin"></i><b id="hCoins">0</b></div>
+        <div class="pill" id="hGearsPill" title="Шестерни"><img class="ri" data-ic="gear" alt=""><b id="hGears">0</b></div>
+        <button class="pill plus" id="hGemsPill" title="Алмазы" aria-label="Алмазы: открыть магазин"><img class="ri" data-ic="gem" alt=""><b id="hGems">0</b><span class="plus-i">+</span></button>
+      </div>
+      <button class="iconbtn" id="soundBtn" aria-label="Звук включён" aria-pressed="true"><img id="soundIc" alt=""></button>
+    </header>
+    <nav class="rail l" aria-label="Разделы">
+      <button class="rbtn" data-open="map"><span class="rb-ic"><img data-ic="map" alt=""></span><span>Карта</span></button>
+      <button class="rbtn" data-open="wheel"><span class="rb-ic"><img data-ic="wheel" alt=""><i class="badge" id="wheelBadge" hidden>!</i></span><span>Колесо</span></button>
+      <button class="rbtn" data-open="power" id="powerBtn"><span class="rb-ic"><img data-ic="power" alt=""><i class="badge" id="powerBadge" hidden>!</i></span><span id="powerLbl">Бонус</span></button>
+    </nav>
+    <nav class="rail r" aria-label="Магазин и склад">
+      <button class="rbtn" data-open="shop"><span class="rb-ic"><img data-ic="shop" alt=""></span><span>Магазин</span></button>
+      <button class="rbtn" data-open="store"><span class="rb-ic"><img data-ic="crate-gold" alt=""><i class="badge" id="storeBadge" hidden>0</i></span><span>Склад</span></button>
+    </nav>
+    <section class="sheet" id="sheet">
+      <nav class="tabs" id="tabs" role="tablist" aria-label="Улучшения">
+        <button class="tab" role="tab" data-tab="yard"><img alt="" data-ic="tabyard"><span>Верфь</span></button>
+        <button class="tab" role="tab" data-tab="hull"><img alt="" data-ic="wall"><span>Стены</span></button>
+        <button class="tab" role="tab" data-tab="crew"><img alt="" data-ic="crew-gunner"><span>Экипаж</span></button>
+        <button class="tab" role="tab" data-tab="arsenal"><img alt="" data-ic="powder"><span>Арсенал</span></button>
+        <button class="tab" role="tab" data-tab="bal"><img alt="" data-ic="blift"><span>Баллоны</span></button>
+        <button class="tab" role="tab" data-tab="prop"><img alt="" data-ic="thrust"><span>Винты</span></button>
+      </nav>
+      <div class="sheet-body" id="sheetBody"></div>
+      <div class="sheet-foot">
+        <div class="liftbox" id="liftBox">
+          <div class="lb-row"><span>Подъём <b id="fLift">0</b></span><span>Вес <b id="fWeight">0</b></span></div>
+          <div class="meter" id="fMeter"><span id="fLiftBar"></span><i id="fWeightMark"></i></div>
+          <div class="lb-state" id="fState">Корабль держится в воздухе</div>
+        </div>
+        <button class="btn go fight" id="fightBtn"><span class="f1">В бой!</span><span class="f2" id="fightSub">Уровень 1</span></button>
+      </div>
+    </section>
+  </div>
+
+  <div id="hud" class="layer" hidden>
+    <div class="hud-top">
+      <button class="iconbtn" id="pauseBtn" aria-label="Пауза"><img id="pauseIc" alt=""></button>
+      <div class="route">
+        <div class="route-label outlined"><span id="bLevel">Уровень 1</span><span id="bName"></span></div>
+        <div class="route-bar"><div id="routeFill"></div><div id="routeMarks"></div><div id="routeShip"></div></div>
+      </div>
+      <button class="iconbtn speedbtn" id="speedBtn" aria-label="Скорость игры">×1</button>
+      <div class="pill" id="bCoinsPill"><i class="coin"></i><b id="bCoins">0</b></div>
+    </div>
+    <div class="powerchip" id="powerChip" hidden><span class="chip" id="powerChipTxt">Усиление</span></div>
+    <div id="warn" class="warn" hidden>Теряем высоту!</div>
+    <div class="hud-bottom">
+      <div class="gauges">
+        <div class="g-row"><span>Высота</span><b id="altVal">0 м</b></div>
+        <div class="meter" id="bMeter"><span id="bLiftBar"></span><i id="bWeightMark"></i></div>
+        <div class="g-row"><span>Подъём <b id="bLift">0</b></span><span>Вес <b id="bWeight">0</b></span></div>
+        <div class="meter hull"><span id="bHullBar"></span></div>
+        <div class="g-row"><span>Корпус</span><b id="bHull">0</b></div>
+      </div>
+      <div class="abil">
+        <button class="ability" id="ballastBtn" aria-label="Сбросить балласт"><img id="ballastIc" alt=""><span class="ab-name">Балласт</span><span class="ab-count" id="ballastN">1</span></button>
+        <button class="ability ram" id="ramBtn" aria-label="Таран"><img id="ramIc" alt=""><span class="ab-name">Таран</span></button>
+      </div>
+    </div>
+  </div>
+
+  <div id="panel" class="panel" hidden>
+    <div class="pcard" role="dialog" aria-modal="true" aria-labelledby="pTitle">
+      <div class="phead"><h2 id="pTitle">Магазин</h2><div class="res" id="pRes"></div><button class="iconbtn" id="pClose" aria-label="Закрыть"><img data-ic="close" alt=""></button></div>
+      <div class="pbody" id="pBody"></div>
+    </div>
+  </div>
+  <div id="modal" class="modal" hidden><div class="mcard" id="mcard" role="dialog" aria-modal="true"></div></div>
+  <div id="sys" class="sys" hidden><div class="sys-card" id="sysCard"></div></div>
+  <div id="toast" class="toast" role="status" hidden></div>
+</div>
